@@ -18,7 +18,10 @@ class MenuScreen {
               children: <Widget>[
                 Title(
                     color: Colors.black,
-                    child: const Text('Select the Variant')),
+                    child: const Text(
+                      'Select the Variant',
+                      style: TextStyle(fontWeight: FontWeight.bold,),
+                    )),
                 RadioListTile(
                   title: const Text(
                       'Variation 1  Rs.800.00'), // Text for the radio button
@@ -49,7 +52,13 @@ class MenuScreen {
                     // Handle radio button selection logic here
                   },
                 ),
-                Title(color: Colors.black, child: const Text('Add Ones')),
+                Title(
+                  color: Colors.black,
+                  child: const Text(
+                    'Add Ones',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
                 Checkbox(
                   checkColor: Colors.white,
                   value: isChecked,
