@@ -17,7 +17,8 @@ class _CartScreenState extends State<CartScreenPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
-        backgroundColor: const Color.fromARGB(255, 19, 139, 4),
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [

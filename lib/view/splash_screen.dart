@@ -44,18 +44,15 @@ class _SplashScreenState extends State<SplashScreenPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 19, 139, 4),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Center(
         child: FadeTransition(
           opacity: _animation,
-          child: Text(
-            'Restaurant Pos Mobile',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 50.0,
-              fontWeight: FontWeight.bold,
-              fontFamily: GoogleFonts.singleDay().fontFamily,
-            ),
+          child: Image.asset(
+            'assets/CinnamonLogo.png', // Path to your image logo
+            width: 400, // Adjust the width as needed
+            height: 400, // Adjust the height as needed
+            // You can add more animations here if needed
           ),
         ),
       ),

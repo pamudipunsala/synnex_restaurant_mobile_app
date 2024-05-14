@@ -31,7 +31,8 @@ class _EditScreenState extends State<EditScreenPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Order'),
-        backgroundColor: const Color.fromARGB(255, 19, 139, 4),
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [

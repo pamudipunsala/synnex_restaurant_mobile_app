@@ -30,7 +30,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Menu'),
-        backgroundColor: const Color.fromARGB(255, 19, 139, 4),
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
@@ -42,7 +43,10 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 hintText: 'Search...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
+                hintStyle: TextStyle(color:  Color.fromARGB(255, 71, 4, 4)),
+                fillColor:  Color.fromARGB(255, 255, 255, 255),
               ),
+              style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
               onChanged: (value) {
                 // Logic
               },
@@ -52,22 +56,23 @@ class _MenuScreenState extends State<MenuScreenPage> {
             value: _selectedOption,
             items: const [
               DropdownMenuItem(
-                child: Text('Category'),
                 value: 'Category',
+                child: Text('Category'),
               ),
               DropdownMenuItem(
-                child: Text('Breakfast'),
                 value: 'Breakfast',
+                child: Text('Breakfast'),
               ),
               DropdownMenuItem(
-                child: Text('Lunch'),
                 value: 'Lunch',
+                child: Text('Lunch'),
               ),
               DropdownMenuItem(
-                child: Text('Dinner'),
                 value: 'Dinner',
+                child: Text('Dinner'),
               ),
             ],
+            style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
             onChanged: (value) {
               setState(() {
                 _selectedOption = value!;
@@ -115,7 +120,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                       const SizedBox(height: 8),
                       Text(
                         menuButtons[index].label,
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 71, 4, 4)),
                       ),
                     ],
                   ),

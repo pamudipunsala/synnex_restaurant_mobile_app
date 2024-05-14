@@ -33,7 +33,8 @@ class _OrderHistoryState extends State<OrderHistoryPage>
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Order History'),
-          backgroundColor: const Color.fromARGB(255, 19, 139, 4),
+          backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [

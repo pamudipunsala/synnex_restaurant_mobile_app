@@ -17,7 +17,7 @@ class MenuScreen {
             child: ListBody(
               children: <Widget>[
                 Title(
-                    color: Colors.black,
+                    color: Color.fromARGB(255, 71, 4, 4),
                     child: const Text(
                       'Select the Variant',
                       style: TextStyle(fontWeight: FontWeight.bold,),
