@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:restaurant_pos_mobile/models/menu_model.dart';
+import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
 
 class MenuScreenPage extends StatefulWidget {
@@ -10,20 +11,27 @@ class MenuScreenPage extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreenPage> {
+  List<dynamic> products = [];
   MenuScreen menu = MenuScreen();
-
-  List<MenuButtonModel> menuButtons = [
-    MenuButtonModel(
-      label: 'Fried Rice\nRs.800.00',
-      imagePath: 'assets/img2.jpeg',
-    ),
-    MenuButtonModel(
-      label: 'String Hoppers\nRs.400.00',
-      imagePath: 'assets/img3.jpeg',
-    ),
-  ];
-
   String _selectedOption = 'Category';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    final response = await http.get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        products = json.decode(response.body);
+      });
+    } else {
+      throw Exception('Failed to load products');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +46,16 @@ class _MenuScreenState extends State<MenuScreenPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              controller: menu.searchController,
               decoration: const InputDecoration(
                 hintText: 'Search...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
-                hintStyle: TextStyle(color:  Color.fromARGB(255, 71, 4, 4)),
-                fillColor:  Color.fromARGB(255, 255, 255, 255),
+                hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                fillColor: Color.fromARGB(255, 255, 255, 255),
               ),
               style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
               onChanged: (value) {
-                // Logic
+                // Logic for search
               },
             ),
           ),
@@ -79,54 +86,57 @@ class _MenuScreenState extends State<MenuScreenPage> {
               });
             },
           ),
-          GridView.builder(
-            shrinkWrap: true,
-            itemCount: menuButtons.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 1.5,
+          Expanded(
+            child: GridView.builder(
+              itemCount: products.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.5,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                final product = products[index];
+                final imageUrl = '${product['image_path']}';
+
+                return GestureDetector(
+                  onTap: () {
+                    menu.showVariationsDialog(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          imageUrl,
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${product['name']}\nRs.${product['regular_price']}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 71, 4, 4)),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-            itemBuilder: (BuildContext context, int index) {
-              final imagePath = menuButtons[index].imagePath;
-              return GestureDetector(
-                onTap: () {
-                  // Logic
-                  menu.showVariationsDialog(context);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        imagePath,
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        menuButtons[index].label,
-                        style: const TextStyle(fontSize: 10, color: Color.fromARGB(255, 71, 4, 4)),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
           ),
         ],
       ),

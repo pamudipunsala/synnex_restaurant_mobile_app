@@ -37,6 +37,12 @@ class _OrderHistoryState extends State<OrderHistoryPage>
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           bottom: TabBar(
             controller: _tabController,
+            labelColor: const Color.fromARGB(
+                255, 255, 255, 255), // Active tab text color
+            unselectedLabelColor: const Color.fromARGB(255, 255, 255, 255)
+                .withOpacity(0.6), 
+            indicatorColor:
+                const Color.fromARGB(255, 255, 255, 255), 
             tabs: const [
               Tab(text: 'Pendings'),
               Tab(text: 'Ready'),

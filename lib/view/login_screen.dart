@@ -1,78 +1,130 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/view_models/login_view_model.dart';
 
 class LoginScreenPage extends StatefulWidget {
   const LoginScreenPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreenPage> {
   LoginScreen loginScreen = LoginScreen();
+  final _formKey = GlobalKey<FormState>();
+
+  Future<void> _login(BuildContext context) async {
+    final username = loginScreen.usernameController.text;
+    final password = loginScreen.passwordController.text;
+
+    final response = await http.post(
+      Uri.parse('http://localhost/mobile_apps/fetch_login_data.php'),
+      body: {
+        'u_name': username,
+        'user_password': password,
+      },
+    );
+
+    final responseData = json.decode(response.body);
+
+    if (responseData['status'] == 'success') {
+      loginScreen.toDashboard(context);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Login Failed'),
+            content: const Text('Invalid username or password.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Title(
-              color: const Color.fromARGB(255, 71, 4, 4),
-              child: const Text(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
                 'LogIn',
                 style: TextStyle(
                   color: Color.fromARGB(255, 71, 4, 4),
-                  fontSize: 40, // Adjust the font size as needed
+                  fontSize: 40,
                 ),
               ),
-            ),
-            const SizedBox(height: 60.0),
-            Theme(
-              data: Theme.of(context).copyWith(
-                inputDecorationTheme: const InputDecorationTheme(
-                  labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+              const SizedBox(height: 60.0),
+              Theme(
+                data: Theme.of(context).copyWith(
+                  inputDecorationTheme: const InputDecorationTheme(
+                    labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                  ),
+                ),
+                child: TextFormField(
+                  controller: loginScreen.usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your username';
+                    }
+                    return null;
+                  },
                 ),
               ),
-              child: TextField(
-                controller: loginScreen.usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Username',
+              const SizedBox(height: 20.0),
+              Theme(
+                data: Theme.of(context).copyWith(
+                  inputDecorationTheme: const InputDecorationTheme(
+                    labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                  ),
+                ),
+                child: TextFormField(
+                  controller: loginScreen.passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
                 ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            Theme(
-              data: Theme.of(context).copyWith(
-                inputDecorationTheme: const InputDecorationTheme(
-                  labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                ),
-              ),
-              child: TextField(
-                controller: loginScreen.passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                ),
-              ),
-            ),
-            const SizedBox(height: 80.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
+              const SizedBox(height: 80.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 71, 4, 4),
                   foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-                  fixedSize: const Size(90,50),
+                  fixedSize: const Size(90, 50),
                 ),
-              onPressed: () {
-                //logic
-                loginScreen.toDashboard(context);
-              },
-              child: const Text('Login'),
-            ),
-          ],
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    _login(context);
+                  }
+                },
+                child: const Text('Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );

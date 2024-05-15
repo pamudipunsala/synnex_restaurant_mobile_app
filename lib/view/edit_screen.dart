@@ -61,7 +61,7 @@ class _EditScreenState extends State<EditScreenPage> {
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Fried Rice\nVariation - Chicken\nAdd Ones - cheese Source\nTotal Price - Rs. 1600',
                         ),
                         Row(
