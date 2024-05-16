@@ -11,7 +11,9 @@ class ProfileScreenPage extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreenPage> {
-  Map<String, dynamic> userDetails = {};
+  Map<String, dynamic>? userDetails;
+  bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
@@ -32,12 +34,30 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
       );
 
       if (response.statusCode == 200) {
-        setState(() {
-          userDetails = json.decode(response.body);
-        });
+        final responseData = json.decode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            userDetails = responseData['user'];
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            errorMessage = 'Failed to load profile details';
+            isLoading = false;
+          });
+        }
       } else {
-        throw Exception('Failed to load profile details');
+        setState(() {
+          errorMessage = 'Failed to load profile details';
+          isLoading = false;
+        });
       }
+    } else {
+      setState(() {
+        errorMessage = 'User ID not found';
+        isLoading = false;
+      });
     }
   }
 
@@ -50,33 +70,38 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Center(
-        child: userDetails.isEmpty
+        child: isLoading
             ? const CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/img1.png',
-                    width: 150,
-                    height: 150,
+            : userDetails != null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/img1.png',
+                        width: 150,
+                        height: 150,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'User Name: ${userDetails!['u_name']}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'User Email: ${userDetails!['user_email']}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Joined Date: ${userDetails!['joined_date']}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  )
+                : Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.red, fontSize: 18),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'User Name: ${userDetails['u_name']}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'User Email: ${userDetails['user_email']}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Joined Date: ${userDetails['user_email']}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
       ),
     );
   }

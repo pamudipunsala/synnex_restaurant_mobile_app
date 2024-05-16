@@ -36,7 +36,6 @@ class _DashboardPageState extends State<DashboardPage> {
               color: const Color.fromARGB(255, 71, 4, 4),
               child: Text(
                 'Edvana Anne',
-                textAlign: TextAlign.right,
                 style: GoogleFonts.roboto(
                   textStyle: const TextStyle(
                     color: Color.fromARGB(255, 71, 4, 4),
