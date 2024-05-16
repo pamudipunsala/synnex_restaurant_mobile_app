@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restaurant_pos_mobile/view_models/login_view_model.dart';
 
 class LoginScreenPage extends StatefulWidget {
@@ -29,9 +30,13 @@ class _LoginScreenState extends State<LoginScreenPage> {
     final responseData = json.decode(response.body);
 
     if (responseData['status'] == 'success') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', responseData['user_id'].toString());
+      // ignore: use_build_context_synchronously
       loginScreen.toDashboard(context);
     } else {
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -78,11 +83,11 @@ class _LoginScreenState extends State<LoginScreenPage> {
                 child: TextFormField(
                   controller: loginScreen.usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'Username',
+                    labelText: 'UserName',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
+                      return 'Please Enter Your Username';
                     }
                     return null;
                   },
@@ -103,7 +108,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please Enter Your Password';
                     }
                     return null;
                   },
