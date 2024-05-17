@@ -23,8 +23,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   }
 
   Future<void> fetchProducts() async {
-    final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
+    final response = await http.get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -41,12 +40,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
       if (query.isEmpty) {
         filteredProducts = List.from(products);
       } else {
-        filteredProducts = products
-            .where((product) => product['name']
-                .toString()
-                .toLowerCase()
-                .contains(query.toLowerCase()))
-            .toList();
+        filteredProducts = products.where((product) =>
+            product['name'].toString().toLowerCase().contains(query.toLowerCase())).toList();
       }
     });
   }
@@ -106,8 +101,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.75,
               child: GridView.builder(
-                itemCount: filteredProducts
-                    .length, // Use filteredProducts instead of products
+                itemCount: filteredProducts.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 8,
@@ -115,13 +109,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   childAspectRatio: 1.5,
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  final product = filteredProducts[
-                      index]; // Use filteredProducts instead of products
+                  final product = filteredProducts[index];
                   final imageUrl = '${product['image_path']}';
 
                   return GestureDetector(
                     onTap: () {
-                      menu.showVariationsDialog(context);
+                      menu.showVariationsDialog(context, int.parse(product['p_id']));
                     },
                     child: Container(
                       decoration: BoxDecoration(
