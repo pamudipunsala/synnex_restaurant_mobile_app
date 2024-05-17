@@ -25,29 +25,42 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userId');
 
+    // Debug print
+    print('User ID: $userId');
+
     if (userId != null) {
-      final response = await http.post(
-        Uri.parse('http://localhost/mobile_apps/fetch_profile_data.php'),
-        body: {
-          'user_id': userId,
-        },
-      );
+      try {
+        final response = await http.post(
+          Uri.parse('http://localhost/mobile_apps/fetch_profile_data.php'),
+          body: {
+            'user_id': userId,
+          },
+        );
 
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
 
-        if (responseData['status'] == 'success') {
-          setState(() {
-            userDetails = responseData['user'];
-            isLoading = false;
-          });
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+
+          if (responseData['status'] == 'success') {
+            setState(() {
+              userDetails = responseData['user'];
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              errorMessage = responseData['message'] ?? 'Failed to load profile details';
+              isLoading = false;
+            });
+          }
         } else {
           setState(() {
             errorMessage = 'Failed to load profile details';
             isLoading = false;
           });
         }
-      } else {
+      } catch (e) {
         setState(() {
           errorMessage = 'Failed to load profile details';
           isLoading = false;
@@ -93,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'Joined Date: ${userDetails!['joined_date']}',
+                        'Joined Date: ${userDetails!['created_date']}',
                         style: const TextStyle(fontSize: 18),
                       ),
                     ],

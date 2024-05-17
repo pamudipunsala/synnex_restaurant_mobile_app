@@ -29,11 +29,27 @@ class _LoginScreenState extends State<LoginScreenPage> {
 
     final responseData = json.decode(response.body);
 
+    // Debug print statements to check the response
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    print('Parsed response data: $responseData');
+
     if (responseData['status'] == 'success') {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userId', responseData['user_id'].toString());
-      // ignore: use_build_context_synchronously
-      loginScreen.toDashboard(context);
+      final userId = responseData['user_id'];
+      print('User ID from response: $userId');
+
+      if (userId != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userId', userId.toString());
+
+        // Debug print to confirm userId is stored
+        print('Stored userId: $userId');
+        
+        // ignore: use_build_context_synchronously
+        loginScreen.toDashboard(context);
+      } else {
+        print('user_id is null');
+      }
     } else {
       showDialog(
         // ignore: use_build_context_synchronously
