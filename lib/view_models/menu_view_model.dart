@@ -13,7 +13,7 @@ class MenuScreen {
     if (response.statusCode == 200) {
       List<dynamic> allVariations = json.decode(response.body);
       // Filter variations based on parentId
-      return allVariations.where((variation) => int.parse(variation['parent_id']) == parentId).toList();
+      return allVariations.where((variation) => int.parse(variation['parent_id'] ?? '0') == parentId).toList();
     } else {
       throw Exception('Failed to load variations');
     }
@@ -54,8 +54,8 @@ class MenuScreen {
                           ),
                           for (var variation in variations)
                             RadioListTile<int>(
-                              title: Text('${variation['name']}  Rs.${variation['regular_price']}'),
-                              value: int.parse(variation['p_id']),
+                              title: Text('${variation['name'] ?? 'Unknown'}  Rs.${variation['regular_price'] ?? '0.00'}'),
+                              value: int.parse(variation['p_id'] ?? '0'),
                               groupValue: selectedRadio,
                               onChanged: (value) {
                                 setState(() {
