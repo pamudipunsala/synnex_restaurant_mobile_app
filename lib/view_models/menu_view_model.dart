@@ -45,12 +45,9 @@ class MenuScreen {
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Title(
-                            color: const Color.fromARGB(255, 71, 4, 4),
-                            child: const Text(
-                              'Select the Variant',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                          const Text(
+                            'Select the Variant',
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 71, 4, 4)),
                           ),
                           for (var variation in variations)
                             RadioListTile<int>(
@@ -63,12 +60,9 @@ class MenuScreen {
                                 });
                               },
                             ),
-                          Title(
-                            color: Colors.black,
-                            child: const Text(
-                              'Add Ones',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
+                          const Text(
+                            'Add Ones',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                           CheckboxListTile(
                             controlAffinity: ListTileControlAffinity.leading,

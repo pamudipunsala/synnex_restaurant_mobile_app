@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
       Uri.parse('http://localhost/mobile_apps/fetch_login_data.php'),
       body: {
         'u_name': username,
+        'user_email': username,
         'user_password': password,
       },
     );
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                 child: TextFormField(
                   controller: loginScreen.usernameController,
                   decoration: const InputDecoration(
-                    labelText: 'UserName',
+                    labelText: 'UserName or UserEmail',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
