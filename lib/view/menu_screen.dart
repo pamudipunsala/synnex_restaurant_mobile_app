@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_pos_mobile/view/cart_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
+import 'package:uuid/uuid.dart';
 
 class MenuScreenPage extends StatefulWidget {
   const MenuScreenPage({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   List<dynamic> filteredProducts = [];
   MenuScreen menu = MenuScreen();
   String _selectedOption = 'Category';
+  int? _selectedRadioValue;
 
   @override
   void initState() {
@@ -23,7 +26,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
   }
 
   Future<void> fetchProducts() async {
-    final response = await http.get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
+    final response = await http
+        .get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -40,10 +44,143 @@ class _MenuScreenState extends State<MenuScreenPage> {
       if (query.isEmpty) {
         filteredProducts = List.from(products);
       } else {
-        filteredProducts = products.where((product) =>
-            product['name'].toString().toLowerCase().contains(query.toLowerCase())).toList();
+        filteredProducts = products
+            .where((product) => product['name']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+            .toList();
       }
     });
+  }
+
+  Future<List<dynamic>> fetchVariations(int parentId) async {
+    final response = await http.get(
+        Uri.parse('http://localhost/mobile_apps/fetch_variations_data.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> allVariations = json.decode(response.body);
+      List<dynamic> variationsWithGroupValue = allVariations
+          .where((variation) =>
+              int.parse(variation['parent_id'] ?? '0') == parentId)
+          .map((variation) => {
+                ...variation,
+                'groupValue': int.parse(variation['p_id'] ?? '0'),
+              })
+          .toList();
+
+      return variationsWithGroupValue;
+    } else {
+      throw Exception('Failed to load variations');
+    }
+  }
+
+  void showVariationsDialog(BuildContext context, int parentId) {
+    bool isChecked = false;
+    int? selectedRadioInDialog =
+        -1; // Local state for radio button inside the dialog
+    const uuid = Uuid();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FutureBuilder<List<dynamic>>(
+          future: fetchVariations(parentId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const AlertDialog(
+                content: Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return AlertDialog(
+                content: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              var variations = snapshot.data!;
+
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: <Widget>[
+                          const Text(
+                            'Select the Variant',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 71, 4, 4)),
+                          ),
+                          for (var variation in variations)
+                            RadioListTile<int>(
+                              key: Key(const Uuid()
+                                  .v4()), // Generate a unique key using UUID
+                              title: Text(
+                                  '${variation['name'] ?? 'Unknown'}  Rs.${variation['regular_price'] ?? '0.00'}'),
+                              value: int.parse(variation['parent_id'] ?? '0'),
+                              groupValue: _selectedRadioValue,
+                              onChanged: (int? value) {
+                                print('Radio Button Selected: $value');
+                                setState(() {
+                                  _selectedRadioValue = value;
+                                });
+                              },
+                            ),
+                          const Text(
+                            'Add Ones',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: const Text('Add Ones 1  Rs.200.00'),
+                            value: isChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                isChecked = value!;
+                              });
+                            },
+                          ),
+                          const Text('Total: 1800.00'),
+                          const SizedBox(height: 20),
+                          TextField(
+                            controller: menu.noteController,
+                            decoration: const InputDecoration(
+                              labelText: 'Add a note',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          setState(() {
+                            _selectedRadioValue = selectedRadioInDialog;
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CartScreenPage()),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -114,7 +251,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
                   return GestureDetector(
                     onTap: () {
-                      menu.showVariationsDialog(context, int.parse(product['p_id']));
+                      showVariationsDialog(context, int.parse(product['p_id']));
                     },
                     child: Container(
                       decoration: BoxDecoration(
