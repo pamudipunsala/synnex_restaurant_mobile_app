@@ -26,7 +26,8 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> fetchTables() async {
-    final response = await http.get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
+    final response = await http
+        .get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -50,29 +51,6 @@ class _CartScreenState extends State<CartScreenPage> {
         children: [
           const Text('Table no : 01'),
           const Text('Order no : 0001'),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DropdownButton<String>(
-              value: selectedOption,
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedOption = newValue!;
-                });
-              },
-              items: <String>[
-                'Table Status',
-                'Table 1',
-                'Table 2',
-                'Table 3',
-                'Table 4'
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: widget.cartItems.length,
@@ -81,7 +59,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 return Card(
                   child: ListTile(
                     title: Text(
-                      '${item.name}\nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}',
+                      '${item.name}\nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}',
                     ),
                   ),
                 );
