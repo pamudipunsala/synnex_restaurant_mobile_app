@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/view/cart_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
-import 'package:uuid/uuid.dart';
 
 class MenuScreenPage extends StatefulWidget {
   const MenuScreenPage({Key? key}) : super(key: key);
@@ -17,7 +16,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
   List<dynamic> filteredProducts = [];
   MenuScreen menu = MenuScreen();
   String _selectedOption = 'Category';
-  int? _selectedRadioValue;
+
+  late int selectedRadioValue = -2;
 
   @override
   void initState() {
@@ -77,9 +77,10 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
   void showVariationsDialog(BuildContext context, int parentId) {
     bool isChecked = false;
-    int? selectedRadioInDialog =
-        -1; // Local state for radio button inside the dialog
-    const uuid = Uuid();
+    int? selectedRadioInDialog = -1;
+    double selectedRadioPrice = 0.0;
+    double checkboxPrice = 200.0; // Price for the checkbox item
+    double totalPrice = 0.0;
 
     showDialog(
       context: context,
@@ -100,6 +101,13 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
               return StatefulBuilder(
                 builder: (context, setState) {
+                  void updateTotalPrice() {
+                    setState(() {
+                      totalPrice = selectedRadioPrice +
+                          (isChecked ? checkboxPrice : 0.0);
+                    });
+                  }
+
                   return AlertDialog(
                     content: SingleChildScrollView(
                       child: ListBody(
@@ -111,17 +119,17 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                 color: Color.fromARGB(255, 71, 4, 4)),
                           ),
                           for (var variation in variations)
-                            RadioListTile<int>(
-                              key: Key(const Uuid()
-                                  .v4()), // Generate a unique key using UUID
+                            RadioListTile(
                               title: Text(
                                   '${variation['name'] ?? 'Unknown'}  Rs.${variation['regular_price'] ?? '0.00'}'),
-                              value: int.parse(variation['parent_id'] ?? '0'),
-                              groupValue: _selectedRadioValue,
-                              onChanged: (int? value) {
-                                print('Radio Button Selected: $value');
+                              value: int.parse(variation['p_id'] ?? '0'),
+                              groupValue: selectedRadioInDialog,
+                              onChanged: (val) {
                                 setState(() {
-                                  _selectedRadioValue = value;
+                                  selectedRadioInDialog = val as int?;
+                                  selectedRadioPrice = double.parse(
+                                      variation['regular_price'] ?? '0.00');
+                                  updateTotalPrice();
                                 });
                               },
                             ),
@@ -137,10 +145,11 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             onChanged: (bool? value) {
                               setState(() {
                                 isChecked = value!;
+                                updateTotalPrice();
                               });
                             },
                           ),
-                          const Text('Total: 1800.00'),
+                          Text('Total: Rs.$totalPrice'),
                           const SizedBox(height: 20),
                           TextField(
                             controller: menu.noteController,
@@ -163,7 +172,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                         child: const Text('OK'),
                         onPressed: () {
                           setState(() {
-                            _selectedRadioValue = selectedRadioInDialog;
+                            selectedRadioValue = selectedRadioInDialog!;
                           });
                           Navigator.push(
                             context,
