@@ -1,11 +1,13 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 
 class CartScreenPage extends StatefulWidget {
-  const CartScreenPage({Key? key}) : super(key: key);
+  final List<CartItem> cartItems;
+
+  const CartScreenPage({Key? key, required this.cartItems}) : super(key: key);
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -24,8 +26,7 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> fetchTables() async {
-    final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
+    final response = await http.get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -74,12 +75,13 @@ class _CartScreenState extends State<CartScreenPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 1,
+              itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {
-                return const Card(
+                final item = widget.cartItems[index];
+                return Card(
                   child: ListTile(
                     title: Text(
-                      'Fried Rice\nVariation - Chicken\nQuantity - 2\nAdd Ones - cheese Source\nTotal Price - Rs. 1600',
+                      '${item.name}\nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}',
                     ),
                   ),
                 );
