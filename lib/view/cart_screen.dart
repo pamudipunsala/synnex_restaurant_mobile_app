@@ -49,7 +49,7 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       body: Column(
         children: [
-          const Text('Table no : 01'),
+          // Text('Table no : ${}'),
           const Text('Order no : 0001'),
           Expanded(
             child: ListView.builder(
@@ -59,7 +59,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 return Card(
                   child: ListTile(
                     title: Text(
-                      '${item.name}\nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}',
+                      '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}',
                     ),
                   ),
                 );

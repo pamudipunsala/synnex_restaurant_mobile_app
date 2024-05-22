@@ -5,6 +5,7 @@ class CartItem {
   final String addOns;
   final double price;
   final String note;
+  final int tableNo;
 
   CartItem({
     required this.name,
@@ -13,5 +14,6 @@ class CartItem {
     required this.addOns,
     required this.price,
     required this.note,
+    required this.tableNo,
   });
 }

@@ -83,6 +83,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
     double selectedRadioPrice = 0.0;
     double checkboxPrice = 200.0; // Price for the checkbox item
     double totalPrice = 0.0;
+    int? tableNo = -1;
 
     showDialog(
       context: context,
@@ -192,6 +193,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               addOns: isChecked ? 'Add Ones 1' : '',
                               price: totalPrice,
                               note: menu.noteController.text,
+                              tableNo: tableNo,
                             ));
                           });
                           Navigator.of(context).pop();
