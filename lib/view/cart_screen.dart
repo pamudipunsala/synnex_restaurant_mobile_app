@@ -39,6 +39,58 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
+  Future<void> submitOrder() async {
+    final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
+    final orderData = {
+      'o_no': '0001',
+      'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
+      'items': widget.cartItems
+          .map((item) => {
+                'item': item.name,
+                'variation': item.variation,
+                'add_ons': item.addOns,
+                'quantity': item.quantity,
+                'price': item.price,
+                'table_no': item.tableNo,
+              })
+          .toList(),
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(orderData),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        if (result['status'] == 'success') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['message'])),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['message'])),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to place order.')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+    print(orderData);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +101,6 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       body: Column(
         children: [
-          // Text('Table no : ${}'),
           const Text('Order no : 0001'),
           Expanded(
             child: ListView.builder(
@@ -79,9 +130,7 @@ class _CartScreenState extends State<CartScreenPage> {
             child: const Text('Add More'),
           ),
           ElevatedButton(
-            onPressed: () {
-              cart.toOrderHistory(context);
-            },
+            onPressed: submitOrder,
             child: const Text('Place Order'),
           ),
         ],

@@ -16,4 +16,16 @@ class CartItem {
     required this.note,
     required this.tableNo,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'variation': variation,
+      'quantity': quantity,
+      'add_ons': addOns,
+      'price': price,
+      'note': note,
+      'table_no': tableNo,
+    };
+  }
 }

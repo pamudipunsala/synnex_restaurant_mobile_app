@@ -81,9 +81,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
     bool isChecked = false;
     int? selectedRadioInDialog = -1;
     double selectedRadioPrice = 0.0;
-    double checkboxPrice = 200.0; // Price for the checkbox item
+    double checkboxPrice = 200.0;
     double totalPrice = 0.0;
-    int? tableNo = -1;
+    int tableNo = -1;
 
     showDialog(
       context: context,
