@@ -125,7 +125,7 @@ class _CartScreenState extends State<CartScreenPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              cart.toMenu(context);
+              Navigator.of(context).pop();
             },
             child: const Text('Add More'),
           ),
