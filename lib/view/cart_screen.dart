@@ -18,11 +18,14 @@ class _CartScreenState extends State<CartScreenPage> {
   List<dynamic> filteredTables = [];
   CartScreen cart = CartScreen();
   String selectedOption = 'Table Status';
+  String orderNumber = '001';
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     fetchTables();
+    generateOrderNumber();
   }
 
   Future<void> fetchTables() async {
@@ -39,10 +42,32 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
+  Future<void> generateOrderNumber() async {
+    final response = await http
+        .get(Uri.parse('http://localhost/mobile_apps/fetch_order_no.php'));
+
+    if (response.statusCode == 200) {
+      final latestOrderNumber =
+          json.decode(response.body)['latest_order_number'];
+      if (latestOrderNumber != null) {
+        final int latestNumber = int.parse(latestOrderNumber);
+        final nextOrderNumber = (latestNumber + 1).toString().padLeft(4, '0');
+        setState(() {
+          orderNumber = nextOrderNumber;
+        });
+      }
+    } else {
+      throw Exception('Failed to fetch latest order number');
+    }
+  }
+
   Future<void> submitOrder() async {
+    setState(() {
+      isLoading = true;
+    });
     final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
     final orderData = {
-      'o_no': '0001',
+      'o_no': orderNumber,
       'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
       'items': widget.cartItems
           .map((item) => {
@@ -72,6 +97,10 @@ class _CartScreenState extends State<CartScreenPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
+          setState(() {
+            widget.cartItems.clear();
+            generateOrderNumber();
+          });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
@@ -101,7 +130,7 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       body: Column(
         children: [
-          const Text('Order no : 0001'),
+          Text('Order no : $orderNumber'),
           Expanded(
             child: ListView.builder(
               itemCount: widget.cartItems.length,
