@@ -18,14 +18,13 @@ class _CartScreenState extends State<CartScreenPage> {
   List<dynamic> filteredTables = [];
   CartScreen cart = CartScreen();
   String selectedOption = 'Table Status';
-  String orderNumber = '001';
-  bool isLoading = false;
+  String orderNo = '';
 
   @override
   void initState() {
     super.initState();
     fetchTables();
-    generateOrderNumber();
+    generateOrderNo();
   }
 
   Future<void> fetchTables() async {
@@ -42,32 +41,26 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
-  Future<void> generateOrderNumber() async {
+  Future<void> generateOrderNo() async {
     final response = await http
         .get(Uri.parse('http://localhost/mobile_apps/fetch_order_no.php'));
 
     if (response.statusCode == 200) {
-      final latestOrderNumber =
-          json.decode(response.body)['latest_order_number'];
-      if (latestOrderNumber != null) {
-        final int latestNumber = int.parse(latestOrderNumber);
-        final nextOrderNumber = (latestNumber + 1).toString().padLeft(4, '0');
-        setState(() {
-          orderNumber = nextOrderNumber;
-        });
-      }
+      final latestOrderNo = json.decode(response.body)['order_no'];
+      final nextOrderNo =
+          (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
+      setState(() {
+        orderNo = nextOrderNo;
+      });
     } else {
-      throw Exception('Failed to fetch latest order number');
+      throw Exception('Failed to generate order number');
     }
   }
 
   Future<void> submitOrder() async {
-    setState(() {
-      isLoading = true;
-    });
     final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
     final orderData = {
-      'o_no': orderNumber,
+      'o_no': orderNo,
       'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
       'items': widget.cartItems
           .map((item) => {
@@ -99,7 +92,6 @@ class _CartScreenState extends State<CartScreenPage> {
           );
           setState(() {
             widget.cartItems.clear();
-            generateOrderNumber();
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +122,7 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       body: Column(
         children: [
-          Text('Order no : $orderNumber'),
+          Text('Order no : $orderNo'),
           Expanded(
             child: ListView.builder(
               itemCount: widget.cartItems.length,
