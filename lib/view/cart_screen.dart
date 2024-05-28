@@ -128,38 +128,52 @@ class _CartScreenState extends State<CartScreenPage> {
               itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {
                 final item = widget.cartItems[index];
-                return Card(
-                  child: ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}'),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove),
-                              onPressed: () {
-                                setState(() {
-                                  if (item.quantity > 1) {
-                                    item.quantity--;
-                                  }
-                                });
-                              },
-                            ),
-                            Text(item.quantity.toString()),
-                            IconButton(
-                              icon: Icon(Icons.add),
-                              onPressed: () {
-                                setState(() {
-                                  item.quantity++;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                return Dismissible(
+                  key: Key(
+                      '${item.name}_${item.tableNo}'), // Ensure each item has a unique key
+                  onDismissed: (direction) {
+                    setState(() {
+                      widget.cartItems.removeAt(index);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${item.name} dismissed")),
+                    );
+                  },
+                  background:
+                      Container(color: Color.fromARGB(255, 170, 131, 128)),
+                  child: Card(
+                    child: ListTile(
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.remove),
+                                onPressed: () {
+                                  setState(() {
+                                    if (item.quantity > 1) {
+                                      item.quantity--;
+                                    }
+                                  });
+                                },
+                              ),
+                              Text(item.quantity.toString()),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  setState(() {
+                                    item.quantity++;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
