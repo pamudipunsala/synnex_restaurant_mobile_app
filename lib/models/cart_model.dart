@@ -1,7 +1,7 @@
 class CartItem {
   final String name;
   final String variation;
-  final int quantity;
+  int quantity;
   final String addOns;
   final double price;
   final String note;
