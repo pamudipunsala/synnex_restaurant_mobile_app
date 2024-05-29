@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/table_view_model.dart';
 
 class TableScreenPage extends StatefulWidget {
@@ -91,7 +92,14 @@ class _TableScreenState extends State<TableScreenPage> {
 
                   return GestureDetector(
                     onTap: () {
-                      tableScreen.toMenu(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MenuScreenPage(
+                            tableNo: int.parse(table['tabel_no']),
+                          ),
+                        ),
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(

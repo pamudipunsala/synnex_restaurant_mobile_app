@@ -5,9 +5,9 @@ import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// In CartScreenPage
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
-
   const CartScreenPage({Key? key, required this.cartItems}) : super(key: key);
 
   @override
@@ -133,7 +133,7 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   void showAddNoteDialog() {
-    noteController.text = noteText; // Pre-fill with existing note if any
+    noteController.text = noteText;
     showDialog(
       context: context,
       builder: (BuildContext context) {

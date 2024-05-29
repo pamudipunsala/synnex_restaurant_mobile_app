@@ -6,6 +6,8 @@ class TableScreen {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const MenuScreenPage()));
+            builder: (context) => const MenuScreenPage(
+                  tableNo: 0,
+                )));
   }
 }
