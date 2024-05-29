@@ -147,7 +147,7 @@ class _CartScreenState extends State<CartScreenPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price}\nNote - ${item.note}'),
+                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}\nNote - ${item.note}'),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
