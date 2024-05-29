@@ -194,6 +194,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               price: totalPrice,
                               note: menu.noteController.text,
                               tableNo: tableNo,
+                              finalNote: '',
                             ));
                           });
                           Navigator.of(context).pop();

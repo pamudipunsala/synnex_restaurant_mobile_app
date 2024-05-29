@@ -6,6 +6,7 @@ class CartItem {
   final double price;
   final String note;
   final int tableNo;
+  String finalNote;
 
   CartItem({
     required this.name,
@@ -15,6 +16,7 @@ class CartItem {
     required this.price,
     required this.note,
     required this.tableNo,
+    required this.finalNote,
   });
 
   Map<String, dynamic> toJson() {

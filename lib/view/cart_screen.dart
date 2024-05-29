@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -19,12 +20,15 @@ class _CartScreenState extends State<CartScreenPage> {
   CartScreen cart = CartScreen();
   String selectedOption = 'Table Status';
   String orderNo = '';
+  final TextEditingController noteController = TextEditingController();
+  String noteText = ''; // To store the note text
 
   @override
   void initState() {
     super.initState();
     fetchTables();
     generateOrderNo();
+    loadNote();
   }
 
   Future<void> fetchTables() async {
@@ -57,6 +61,18 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
+  Future<void> loadNote() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      noteText = prefs.getString('noteText') ?? '';
+    });
+  }
+
+  Future<void> saveNote() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('noteText', noteText);
+  }
+
   Future<void> submitOrder() async {
     final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
     final orderData = {
@@ -72,6 +88,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 'table_no': item.tableNo,
               })
           .toList(),
+      'note': noteText, // Include the note in the order data
     };
 
     try {
@@ -92,7 +109,10 @@ class _CartScreenState extends State<CartScreenPage> {
           );
           setState(() {
             widget.cartItems.clear();
+            noteText =
+                ''; // Clear the note text upon successful order submission
           });
+          saveNote(); // Save the note text to shared preferences
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
@@ -110,6 +130,42 @@ class _CartScreenState extends State<CartScreenPage> {
       );
     }
     print(orderData);
+  }
+
+  void showAddNoteDialog() {
+    noteController.text = noteText; // Pre-fill with existing note if any
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Note'),
+          content: TextField(
+            controller: noteController,
+            decoration: const InputDecoration(
+              hintText: 'Enter your note here',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                setState(() {
+                  noteText = noteController.text; // Save the note text
+                });
+                saveNote(); // Save the note text to shared preferences
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -147,7 +203,7 @@ class _CartScreenState extends State<CartScreenPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}\nNote - ${item.note}'),
+                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}'),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -180,10 +236,20 @@ class _CartScreenState extends State<CartScreenPage> {
               },
             ),
           ),
+          if (noteText.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Note: $noteText',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
           ElevatedButton(
-            onPressed: () {
-              cart.toNote(context);
-            },
+            onPressed: showAddNoteDialog,
             child: const Text('Add Note'),
           ),
           ElevatedButton(
