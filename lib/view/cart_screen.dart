@@ -20,8 +20,9 @@ class _CartScreenState extends State<CartScreenPage> {
   CartScreen cart = CartScreen();
   String selectedOption = 'Table Status';
   String orderNo = '';
+  String tableNo = '';
   final TextEditingController noteController = TextEditingController();
-  String noteText = ''; // To store the note text
+  String noteText = '';
 
   @override
   void initState() {
@@ -88,7 +89,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 'table_no': item.tableNo,
               })
           .toList(),
-      'note': noteText, // Include the note in the order data
+      'note': noteText,
     };
 
     try {
@@ -109,10 +110,9 @@ class _CartScreenState extends State<CartScreenPage> {
           );
           setState(() {
             widget.cartItems.clear();
-            noteText =
-                ''; // Clear the note text upon successful order submission
+            noteText = '';
           });
-          saveNote(); // Save the note text to shared preferences
+          saveNote();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
