@@ -323,14 +323,14 @@ class _MenuScreenState extends State<MenuScreenPage> {
             ],
           ),
         ),
-        floatingActionButton:
-            FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => CartScreenPage(
                   cartItems: cartItems,
+                  comId: '',
                 ),
               ),
             );

@@ -5,10 +5,11 @@ import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-// In CartScreenPage
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
-  const CartScreenPage({Key? key, required this.cartItems}) : super(key: key);
+  final String comId; // Add comId parameter
+  const CartScreenPage({Key? key, required this.cartItems, required this.comId})
+      : super(key: key); // Include comId in constructor
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -28,7 +29,13 @@ class _CartScreenState extends State<CartScreenPage> {
   void initState() {
     super.initState();
     fetchTables();
-    generateOrderNo();
+
+    if (widget.comId.isNotEmpty) {
+      generateOrderNo(widget.comId); // Pass comId to generateOrderNo
+    } else {
+      print('Error: comId is null or empty'); // Add debugging message
+    }
+
     loadNote();
   }
 
@@ -46,18 +53,40 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
-  Future<void> generateOrderNo() async {
-    final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_order_no.php'));
+  Future<void> generateOrderNo(String comId) async {
+    print(
+        'Generating order number for com_id: $comId'); // Debugging print statement
+
+    final response = await http.get(Uri.parse(
+        'http://localhost/mobile_apps/fetch_order_no.php?com_id=$comId'));
+
+    print(
+        'HTTP response status: ${response.statusCode}'); // Debugging print statement
+    print('HTTP response body: ${response.body}'); // Debugging print statement
 
     if (response.statusCode == 200) {
-      final latestOrderNo = json.decode(response.body)['order_no'];
-      final nextOrderNo =
-          (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
-      setState(() {
-        orderNo = nextOrderNo;
-      });
+      final data = json.decode(response.body);
+      final latestOrderNo = data['o_no'];
+      print(
+          'Latest order number fetched: $latestOrderNo'); // Debugging print statement
+
+      if (latestOrderNo != null) {
+        final nextOrderNo =
+            (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
+        setState(() {
+          orderNo = nextOrderNo;
+        });
+        print(
+            'Next order number generated: $orderNo'); // Debugging print statement
+      } else {
+        setState(() {
+          orderNo = '001';
+        });
+        print('Starting order number from 001'); // Debugging print statement
+      }
     } else {
+      print(
+          'Failed to fetch order number: ${response.statusCode}'); // Debugging print statement
       throw Exception('Failed to generate order number');
     }
   }
@@ -79,6 +108,7 @@ class _CartScreenState extends State<CartScreenPage> {
     final orderData = {
       'o_no': orderNo,
       'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
+      'com_id': 1, // Change this to the appropriate com_id value
       'items': widget.cartItems
           .map((item) => {
                 'item': item.name,
@@ -129,7 +159,6 @@ class _CartScreenState extends State<CartScreenPage> {
         SnackBar(content: Text('Error: $e')),
       );
     }
-    print(orderData);
   }
 
   void showAddNoteDialog() {
@@ -203,7 +232,8 @@ class _CartScreenState extends State<CartScreenPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}'),
+                            '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}',
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
