@@ -13,7 +13,7 @@ class CartScreen {
 
   void toMenu(BuildContext context) {
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const MenuScreenPage(tableNo: 0,))));
+        MaterialPageRoute(builder: ((context) => const MenuScreenPage(tableNo: 0, userId: '',))));
   }
 
   void toOrderHistory(BuildContext context) {

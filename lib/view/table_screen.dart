@@ -97,6 +97,7 @@ class _TableScreenState extends State<TableScreenPage> {
                         MaterialPageRoute(
                           builder: (context) => MenuScreenPage(
                             tableNo: int.parse(table['tabel_no']),
+                            userId: '',
                           ),
                         ),
                       );

@@ -6,8 +6,10 @@ import 'package:restaurant_pos_mobile/view/cart_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
 
 class MenuScreenPage extends StatefulWidget {
+  final String userId;
   final int tableNo;
-  const MenuScreenPage({Key? key, required this.tableNo}) : super(key: key);
+  const MenuScreenPage({Key? key, required this.userId, required this.tableNo})
+      : super(key: key);
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -19,7 +21,6 @@ class _MenuScreenState extends State<MenuScreenPage> {
   MenuScreen menu = MenuScreen();
   String _selectedOption = 'Category';
   late int selectedRadioValue = -2;
-
   List<CartItem> cartItems = [];
 
   @override
@@ -29,16 +30,29 @@ class _MenuScreenState extends State<MenuScreenPage> {
   }
 
   Future<void> fetchProducts() async {
-    final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_menu_data.php'));
+    try {
+      final response = await http.post(
+        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        body: {
+          'menu_id': '1',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      setState(() {
-        products = json.decode(response.body);
-        filteredProducts = List.from(products);
-      });
-    } else {
-      throw Exception('Failed to load products');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          products = json.decode(response.body);
+          filteredProducts = List.from(products);
+        });
+        print('Products fetched successfully: $products');
+      } else {
+        print('Failed to load products, status code: ${response.statusCode}');
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      print('Error fetching products: $e');
     }
   }
 
@@ -58,23 +72,28 @@ class _MenuScreenState extends State<MenuScreenPage> {
   }
 
   Future<List<dynamic>> fetchVariations(int parentId) async {
-    final response = await http.get(
-        Uri.parse('http://localhost/mobile_apps/fetch_variations_data.php'));
+    try {
+      final response =
+          await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
 
-    if (response.statusCode == 200) {
-      List<dynamic> allVariations = json.decode(response.body);
-      List<dynamic> variationsWithGroupValue = allVariations
-          .where((variation) =>
-              int.parse(variation['parent_id'] ?? '0') == parentId)
-          .map((variation) => {
-                ...variation,
-                'groupValue': int.parse(variation['p_id'] ?? '0'),
-              })
-          .toList();
+      if (response.statusCode == 200) {
+        List<dynamic> allVariations = json.decode(response.body);
+        List<dynamic> variationsWithGroupValue = allVariations
+            .where((variation) =>
+                int.parse(variation['parent_id'] ?? '0') == parentId)
+            .map((variation) => {
+                  ...variation,
+                  'groupValue': int.parse(variation['p_id'] ?? '0'),
+                })
+            .toList();
 
-      return variationsWithGroupValue;
-    } else {
-      throw Exception('Failed to load variations');
+        return variationsWithGroupValue;
+      } else {
+        throw Exception('Failed to load variations');
+      }
+    } catch (e) {
+      print('Error fetching variations: $e');
+      return [];
     }
   }
 
@@ -196,6 +215,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               note: menu.noteController.text,
                               tableNo: tableNo,
                               finalNote: '',
+                              comId: '',
                             ));
                           });
                           Navigator.of(context).pop();
@@ -264,62 +284,34 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   });
                 },
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                child: GridView.builder(
-                  itemCount: filteredProducts.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    final product = filteredProducts[index];
-                    final imageUrl = '${product['image_path']}';
-
-                    return GestureDetector(
-                      onTap: () {
-                        showVariationsDialog(
-                            context, int.parse(product['p_id']));
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              imageUrl,
-                              height: 80,
-                              width: 80,
-                              fit: BoxFit.cover,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${product['name']}\nRs.${product['regular_price']}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Color.fromARGB(255, 71, 4, 4)),
-                            ),
-                          ],
-                        ),
+              const SizedBox(height: 8),
+              for (var product in filteredProducts)
+                GestureDetector(
+                  onTap: () =>
+                      showVariationsDialog(context, int.parse(product['p_id'])),
+                  child: Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    child: ListTile(
+                      leading: Image.asset(
+                        product['image'],
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
                       ),
-                    );
-                  },
+                      title: Text(product['name'] ?? 'Unknown',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 71, 4, 4))),
+                      subtitle: Text('Rs.${product['regular_price'] ?? '0.00'}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 71, 4, 4))),
+                      trailing: const Icon(Icons.arrow_forward),
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -328,13 +320,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CartScreenPage(
-                  cartItems: cartItems,
-                  comId: '',
-                ),
-              ),
+                  builder: (context) => CartScreenPage(
+                      cartItems: cartItems, tableNo: widget.tableNo)),
             );
           },
+          backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           child: const Icon(Icons.shopping_cart),
         ));
   }

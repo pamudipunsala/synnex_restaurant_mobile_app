@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
     final password = loginScreen.passwordController.text;
 
     final response = await http.post(
-      Uri.parse('http://localhost/mobile_apps/fetch_login_data.php'),
+      Uri.parse('https://mobileapp.synnexcloudpos.com'),
       body: {
         'u_name': username,
         'user_email': username,
@@ -28,37 +28,74 @@ class _LoginScreenState extends State<LoginScreenPage> {
       },
     );
 
-    final responseData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
 
-    // Debug print statements to check the response
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    print('Parsed response data: $responseData');
+      // Debug print statements to check the response
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      print('Parsed response data: $responseData');
 
-    if (responseData['status'] == 'success') {
+      // Check if responseData is a list
+      if (responseData is List) {
+        print('Received a list instead of an object: $responseData');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Login Failed'),
+              content: const Text('Unexpected response from the server.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
       final userId = responseData['user_id'];
-      print('User ID from response: $userId');
-
       if (userId != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', userId.toString());
 
         // Debug print to confirm userId is stored
         print('Stored userId: $userId');
-        
+
         // ignore: use_build_context_synchronously
         loginScreen.toDashboard(context);
       } else {
-        print('user_id is null');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Login Failed'),
+              content: const Text('Invalid username or password.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
     } else {
+      // Handle non-200 responses
       showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Login Failed'),
-            content: const Text('Invalid username or password.'),
+            content: const Text('Unexpected response from the server.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {

@@ -8,6 +8,7 @@ class TableScreen {
         MaterialPageRoute(
             builder: (context) => const MenuScreenPage(
                   tableNo: 0,
+                  userId: '',
                 )));
   }
 }

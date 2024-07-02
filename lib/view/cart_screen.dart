@@ -7,9 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
-  final String comId; // Add comId parameter
-  const CartScreenPage({Key? key, required this.cartItems, required this.comId})
-      : super(key: key); // Include comId in constructor
+
+  const CartScreenPage({Key? key, required this.cartItems, required int tableNo}) : super(key: key);
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -29,19 +28,18 @@ class _CartScreenState extends State<CartScreenPage> {
   void initState() {
     super.initState();
     fetchTables();
-
-    if (widget.comId.isNotEmpty) {
-      generateOrderNo(widget.comId); // Pass comId to generateOrderNo
-    } else {
-      print('Error: comId is null or empty'); // Add debugging message
-    }
-
     loadNote();
+
+    String? comId =
+        widget.cartItems.isNotEmpty && widget.cartItems.last.comId.isNotEmpty
+            ? widget.cartItems.last.comId
+            : '1'; // Default value as '1'
+    generateOrderNo(comId); // Pass comId to generateOrderNo
   }
 
   Future<void> fetchTables() async {
     final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
+        .get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -53,41 +51,72 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
-  Future<void> generateOrderNo(String comId) async {
-    print(
-        'Generating order number for com_id: $comId'); // Debugging print statement
+  Future<void> generateOrderNo(String? comId) async {
+    print('Generating order number...'); // Debugging print statement
 
-    final response = await http.get(Uri.parse(
-        'http://localhost/mobile_apps/fetch_order_no.php?com_id=$comId'));
+    final response = await http
+        .get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
 
     print(
         'HTTP response status: ${response.statusCode}'); // Debugging print statement
     print('HTTP response body: ${response.body}'); // Debugging print statement
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final latestOrderNo = data['o_no'];
-      print(
-          'Latest order number fetched: $latestOrderNo'); // Debugging print statement
+      if (response.body.isEmpty) {
+        throw Exception('Empty response body');
+      }
 
-      if (latestOrderNo != null) {
-        final nextOrderNo =
-            (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
-        setState(() {
-          orderNo = nextOrderNo;
-        });
+      final data = json.decode(response.body);
+      final comId = data['com_id'];
+      print('Received com_id: $comId'); // Debugging print statement
+
+      if (comId != null && comId.isNotEmpty) {
+        final orderResponse = await http.get(Uri.parse(
+            'http://localhost/mobile_apps/fetch_order_no.php?com_id=$comId'));
+
         print(
-            'Next order number generated: $orderNo'); // Debugging print statement
+            'Order response status: ${orderResponse.statusCode}'); // Debugging print statement
+        print(
+            'Order response body: ${orderResponse.body}'); // Debugging print statement
+
+        if (orderResponse.statusCode == 200) {
+          if (orderResponse.body.isEmpty) {
+            throw Exception('Empty order response body');
+          }
+
+          final orderData = json.decode(orderResponse.body);
+          final latestOrderNo = orderData['o_no'];
+          print(
+              'Latest order number fetched: $latestOrderNo'); // Debugging print statement
+
+          if (latestOrderNo != null) {
+            final nextOrderNo =
+                (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
+            setState(() {
+              orderNo = nextOrderNo;
+            });
+            print(
+                'Next order number generated: $orderNo'); // Debugging print statement
+          } else {
+            setState(() {
+              orderNo = '001';
+            });
+            print(
+                'Starting order number from 001'); // Debugging print statement
+          }
+        } else {
+          print(
+              'Failed to fetch order number: ${orderResponse.statusCode}'); // Debugging print statement
+          throw Exception('Failed to fetch order number');
+        }
       } else {
-        setState(() {
-          orderNo = '001';
-        });
-        print('Starting order number from 001'); // Debugging print statement
+        print('Received empty or invalid com_id'); // Debugging print statement
+        throw Exception('Empty or invalid com_id received');
       }
     } else {
       print(
-          'Failed to fetch order number: ${response.statusCode}'); // Debugging print statement
-      throw Exception('Failed to generate order number');
+          'Failed to fetch com_id: ${response.statusCode}'); // Debugging print statement
+      throw Exception('Failed to fetch com_id');
     }
   }
 
@@ -105,10 +134,14 @@ class _CartScreenState extends State<CartScreenPage> {
 
   Future<void> submitOrder() async {
     final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
+    final comId = widget.cartItems.isNotEmpty
+        ? widget.cartItems.last.comId
+        : '1'; // Ensure com_id is provided
+
     final orderData = {
       'o_no': orderNo,
       'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
-      'com_id': 1, // Change this to the appropriate com_id value
+      'com_id': comId,
       'items': widget.cartItems
           .map((item) => {
                 'item': item.name,
@@ -266,33 +299,26 @@ class _CartScreenState extends State<CartScreenPage> {
               },
             ),
           ),
-          if (noteText.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+          if (widget.cartItems.isNotEmpty && noteText.isNotEmpty)
+            Container(
+              padding: EdgeInsets.all(16.0),
+              color: Colors.grey[200],
               child: Text(
                 'Note: $noteText',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 16.0),
               ),
             ),
           ElevatedButton(
             onPressed: showAddNoteDialog,
-            child: const Text('Add Note'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Add More'),
-          ),
-          ElevatedButton(
-            onPressed: submitOrder,
-            child: const Text('Place Order'),
+            child: Text('Add Note'),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: submitOrder,
+        child: Icon(Icons.check),
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
     );
   }
