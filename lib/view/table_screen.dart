@@ -24,8 +24,13 @@ class _TableScreenState extends State<TableScreenPage> {
   }
 
   Future<void> fetchTables() async {
-    final response = await http
-        .get(Uri.parse('http://localhost/mobile_apps/fetch_table_data.php'));
+    final response = await http.post(
+      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: {
+        'table_id': '1',
+      },
+    );
 
     if (response.statusCode == 200) {
       setState(() {

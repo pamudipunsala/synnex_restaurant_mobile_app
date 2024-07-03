@@ -18,7 +18,7 @@ class CartItem {
     required this.note,
     required this.tableNo,
     required this.finalNote,
-    required this.comId,
+    required this.comId, required productId, required productName,
   });
 
   Map<String, dynamic> toJson() {

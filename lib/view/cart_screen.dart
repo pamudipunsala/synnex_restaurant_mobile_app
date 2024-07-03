@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
 
-  const CartScreenPage({Key? key, required this.cartItems, required int tableNo}) : super(key: key);
+  const CartScreenPage(
+      {Key? key, required this.cartItems, required int tableNo})
+      : super(key: key);
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -38,8 +40,8 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> fetchTables() async {
-    final response = await http
-        .get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
+    final response =
+        await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -54,8 +56,8 @@ class _CartScreenState extends State<CartScreenPage> {
   Future<void> generateOrderNo(String? comId) async {
     print('Generating order number...'); // Debugging print statement
 
-    final response = await http
-        .get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
+    final response =
+        await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
 
     print(
         'HTTP response status: ${response.statusCode}'); // Debugging print statement

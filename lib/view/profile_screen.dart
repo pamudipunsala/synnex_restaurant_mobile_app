@@ -31,9 +31,10 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
     if (userId != null) {
       try {
         final response = await http.post(
-          Uri.parse('http://localhost/mobile_apps/fetch_profile_data.php'),
+          Uri.parse('https://mobileapp.synnexcloudpos.com'),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
-            'user_id': userId,
+            'user_id': '3',
           },
         );
 
@@ -50,7 +51,8 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
             });
           } else {
             setState(() {
-              errorMessage = responseData['message'] ?? 'Failed to load profile details';
+              errorMessage =
+                  responseData['message'] ?? 'Failed to load profile details';
               isLoading = false;
             });
           }

@@ -8,8 +8,8 @@ import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
 class MenuScreenPage extends StatefulWidget {
   final String userId;
   final int tableNo;
-  const MenuScreenPage({Key? key, required this.userId, required this.tableNo})
-      : super(key: key);
+  const MenuScreenPage(
+      {super.key, required this.userId, required this.tableNo});
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -33,6 +33,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
     try {
       final response = await http.post(
         Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'menu_id': '1',
         },
@@ -73,8 +74,13 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
   Future<List<dynamic>> fetchVariations(int parentId) async {
     try {
-      final response =
-          await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
+      final response = await http.post(
+        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'Variation_id': '1',
+        },
+      );
 
       if (response.statusCode == 200) {
         List<dynamic> allVariations = json.decode(response.body);
@@ -216,6 +222,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               tableNo: tableNo,
                               finalNote: '',
                               comId: '',
+                              productId: null,
+                              productName: null,
                             ));
                           });
                           Navigator.of(context).pop();
@@ -294,12 +302,15 @@ class _MenuScreenState extends State<MenuScreenPage> {
                     margin: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16.0),
                     child: ListTile(
-                      leading: Image.asset(
-                        product['image'],
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
+                      leading: product['image'] != null
+                          ? Image.asset(
+                              product['image'],
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.image_not_supported,
+                              size: 50, color: Colors.grey),
                       title: Text(product['name'] ?? 'Unknown',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
