@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
           Uri.parse('https://mobileapp.synnexcloudpos.com'),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
-            'user_id': '3',
+            'profile_id': userId,
           },
         );
 
@@ -42,17 +42,16 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
         print('Response body: ${response.body}');
 
         if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
+          List<dynamic> responseData = json.decode(response.body);
 
-          if (responseData['status'] == 'success') {
+          if (responseData.isNotEmpty) {
             setState(() {
-              userDetails = responseData['user'];
+              userDetails = responseData[0];
               isLoading = false;
             });
           } else {
             setState(() {
-              errorMessage =
-                  responseData['message'] ?? 'Failed to load profile details';
+              errorMessage = 'No profile details found';
               isLoading = false;
             });
           }
