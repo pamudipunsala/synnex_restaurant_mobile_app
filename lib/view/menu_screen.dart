@@ -293,36 +293,62 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 },
               ),
               const SizedBox(height: 8),
-              for (var product in filteredProducts)
-                GestureDetector(
-                  onTap: () =>
-                      showVariationsDialog(context, int.parse(product['p_id'])),
-                  child: Card(
-                    elevation: 3,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
-                    child: ListTile(
-                      leading: product['image'] != null
-                          ? Image.asset(
-                              product['image'],
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(Icons.image_not_supported,
-                              size: 50, color: Colors.grey),
-                      title: Text(product['name'] ?? 'Unknown',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 71, 4, 4))),
-                      subtitle: Text('Rs.${product['regular_price'] ?? '0.00'}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 71, 4, 4))),
-                      trailing: const Icon(Icons.arrow_forward),
-                    ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.75,
+                child: GridView.builder(
+                  itemCount: filteredProducts.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 1.5,
                   ),
+                  itemBuilder: (BuildContext context, int index) {
+                    final product = filteredProducts[index];
+                    final imageUrl = '${product['image_path']}';
+
+                    return GestureDetector(
+                      onTap: () {
+                        showVariationsDialog(
+                            context, int.parse(product['p_id']));
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              imageUrl,
+                              height: 80,
+                              width: 80,
+                              fit: BoxFit.cover,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${product['name']}\nRs.${product['regular_price']}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 10,
+                                  color: Color.fromARGB(255, 71, 4, 4)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
+              ),
             ],
           ),
         ),

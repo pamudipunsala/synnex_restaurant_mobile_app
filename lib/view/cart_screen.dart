@@ -40,8 +40,13 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> fetchTables() async {
-    final response =
-        await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
+    final response = await http.post(
+      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: {
+        'table_id': '1',
+      },
+    );
 
     if (response.statusCode == 200) {
       setState(() {
@@ -53,11 +58,33 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
+// Future<void> fetchTables() async {
+//   final response = await http.post(
+//     Uri.parse('https://mobileapp.synnexcloudpos.com'),
+//     headers: {'Content-Type': 'application/json'},
+//     body: jsonEncode({'request_type': 'fetch_tables'}), // Example payload
+//   );
+
+//   if (response.statusCode == 200) {
+//     setState(() {
+//       tables = json.decode(response.body);
+//       filteredTables = List.from(tables);
+//     });
+//   } else {
+//     throw Exception('Failed to load tables');
+//   }
+// }
+
   Future<void> generateOrderNo(String? comId) async {
     print('Generating order number...'); // Debugging print statement
 
-    final response =
-        await http.get(Uri.parse('https://mobileapp.synnexcloudpos.com'));
+    final response = await http.post(
+      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: {
+        'com_id': '1',
+      },
+    );
 
     print(
         'HTTP response status: ${response.statusCode}'); // Debugging print statement
@@ -68,13 +95,18 @@ class _CartScreenState extends State<CartScreenPage> {
         throw Exception('Empty response body');
       }
 
-      final data = json.decode(response.body);
-      final comId = data['com_id'];
+      final List<dynamic> data = json.decode(response.body);
+      final comId = data.isNotEmpty ? data[0]['com_id'] : null;
       print('Received com_id: $comId'); // Debugging print statement
 
       if (comId != null && comId.isNotEmpty) {
-        final orderResponse = await http.get(Uri.parse(
-            'http://localhost/mobile_apps/fetch_order_no.php?com_id=$comId'));
+        final orderResponse = await http.post(
+          Uri.parse('https://mobileapp.synnexcloudpos.com'),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: {
+            'com_id': comId,
+          },
+        );
 
         print(
             'Order response status: ${orderResponse.statusCode}'); // Debugging print statement
@@ -87,7 +119,8 @@ class _CartScreenState extends State<CartScreenPage> {
           }
 
           final orderData = json.decode(orderResponse.body);
-          final latestOrderNo = orderData['o_no'];
+          final latestOrderNo =
+              orderData.isNotEmpty ? orderData[0]['o_no'] : null;
           print(
               'Latest order number fetched: $latestOrderNo'); // Debugging print statement
 
