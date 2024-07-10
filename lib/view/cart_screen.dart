@@ -7,10 +7,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
+  final int tableNo;
+  final String comId;
 
-  const CartScreenPage(
-      {Key? key, required this.cartItems, required int tableNo})
-      : super(key: key);
+  const CartScreenPage({
+    Key? key,
+    required this.cartItems,
+    required this.tableNo,
+    required this.comId, // Ensure comId is received here
+  }) : super(key: key);
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -32,11 +37,15 @@ class _CartScreenState extends State<CartScreenPage> {
     fetchTables();
     loadNote();
 
-    String? comId =
-        widget.cartItems.isNotEmpty && widget.cartItems.last.comId.isNotEmpty
-            ? widget.cartItems.last.comId
-            : '1'; // Default value as '1'
-    generateOrderNo(comId); // Pass comId to generateOrderNo
+    if (widget.cartItems.isNotEmpty &&
+      widget.cartItems.last.comId != null &&
+      widget.cartItems.last.comId.isNotEmpty) {
+    generateOrderNo(widget.comId); 
+    } else {
+      // Handle the case where comId is missing
+      // You might want to show an error message or handle it differently based on your requirements
+      print("Error: comId is missing.");
+    }
   }
 
   Future<void> fetchTables() async {
@@ -82,7 +91,7 @@ class _CartScreenState extends State<CartScreenPage> {
       Uri.parse('https://mobileapp.synnexcloudpos.com'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {
-        'com_id': '1',
+        'com_id': comId,
       },
     );
 
@@ -171,7 +180,7 @@ class _CartScreenState extends State<CartScreenPage> {
     final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
     final comId = widget.cartItems.isNotEmpty
         ? widget.cartItems.last.comId
-        : '1'; // Ensure com_id is provided
+        : 'comId'; // Ensure com_id is provided
 
     final orderData = {
       'o_no': orderNo,

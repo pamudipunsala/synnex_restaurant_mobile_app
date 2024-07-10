@@ -8,8 +8,12 @@ import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
 class MenuScreenPage extends StatefulWidget {
   final String userId;
   final int tableNo;
+  final String comId;
   const MenuScreenPage(
-      {super.key, required this.userId, required this.tableNo});
+      {super.key,
+      required this.userId,
+      required this.tableNo,
+      required this.comId});
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -221,7 +225,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               note: menu.noteController.text,
                               tableNo: tableNo,
                               finalNote: '',
-                              comId: '',
+                              comId: products.firstWhere((product) =>
+                                  int.parse(product['p_id']) ==
+                                  parentId)['com_id'], // Add this line
                               productId: null,
                               productName: null,
                             ));
@@ -358,7 +364,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => CartScreenPage(
-                      cartItems: cartItems, tableNo: widget.tableNo)),
+                      cartItems: cartItems,
+                      tableNo: widget.tableNo,
+                      comId: widget.comId)),
             );
           },
           backgroundColor: const Color.fromARGB(255, 71, 4, 4),

@@ -6,12 +6,15 @@ import 'package:restaurant_pos_mobile/view/profile_screen.dart';
 import 'package:restaurant_pos_mobile/view/table_screen.dart';
 
 class DashboardScreen {
-  void toMenu(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const MenuScreenPage(tableNo: 0, userId: '',))));
+  void toMenu(BuildContext context, String comId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) =>
+                MenuScreenPage(tableNo: 0, userId: '', comId: comId))));
   }
 
-  void toOrderHistory(BuildContext context) {
+  void toOrderHistory(BuildContext context, String comId) {
     Navigator.push(context,
         MaterialPageRoute(builder: ((context) => const OrderHistoryPage())));
   }
@@ -20,9 +23,14 @@ class DashboardScreen {
     Navigator.push(context,
         MaterialPageRoute(builder: ((context) => const ProfileScreenPage())));
   }
-  void toTables(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const TableScreenPage())));
+
+  void toTables(BuildContext context, String comId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) => TableScreenPage(
+                  comId: comId,
+                ))));
   }
 
   void isLogout(BuildContext context) {

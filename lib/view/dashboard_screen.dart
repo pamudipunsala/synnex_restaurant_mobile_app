@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/view_models/dashboard_view_model.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final String comId; 
+
+  const DashboardPage({super.key, required this.comId});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -69,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 fixedSize: const Size(200, 50),
               ),
               onPressed: () {
-                dashboard.toMenu(context);
+                dashboard.toMenu(context, widget.comId);
               },
               child: const Text('Menu'),
             ),
@@ -81,7 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 fixedSize: const Size(200, 50),
               ),
               onPressed: () {
-                dashboard.toOrderHistory(context);
+                dashboard.toOrderHistory(context, widget.comId);
               },
               child: const Text('Order History'),
             ),
@@ -119,7 +121,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fixedSize: const Size(200, 80),
                 ),
                 onPressed: () {
-                  dashboard.toTables(context);
+                  dashboard.toTables(context, widget.comId);
                 },
                 child: const Text('Add Sales'),
               ),

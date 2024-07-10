@@ -35,12 +35,14 @@ class _LoginScreenState extends State<LoginScreenPage> {
 
       if (responseData is List && responseData.isNotEmpty) {
         final userId = responseData[0]['user_id'].toString();
+        final comId = responseData[0]['com_id'].toString();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', userId.toString());
 
         print('Stored userId: $userId');
+        print('Stored comId: $comId');
 
-        loginScreen.toDashboard(context);
+        loginScreen.toDashboard(context, comId);
       } else {
         _showErrorDialog(context, 'Unexpected response from the server.');
       }
