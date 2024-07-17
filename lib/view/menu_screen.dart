@@ -114,6 +114,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
     double checkboxPrice = 200.0;
     double totalPrice = 0.0;
     int tableNo = widget.tableNo;
+    String userId = widget.userId;
+    String note = '';
 
     showDialog(
       context: context,
@@ -205,31 +207,38 @@ class _MenuScreenState extends State<MenuScreenPage> {
                         child: const Text('OK'),
                         onPressed: () {
                           setState(() {
+                            final selectedProduct = products.firstWhere(
+                                (product) =>
+                                    int.parse(product['p_id']) == parentId,
+                                orElse: () => {
+                                      'name': 'Unknown',
+                                      'com_id': '',
+                                      'p_id': 0
+                                    });
+
                             cartItems.add(CartItem(
-                              name: products.firstWhere(
-                                  (product) =>
-                                      int.parse(product['p_id']) == parentId,
-                                  orElse: () => {
-                                        'name': 'Unknown',
-                                      })['name'],
+                              name: selectedProduct['name'],
                               variation: variations.firstWhere(
                                   (variation) =>
                                       int.parse(variation['p_id']) ==
                                       selectedRadioInDialog,
-                                  orElse: () => {
-                                        'name': 'Unknown',
-                                      })['name'],
+                                  orElse: () => {'name': 'Unknown'})['name'],
                               quantity: 1,
                               addOns: isChecked ? 'Add Ones 1' : '',
                               price: totalPrice,
                               note: menu.noteController.text,
                               tableNo: tableNo,
-                              finalNote: '',
-                              comId: products.firstWhere((product) =>
-                                  int.parse(product['p_id']) ==
-                                  parentId)['com_id'], // Add this line
-                              productId: null,
+                              finalNote: note,
+                              comId: selectedProduct[
+                                  'com_id'], // Accessing com_id from selectedProduct
+                              productId: int.parse(
+                                  selectedProduct['p_id']), // Accessing p_id
+                              kotType: products.firstWhere(
+                                  (product) =>
+                                      int.parse(product['p_id']) == parentId,
+                                  orElse: () => {'kot_type': 0})['kot_type'],
                               productName: null,
+                              userId: userId,
                             ));
                           });
                           Navigator.of(context).pop();
@@ -363,10 +372,13 @@ class _MenuScreenState extends State<MenuScreenPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => CartScreenPage(
-                      cartItems: cartItems,
-                      tableNo: widget.tableNo,
-                      comId: widget.comId)),
+                builder: (context) => CartScreenPage(
+                  cartItems: cartItems,
+                  tableNo: widget.tableNo,
+                  comId: widget.comId,
+                  userId: widget.userId,
+                ),
+              ),
             );
           },
           backgroundColor: const Color.fromARGB(255, 71, 4, 4),

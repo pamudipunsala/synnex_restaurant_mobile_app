@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
         print('Stored userId: $userId');
         print('Stored comId: $comId');
 
-        loginScreen.toDashboard(context, comId);
+        loginScreen.toDashboard(context, comId, userId);
       } else {
         _showErrorDialog(context, 'Unexpected response from the server.');
       }

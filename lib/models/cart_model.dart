@@ -8,6 +8,9 @@ class CartItem {
   final int tableNo;
   String finalNote;
   final String comId;
+  final int productId;
+  final String kotType;
+  final String userId;
 
   CartItem({
     required this.name,
@@ -19,8 +22,10 @@ class CartItem {
     required this.tableNo,
     required this.finalNote,
     required this.comId,
-    required productId,
     required productName,
+    required this.productId,
+    required this.kotType,
+    required this.userId,
   });
 
   Map<String, dynamic> toJson() {

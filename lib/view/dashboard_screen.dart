@@ -3,9 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/view_models/dashboard_view_model.dart';
 
 class DashboardPage extends StatefulWidget {
-  final String comId; 
+  final String comId;
+  final String userId;
 
-  const DashboardPage({super.key, required this.comId});
+  const DashboardPage({super.key, required this.comId, required this.userId});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -28,12 +29,12 @@ class _DashboardPageState extends State<DashboardPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Align(
-              alignment: const Alignment(0.8,0.6),
+              alignment: const Alignment(0.8, 0.6),
               child: Image.asset(
-                        'assets/img1.png',
-                        width: 50,
-                        height: 50,
-                      ),
+                'assets/img1.png',
+                width: 50,
+                height: 50,
+              ),
             ),
             Title(
               color: const Color.fromARGB(255, 71, 4, 4),
@@ -71,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 fixedSize: const Size(200, 50),
               ),
               onPressed: () {
-                dashboard.toMenu(context, widget.comId);
+                dashboard.toMenu(context, widget.comId, widget.userId);
               },
               child: const Text('Menu'),
             ),
@@ -121,7 +122,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   fixedSize: const Size(200, 80),
                 ),
                 onPressed: () {
-                  dashboard.toTables(context, widget.comId);
+                  dashboard.toTables(context, widget.comId, widget.userId);
                 },
                 child: const Text('Add Sales'),
               ),

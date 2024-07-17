@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_pos_mobile/models/order_history_model.dart';
 import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
 
 class OrderHistoryPage extends StatefulWidget {
@@ -12,6 +13,7 @@ class OrderHistoryPage extends StatefulWidget {
 class _OrderHistoryState extends State<OrderHistoryPage>
     with SingleTickerProviderStateMixin {
   OrderHistoryScreen orderhistory = OrderHistoryScreen();
+  late OrderHistoryScreen history;
   late TabController _tabController;
 
   @override
@@ -39,10 +41,9 @@ class _OrderHistoryState extends State<OrderHistoryPage>
             controller: _tabController,
             labelColor: const Color.fromARGB(
                 255, 255, 255, 255), // Active tab text color
-            unselectedLabelColor: const Color.fromARGB(255, 255, 255, 255)
-                .withOpacity(0.6), 
-            indicatorColor:
-                const Color.fromARGB(255, 255, 255, 255), 
+            unselectedLabelColor:
+                const Color.fromARGB(255, 255, 255, 255).withOpacity(0.6),
+            indicatorColor: const Color.fromARGB(255, 255, 255, 255),
             tabs: const [
               Tab(text: 'Pendings'),
               Tab(text: 'Ready'),
@@ -89,12 +90,12 @@ class _PendingList extends StatelessWidget {
         const Text('4 Pendings      2 Ready'),
         Expanded(
           child: ListView.builder(
-            itemCount: 4,
+            itemCount: 1,
             itemBuilder: (context, index) {
               return Card(
                 child: ListTile(
                   title: const Text(
-                    'Fried Rice\nVariation - Chicken\nQuantity - 2\nAdd Ones - cheese Source\nTotal Price - Rs. 1600',
+                    'Fried Rice\nVariation - \nQuantity - \nAdd Ones - \nTotal Price - Rs. ',
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,

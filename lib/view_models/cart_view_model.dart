@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_pos_mobile/view/comment_screen.dart';
-import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 import 'package:restaurant_pos_mobile/view/order_history.dart';
 
 class CartScreen {
@@ -12,8 +11,7 @@ class CartScreen {
   }
 
   void toMenu(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const MenuScreenPage(tableNo: 0, userId: '', comId: '',))));
+    Navigator.of(context).pop();
   }
 
   void toOrderHistory(BuildContext context) {

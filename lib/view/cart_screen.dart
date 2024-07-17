@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
+  final String userId;
   final int tableNo;
   final String comId;
 
@@ -14,7 +15,8 @@ class CartScreenPage extends StatefulWidget {
     Key? key,
     required this.cartItems,
     required this.tableNo,
-    required this.comId, // Ensure comId is received here
+    required this.comId,
+    required this.userId,
   }) : super(key: key);
 
   @override
@@ -30,17 +32,18 @@ class _CartScreenState extends State<CartScreenPage> {
   String tableNo = '';
   final TextEditingController noteController = TextEditingController();
   String noteText = '';
+  double totalPrice = 0.0;
+  int? oId;
 
   @override
   void initState() {
     super.initState();
     fetchTables();
     loadNote();
+    calculateTotalPrice();
 
-    if (widget.cartItems.isNotEmpty &&
-      widget.cartItems.last.comId != null &&
-      widget.cartItems.last.comId.isNotEmpty) {
-    generateOrderNo(widget.comId); 
+    if (widget.cartItems.isNotEmpty && widget.cartItems.last.comId.isNotEmpty) {
+      generateOrderNo(widget.comId);
     } else {
       // Handle the case where comId is missing
       // You might want to show an error message or handle it differently based on your requirements
@@ -66,23 +69,6 @@ class _CartScreenState extends State<CartScreenPage> {
       throw Exception('Failed to load tables');
     }
   }
-
-// Future<void> fetchTables() async {
-//   final response = await http.post(
-//     Uri.parse('https://mobileapp.synnexcloudpos.com'),
-//     headers: {'Content-Type': 'application/json'},
-//     body: jsonEncode({'request_type': 'fetch_tables'}), // Example payload
-//   );
-
-//   if (response.statusCode == 200) {
-//     setState(() {
-//       tables = json.decode(response.body);
-//       filteredTables = List.from(tables);
-//     });
-//   } else {
-//     throw Exception('Failed to load tables');
-//   }
-// }
 
   Future<void> generateOrderNo(String? comId) async {
     print('Generating order number...'); // Debugging print statement
@@ -177,31 +163,56 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> submitOrder() async {
-    final url = Uri.parse('http://localhost/mobile_apps/submit_data.php');
     final comId = widget.cartItems.isNotEmpty
         ? widget.cartItems.last.comId
-        : 'comId'; // Ensure com_id is provided
+        : widget.comId;
+    final currentDate = DateTime.now();
+    final formattedDateTime =
+        '${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')} ${currentDate.hour.toString().padLeft(2, '0')}:${currentDate.minute.toString().padLeft(2, '0')}:${currentDate.second.toString().padLeft(2, '0')}';
+    final allNotes = widget.cartItems.map((item) => item.note).join(', ');
 
     final orderData = {
       'o_no': orderNo,
-      'table_no': widget.cartItems.isNotEmpty ? widget.cartItems[0].tableNo : 0,
+      'tabel_no': widget.tableNo.toString(),
       'com_id': comId,
+      'total_payable': totalPrice + (totalPrice * 0.05),
+      'created_date': formattedDateTime,
+      'total_discount': 0.00,
+      'total_before_discount': totalPrice,
+      'service_charge': totalPrice * 0.05,
+      'total_paid': 0.00,
+      'payment_method': 0,
+      'delivery': 0,
+      'waiter': widget.userId.toString(),
+      'added_by': widget.userId.toString(),
+      'status': 0,
+      'order_note': allNotes,
+      'o_type': 1,
+      'customer': '1',
+      'cancel_reason': 'vdvcd',
+      'canceled_by': 0,
       'items': widget.cartItems
           .map((item) => {
-                'item': item.name,
-                'variation': item.variation,
-                'add_ons': item.addOns,
+                'item_id': item.productId,
+                'item': item.name.toString(),
                 'quantity': item.quantity,
                 'price': item.price,
-                'table_no': item.tableNo,
+                'note': item.note.toString(),
+                'total_before_discount': item.price * item.quantity,
+                'discout': item.price * 0.05,
+                'total': item.price * item.quantity,
+                'kot_type': item.kotType,
+                'o_id': 126,
+                'com_id': item.comId,
               })
           .toList(),
-      'note': noteText,
     };
+
+    print('Order data being sent: $orderData'); // Debugging print statement
 
     try {
       final response = await http.post(
-        url,
+        Uri.parse('https://mobileapp.synnexcloudpos.com'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(orderData),
       );
@@ -238,40 +249,50 @@ class _CartScreenState extends State<CartScreenPage> {
     }
   }
 
-  void showAddNoteDialog() {
-    noteController.text = noteText;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Note'),
-          content: TextField(
-            controller: noteController,
-            decoration: const InputDecoration(
-              hintText: 'Enter your note here',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text('Save'),
-              onPressed: () {
-                setState(() {
-                  noteText = noteController.text; // Save the note text
-                });
-                saveNote(); // Save the note text to shared preferences
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+  // void showAddNoteDialog() {
+  //   noteController.text = noteText;
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Note'),
+  //         content: TextField(
+  //           controller: noteController,
+  //           decoration: const InputDecoration(
+  //             hintText: 'Enter your note here',
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Cancel'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // Close the dialog
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text('Save'),
+  //             onPressed: () {
+  //               setState(() {
+  //                 noteText = noteController.text; // Save the note text
+  //               });
+  //               saveNote(); // Save the note text to shared preferences
+  //               Navigator.of(context).pop(); // Close the dialog
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  void calculateTotalPrice() {
+    double total = 0.0;
+    for (var item in widget.cartItems) {
+      total += item.price * item.quantity;
+    }
+    setState(() {
+      totalPrice = total;
+    });
   }
 
   @override
@@ -284,7 +305,10 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       body: Column(
         children: [
-          Text('Order no : $orderNo'),
+          Text(
+            'Order no : $orderNo',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: widget.cartItems.length,
@@ -309,7 +333,7 @@ class _CartScreenState extends State<CartScreenPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nTotal Price - Rs. ${item.price * item.quantity}',
+                            '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price * item.quantity}',
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -320,6 +344,7 @@ class _CartScreenState extends State<CartScreenPage> {
                                   setState(() {
                                     if (item.quantity > 1) {
                                       item.quantity--;
+                                      calculateTotalPrice();
                                     }
                                   });
                                 },
@@ -330,6 +355,7 @@ class _CartScreenState extends State<CartScreenPage> {
                                 onPressed: () {
                                   setState(() {
                                     item.quantity++;
+                                    calculateTotalPrice();
                                   });
                                 },
                               ),
@@ -352,9 +378,21 @@ class _CartScreenState extends State<CartScreenPage> {
                 style: TextStyle(fontSize: 16.0),
               ),
             ),
+          Text('Total Price =  Rs. $totalPrice',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+          // ElevatedButton(
+          //   onPressed: showAddNoteDialog,
+          //   child: Text('Add Note'),
+          // ),
           ElevatedButton(
-            onPressed: showAddNoteDialog,
-            child: Text('Add Note'),
+            onPressed: () {
+              cart.toMenu(context);
+            },
+            child: Text('Add More'),
+          ),
+          ElevatedButton(
+            onPressed: submitOrder,
+            child: Text('Place Order'),
           ),
         ],
       ),

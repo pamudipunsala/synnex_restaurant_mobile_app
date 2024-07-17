@@ -6,7 +6,8 @@ import 'package:restaurant_pos_mobile/view_models/table_view_model.dart';
 
 class TableScreenPage extends StatefulWidget {
   final String comId;
-  const TableScreenPage({super.key, required this.comId});
+  final String userId;
+  const TableScreenPage({super.key, required this.comId, required this.userId});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -103,8 +104,9 @@ class _TableScreenState extends State<TableScreenPage> {
                         MaterialPageRoute(
                           builder: (context) => MenuScreenPage(
                             tableNo: int.parse(table['tabel_no']),
-                            userId: '',
+                            // userId: int.parse(table['user_id']),
                             comId: widget.comId,
+                            userId: widget.userId,
                           ),
                         ),
                       );
