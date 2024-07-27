@@ -191,24 +191,9 @@ class _CartScreenState extends State<CartScreenPage> {
       'customer': '1',
       'cancel_reason': 'vdvcd',
       'canceled_by': 0,
-      'items': widget.cartItems
-          .map((item) => {
-                'item_id': item.productId,
-                'item': item.name.toString(),
-                'quantity': item.quantity,
-                'price': item.price,
-                'note': item.note.toString(),
-                'total_before_discount': item.price * item.quantity,
-                'discout': item.price * 0.05,
-                'total': item.price * item.quantity,
-                'kot_type': item.kotType,
-                'o_id': 126,
-                'com_id': item.comId,
-              })
-          .toList(),
     };
 
-    print('Order data being sent: $orderData'); // Debugging print statement
+    print('Order data to send: $orderData'); // Debugging print statement
 
     try {
       final response = await http.post(
@@ -217,20 +202,74 @@ class _CartScreenState extends State<CartScreenPage> {
         body: jsonEncode(orderData),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Order response status: ${response.statusCode}');
+      print('Order response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final result = jsonDecode(response.body);
+        print('Server Response: $result');
+
         if (result['status'] == 'success') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result['message'])),
+          final oId = result['o_id'];
+          print('oId from server: $oId');
+
+          List<Map<String, dynamic>> itemsData = widget.cartItems
+              .map((items) => {
+                    'item_id': items.productId,
+                    'item': items.name,
+                    'quantity': items.quantity.toString(),
+                    'price': items.price,
+                    'note': items.note,
+                    'total_before_discount': items.price * items.quantity,
+                    'discout': 0.00,
+                    'total': items.price * items.quantity,
+                    'kot_type': items.kotType,
+                    'o_id': oId,
+                    'com_id': comId,
+                  })
+              .toList();
+
+          // Map<String, dynamic> itemsData = {
+          //   "item_id": 2,
+          //   "item": "String Hoppers",
+          //   "quantity": "1",
+          //   "price": 550.0,
+          //   "note": "jnkngb",
+          //   "total_before_discount": 550.0,
+          //   "discout": 0.0,
+          //   "total": 550.0,
+          //   "kot_type": "0",
+          //   "o_id": "258",
+          //   "com_id": "1"
+          // };
+
+          print('Sending items data: $itemsData');
+          final itemResponse = await http.post(
+            Uri.parse('https://mobileapp.synnexcloudpos.com/addorder.php'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(itemsData),
           );
-          setState(() {
-            widget.cartItems.clear();
-            noteText = '';
-          });
-          saveNote();
+
+          print('Items response status: ${itemResponse.statusCode}');
+          print('Items response body: ${itemResponse.body}');
+
+          if (itemResponse.statusCode == 200) {
+            print('Successfully inserted items');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(result['message'])),
+            );
+            setState(() {
+              widget.cartItems.clear();
+              noteText = '';
+            });
+            saveNote();
+          } else {
+            print(
+                'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to insert items.')),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),

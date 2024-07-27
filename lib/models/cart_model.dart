@@ -11,6 +11,7 @@ class CartItem {
   final int productId;
   final String kotType;
   final String userId;
+  final int oId;
 
   CartItem({
     required this.name,
@@ -26,6 +27,7 @@ class CartItem {
     required this.productId,
     required this.kotType,
     required this.userId,
+    required this.oId,
   });
 
   Map<String, dynamic> toJson() {

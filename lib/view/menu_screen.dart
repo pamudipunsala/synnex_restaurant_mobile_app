@@ -238,7 +238,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       int.parse(product['p_id']) == parentId,
                                   orElse: () => {'kot_type': 0})['kot_type'],
                               productName: null,
-                              userId: userId,
+                              userId: userId, oId: 1,
                             ));
                           });
                           Navigator.of(context).pop();
