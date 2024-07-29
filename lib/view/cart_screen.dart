@@ -229,19 +229,10 @@ class _CartScreenState extends State<CartScreenPage> {
                   })
               .toList();
 
-          // Map<String, dynamic> itemsData = {
-          //   "item_id": 2,
-          //   "item": "String Hoppers",
-          //   "quantity": "1",
-          //   "price": 550.0,
-          //   "note": "jnkngb",
-          //   "total_before_discount": 550.0,
-          //   "discout": 0.0,
-          //   "total": 550.0,
-          //   "kot_type": "0",
-          //   "o_id": "258",
-          //   "com_id": "1"
-          // };
+          // Debugging prints for itemsData
+          for (var item in itemsData) {
+            print('Item data: $item');
+          }
 
           print('Sending items data: $itemsData');
           final itemResponse = await http.post(
