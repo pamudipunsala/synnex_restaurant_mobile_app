@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/table_view_model.dart';
@@ -63,85 +64,111 @@ class _TableScreenState extends State<TableScreenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tables'),
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                  hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                  fillColor: Color.fromARGB(255, 255, 255, 255),
+            Text(
+              'Tables',
+              style: GoogleFonts.archivo(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                onChanged: searchTables,
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.75,
-              child: GridView.builder(
-                itemCount: filteredTables.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1.5,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  final table = filteredTables[index];
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MenuScreenPage(
-                            tableNo: int.parse(table['tabel_no']),
-                            // userId: int.parse(table['user_id']),
-                            comId: widget.comId,
-                            userId: widget.userId,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Table No: ${table['tabel_no']}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 71, 4, 4)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
               ),
             ),
           ],
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                    hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                    fillColor: Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                  onChanged: searchTables,
+                ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.75,
+                child: GridView.builder(
+                  itemCount: filteredTables.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 4,
+                    mainAxisSpacing: 4,
+                    childAspectRatio: 1.5,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    final table = filteredTables[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MenuScreenPage(
+                              tableNo: int.parse(table['tabel_no']),
+                              comId: widget.comId,
+                              userId: widget.userId,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Table No: ${table['tabel_no']}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Color.fromARGB(255, 71, 4, 4)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

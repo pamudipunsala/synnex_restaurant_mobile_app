@@ -75,78 +75,163 @@ class _LoginScreenState extends State<LoginScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 170, 131, 128),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'LogIn',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 71, 4, 4),
-                  fontSize: 40,
-                  fontFamily: 'Raleway',
-                ),
-              ),
-              const SizedBox(height: 60.0),
-              Theme(
-                data: Theme.of(context).copyWith(
-                  inputDecorationTheme: const InputDecorationTheme(
-                    labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                  ),
-                ),
-                child: TextFormField(
-                  controller: loginScreen.usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'UserName or UserEmail',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please Enter Your Username';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              Theme(
-                data: Theme.of(context).copyWith(
-                  inputDecorationTheme: const InputDecorationTheme(
-                    labelStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                  ),
-                ),
-                child: TextFormField(
-                  controller: loginScreen.passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please Enter Your Password';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(height: 80.0),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-                  foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-                  fixedSize: const Size(90, 50),
-                ),
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    _login(context);
-                  }
-                },
-                child: const Text('Login'),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA),
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    elevation: 8.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'LogIn',
+                              style: GoogleFonts.archivo(
+                                color: const Color.fromARGB(255, 71, 4, 4),
+                                fontSize: 40,
+                              ),
+                            ),
+                            const SizedBox(height: 40.0),
+                            Theme(
+                              data: Theme.of(context).copyWith(
+                                inputDecorationTheme:
+                                    const InputDecorationTheme(
+                                  labelStyle: TextStyle(
+                                      color: Color.fromARGB(255, 71, 4, 4)),
+                                ),
+                              ),
+                              child: TextFormField(
+                                controller: loginScreen.usernameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'UserName or UserEmail',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter Your Username';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 20.0),
+                            Theme(
+                              data: Theme.of(context).copyWith(
+                                inputDecorationTheme: InputDecorationTheme(
+                                  labelStyle: GoogleFonts.archivo(
+                                    color: const Color.fromARGB(255, 71, 4, 4),
+                                  ),
+                                ),
+                              ),
+                              child: TextFormField(
+                                controller: loginScreen.passwordController,
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                  labelText: 'Password',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter Your Password';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 40.0),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors
+                                    .transparent, // Make the button background transparent
+                                shadowColor: Colors.black.withOpacity(1),
+                                fixedSize: const Size(220, 70),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Adjust this value to reduce the border radius
+                                ),
+                                elevation:
+                                    0, // Set elevation to 0 to remove default shadow
+                              ).copyWith(
+                                backgroundColor:
+                                    WidgetStateProperty.resolveWith<Color?>(
+                                  (states) => Colors.transparent,
+                                ),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  _login(context);
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF470404),
+                                      Color(0xFFDAB3AC),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Match the border radius of the button
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  'Login',
+                                  style: GoogleFonts.archivo(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40.0),
+                Text(
+                  'Powered by Synnex IT Solutions 2024',
+                  style: GoogleFonts.archivo(
+                    color: Colors.black54,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

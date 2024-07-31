@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view/cart_screen.dart';
@@ -258,12 +259,38 @@ class _MenuScreenState extends State<MenuScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Menu'),
-          backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Menu',
+              style: GoogleFonts.archivo(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
-        body: SingleChildScrollView(
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Padding(
@@ -316,7 +343,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
-                    childAspectRatio: 1.5,
+                    childAspectRatio: 1.35,
                   ),
                   itemBuilder: (BuildContext context, int index) {
                     final product = filteredProducts[index];
@@ -328,6 +355,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             context, int.parse(product['p_id']));
                       },
                       child: Container(
+                        margin: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -345,8 +374,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
                           children: [
                             Image.asset(
                               imageUrl,
-                              height: 80,
-                              width: 80,
+                              height: 70,
+                              width: 70,
                               fit: BoxFit.cover,
                             ),
                             const SizedBox(height: 8),
@@ -367,23 +396,25 @@ class _MenuScreenState extends State<MenuScreenPage> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CartScreenPage(
-                  cartItems: cartItems,
-                  tableNo: widget.tableNo,
-                  comId: widget.comId,
-                  userId: widget.userId,
-                ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CartScreenPage(
+                cartItems: cartItems,
+                tableNo: widget.tableNo,
+                comId: widget.comId,
+                userId: widget.userId,
               ),
-            );
-          },
-          backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          child: const Icon(Icons.shopping_cart),
-        ));
+            ),
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        child: const Icon(Icons.shopping_cart),
+      ),
+    );
   }
 }

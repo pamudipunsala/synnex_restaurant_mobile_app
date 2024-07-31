@@ -4,6 +4,7 @@ import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -46,7 +47,6 @@ class _CartScreenState extends State<CartScreenPage> {
       generateOrderNo(widget.comId);
     } else {
       // Handle the case where comId is missing
-      // You might want to show an error message or handle it differently based on your requirements
       print("Error: comId is missing.");
     }
   }
@@ -55,9 +55,7 @@ class _CartScreenState extends State<CartScreenPage> {
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'table_id': '1',
-      },
+      body: {'table_id': '1'},
     );
 
     if (response.statusCode == 200) {
@@ -71,19 +69,16 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> generateOrderNo(String? comId) async {
-    print('Generating order number...'); // Debugging print statement
+    print('Generating order number...');
 
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: {
-        'com_id': comId,
-      },
+      body: {'com_id': comId},
     );
 
-    print(
-        'HTTP response status: ${response.statusCode}'); // Debugging print statement
-    print('HTTP response body: ${response.body}'); // Debugging print statement
+    print('HTTP response status: ${response.statusCode}');
+    print('HTTP response body: ${response.body}');
 
     if (response.statusCode == 200) {
       if (response.body.isEmpty) {
@@ -92,21 +87,17 @@ class _CartScreenState extends State<CartScreenPage> {
 
       final List<dynamic> data = json.decode(response.body);
       final comId = data.isNotEmpty ? data[0]['com_id'] : null;
-      print('Received com_id: $comId'); // Debugging print statement
+      print('Received com_id: $comId');
 
       if (comId != null && comId.isNotEmpty) {
         final orderResponse = await http.post(
           Uri.parse('https://mobileapp.synnexcloudpos.com'),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: {
-            'com_id': comId,
-          },
+          body: {'com_id': comId},
         );
 
-        print(
-            'Order response status: ${orderResponse.statusCode}'); // Debugging print statement
-        print(
-            'Order response body: ${orderResponse.body}'); // Debugging print statement
+        print('Order response status: ${orderResponse.statusCode}');
+        print('Order response body: ${orderResponse.body}');
 
         if (orderResponse.statusCode == 200) {
           if (orderResponse.body.isEmpty) {
@@ -116,8 +107,7 @@ class _CartScreenState extends State<CartScreenPage> {
           final orderData = json.decode(orderResponse.body);
           final latestOrderNo =
               orderData.isNotEmpty ? orderData[0]['o_no'] : null;
-          print(
-              'Latest order number fetched: $latestOrderNo'); // Debugging print statement
+          print('Latest order number fetched: $latestOrderNo');
 
           if (latestOrderNo != null) {
             final nextOrderNo =
@@ -125,27 +115,23 @@ class _CartScreenState extends State<CartScreenPage> {
             setState(() {
               orderNo = nextOrderNo;
             });
-            print(
-                'Next order number generated: $orderNo'); // Debugging print statement
+            print('Next order number generated: $orderNo');
           } else {
             setState(() {
               orderNo = '001';
             });
-            print(
-                'Starting order number from 001'); // Debugging print statement
+            print('Starting order number from 001');
           }
         } else {
-          print(
-              'Failed to fetch order number: ${orderResponse.statusCode}'); // Debugging print statement
+          print('Failed to fetch order number: ${orderResponse.statusCode}');
           throw Exception('Failed to fetch order number');
         }
       } else {
-        print('Received empty or invalid com_id'); // Debugging print statement
+        print('Received empty or invalid com_id');
         throw Exception('Empty or invalid com_id received');
       }
     } else {
-      print(
-          'Failed to fetch com_id: ${response.statusCode}'); // Debugging print statement
+      print('Failed to fetch com_id: ${response.statusCode}');
       throw Exception('Failed to fetch com_id');
     }
   }
@@ -193,7 +179,7 @@ class _CartScreenState extends State<CartScreenPage> {
       'canceled_by': 0,
     };
 
-    print('Order data to send: $orderData'); // Debugging print statement
+    print('Order data to send: $orderData');
 
     try {
       final response = await http.post(
@@ -229,7 +215,6 @@ class _CartScreenState extends State<CartScreenPage> {
                   })
               .toList();
 
-          // Debugging prints for itemsData
           for (var item in itemsData) {
             print('Item data: $item');
           }
@@ -268,163 +253,177 @@ class _CartScreenState extends State<CartScreenPage> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to place order.')),
+          SnackBar(content: Text('Failed to submit order')),
         );
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Error submitting order')),
       );
     }
   }
 
-  // void showAddNoteDialog() {
-  //   noteController.text = noteText;
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Note'),
-  //         content: TextField(
-  //           controller: noteController,
-  //           decoration: const InputDecoration(
-  //             hintText: 'Enter your note here',
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: const Text('Cancel'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop(); // Close the dialog
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: const Text('Save'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 noteText = noteController.text; // Save the note text
-  //               });
-  //               saveNote(); // Save the note text to shared preferences
-  //               Navigator.of(context).pop(); // Close the dialog
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void calculateTotalPrice() {
-    double total = 0.0;
-    for (var item in widget.cartItems) {
-      total += item.price * item.quantity;
-    }
-    setState(() {
-      totalPrice = total;
-    });
+    totalPrice = widget.cartItems
+        .fold(0.0, (sum, item) => sum + (item.price * item.quantity));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-      ),
-      body: Column(
-        children: [
-          Text(
-            'Order no : $orderNo',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.cartItems.length,
-              itemBuilder: (context, index) {
-                final item = widget.cartItems[index];
-                return Dismissible(
-                  key: Key(
-                      '${item.name}_${item.tableNo}'), // Ensure each item has a unique key
-                  onDismissed: (direction) {
-                    setState(() {
-                      widget.cartItems.removeAt(index);
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${item.name} dismissed")),
-                    );
-                  },
-                  background:
-                      Container(color: Color.fromARGB(255, 170, 131, 128)),
-                  child: Card(
-                    child: ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ones - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price * item.quantity}',
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.remove),
-                                onPressed: () {
-                                  setState(() {
-                                    if (item.quantity > 1) {
-                                      item.quantity--;
-                                      calculateTotalPrice();
-                                    }
-                                  });
-                                },
-                              ),
-                              Text(item.quantity.toString()),
-                              IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: () {
-                                  setState(() {
-                                    item.quantity++;
-                                    calculateTotalPrice();
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (widget.cartItems.isNotEmpty && noteText.isNotEmpty)
-            Container(
-              padding: EdgeInsets.all(16.0),
-              color: Colors.grey[200],
-              child: Text(
-                'Note: $noteText',
-                style: TextStyle(fontSize: 16.0),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Shopping Cart',
+              style: GoogleFonts.archivo(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          Text('Total Price =  Rs. $totalPrice',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-          // ElevatedButton(
-          //   onPressed: showAddNoteDialog,
-          //   child: Text('Add Note'),
-          // ),
-          ElevatedButton(
-            onPressed: () {
-              cart.toMenu(context);
-            },
-            child: Text('Add More'),
+          ],
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          ElevatedButton(
-            onPressed: submitOrder,
-            child: Text('Place Order'),
-          ),
-        ],
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Order no : $orderNo',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.cartItems.length,
+                itemBuilder: (context, index) {
+                  final item = widget.cartItems[index];
+                  return Dismissible(
+                    key: Key('${item.name}_${item.tableNo}'),
+                    onDismissed: (direction) {
+                      setState(() {
+                        widget.cartItems.removeAt(index);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("${item.name} dismissed")),
+                      );
+                    },
+                    background:
+                        Container(color: Color.fromARGB(255, 170, 131, 128)),
+                    child: Card(
+                      child: ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ons - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price * item.quantity}',
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.remove),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (item.quantity > 1) {
+                                        item.quantity--;
+                                        calculateTotalPrice();
+                                      }
+                                    });
+                                  },
+                                ),
+                                Text(item.quantity.toString()),
+                                IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () {
+                                    setState(() {
+                                      item.quantity++;
+                                      calculateTotalPrice();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (widget.cartItems.isNotEmpty && noteText.isNotEmpty)
+              Container(
+                padding: EdgeInsets.all(16.0),
+                color: Colors.grey[200],
+                child: Text(
+                  'Note: $noteText',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ),
+            Text('Total Price = Rs. $totalPrice',
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                ),
+                elevation: 8, // Shadow effect
+                textStyle: GoogleFonts.archivo(
+                  textStyle: const TextStyle(
+                    fontSize: 18, // Adjust font size
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              onPressed: () {
+                cart.toMenu(context);
+              },
+              child: Text('Add More'),
+            ),
+            SizedBox(height: 12),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                ),
+                elevation: 8, // Shadow effect
+                textStyle: GoogleFonts.archivo(
+                  textStyle: const TextStyle(
+                    fontSize: 18, // Adjust font size
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              onPressed: submitOrder,
+              child: Text('Place Order'),
+            ),
+            SizedBox(height: 18),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: submitOrder,

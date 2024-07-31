@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
 import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
 
@@ -34,9 +35,23 @@ class _OrderHistoryState extends State<OrderHistoryPage>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Order History'),
           backgroundColor: const Color.fromARGB(255, 71, 4, 4),
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                'Order History',
+                style: GoogleFonts.archivo(
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
           bottom: TabBar(
             controller: _tabController,
             labelColor: const Color.fromARGB(
@@ -72,54 +87,67 @@ class _PendingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            decoration: const InputDecoration(
-              hintText: 'Search...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            // rgb(240, 225, 218)
+            Color(0xFFDAB3AC),
+            Color(0xFFF0E1DA), // rgb(218, 179, 172)
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                // Implement search logic
+              },
             ),
-            onChanged: (value) {
-              // Implement search logic
-            },
           ),
-        ),
-        const Text('4 Pendings      2 Ready'),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 1,
-            itemBuilder: (context, index) {
-              return Card(
-                child: ListTile(
-                  title: const Text(
-                    'Fried Rice\nVariation - \nQuantity - \nAdd Ones - \nTotal Price - Rs. ',
+          const Text('4 Pendings      2 Ready'),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 1,
+              itemBuilder: (context, index) {
+                return Card(
+                  child: ListTile(
+                    title: const Text(
+                      'Fried Rice\nVariation - \nQuantity - \nAdd Ones - \nTotal Price - Rs. ',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            orderhistory.toEditScreen(context);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Delete logic
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          orderhistory.toEditScreen(context);
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          // Delete logic
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -129,54 +157,67 @@ class _ReadyList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            decoration: const InputDecoration(
-              hintText: 'Search...',
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            // rgb(240, 225, 218)
+            Color(0xFFDAB3AC),
+            Color(0xFFF0E1DA), // rgb(218, 179, 172)
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                // Implement search logic
+              },
             ),
-            onChanged: (value) {
-              // Implement search logic
-            },
           ),
-        ),
-        const Text('4 Pendings      2 Ready'),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return Card(
-                child: ListTile(
-                  title: const Text(
-                    'String Hoppers\nVariation - red  - 2\nAdd Ones - fish curry\nTotal Price - Rs. 400.00',
+          const Text('4 Pendings      2 Ready'),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return Card(
+                  child: ListTile(
+                    title: const Text(
+                      'String Hoppers\nVariation - red  - 2\nAdd Ones - fish curry\nTotal Price - Rs. 400.00',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            // Edit logic
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Delete logic
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          // Edit logic
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          // Delete logic
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

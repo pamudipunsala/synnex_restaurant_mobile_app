@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,44 +79,104 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
-        title: const Text('Profile'),
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Profile',
+              style: GoogleFonts.archivo(
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Center(
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : userDetails != null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/img1.png',
-                        width: 150,
-                        height: 150,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'User Name: ${userDetails!['u_name']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'User Email: ${userDetails!['user_email']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Joined Date: ${userDetails!['created_date']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  )
-                : Text(
-                    errorMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 18),
-                  ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              // rgb(240, 225, 218)
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA), // rgb(218, 179, 172)
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : userDetails != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Profile Details',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 71, 4, 4),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Card(
+                          elevation: 5,
+                          margin: const EdgeInsets.all(20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/img1.png',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'User Name: ${userDetails!['u_name']}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Email: ${userDetails!['user_email']}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Joined Date: ${userDetails!['created_date']}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 80),
+                        Text(
+                          'Powered by Synnex IT Solutions 2024',
+                          style: GoogleFonts.archivo(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ), // Additional space after the card item
+                      ],
+                    )
+                  : Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 18),
+                    ),
+        ),
       ),
     );
   }
