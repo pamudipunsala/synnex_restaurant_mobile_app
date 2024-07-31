@@ -427,9 +427,9 @@ class _CartScreenState extends State<CartScreenPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: submitOrder,
-        child: Icon(Icons.check),
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        child: const Icon(Icons.check),
       ),
     );
   }

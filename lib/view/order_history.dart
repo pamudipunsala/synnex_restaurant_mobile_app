@@ -1,32 +1,61 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
-import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _OrderHistoryState createState() => _OrderHistoryState();
 }
 
 class _OrderHistoryState extends State<OrderHistoryPage>
     with SingleTickerProviderStateMixin {
-  OrderHistoryScreen orderhistory = OrderHistoryScreen();
-  late OrderHistoryScreen history;
   late TabController _tabController;
+  late Future<List<HistoryItem>> _orderHistory;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _orderHistory = Future.value([]); // Initialize with an empty list
+    fetchOrderHistory().then((history) {
+      setState(() {
+        _orderHistory = Future.value(history);
+      });
+    });
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<List<HistoryItem>> fetchOrderHistory() async {
+    final response = await http.post(
+      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      body: {'history_id': '1'},
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      try {
+        List<dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse
+            .map<HistoryItem>((order) => HistoryItem.fromJson(order))
+            .toList();
+      } catch (e) {
+        throw Exception('Failed to parse order history data: $e');
+      }
+    } else {
+      throw Exception(
+          'Failed to load order history, status code: ${response.statusCode}');
+    }
   }
 
   @override
@@ -54,8 +83,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
           ),
           bottom: TabBar(
             controller: _tabController,
-            labelColor: const Color.fromARGB(
-                255, 255, 255, 255), // Active tab text color
+            labelColor: const Color.fromARGB(255, 255, 255, 255),
             unselectedLabelColor:
                 const Color.fromARGB(255, 255, 255, 255).withOpacity(0.6),
             indicatorColor: const Color.fromARGB(255, 255, 255, 255),
@@ -68,11 +96,8 @@ class _OrderHistoryState extends State<OrderHistoryPage>
         body: TabBarView(
           controller: _tabController,
           children: [
-            // Pending List
-
-            _PendingList(), // Remove const here
-            // Ready List
-            _ReadyList(), // Remove const here
+            _PendingList(orderHistory: _orderHistory),
+            _ReadyList(orderHistory: _orderHistory),
           ],
         ),
       ),
@@ -80,10 +105,10 @@ class _OrderHistoryState extends State<OrderHistoryPage>
   }
 }
 
-// ignore: must_be_immutable
 class _PendingList extends StatelessWidget {
-  _PendingList({Key? key}) : super(key: key);
-  OrderHistoryScreen orderhistory = OrderHistoryScreen();
+  final Future<List<HistoryItem>> orderHistory;
+
+  _PendingList({Key? key, required this.orderHistory}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +116,8 @@ class _PendingList extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            // rgb(240, 225, 218)
             Color(0xFFDAB3AC),
-            Color(0xFFF0E1DA), // rgb(218, 179, 172)
+            Color(0xFFF0E1DA),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -116,33 +140,47 @@ class _PendingList extends StatelessWidget {
           ),
           const Text('4 Pendings      2 Ready'),
           Expanded(
-            child: ListView.builder(
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: const Text(
-                      'Fried Rice\nVariation - \nQuantity - \nAdd Ones - \nTotal Price - Rs. ',
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            orderhistory.toEditScreen(context);
-                          },
+            child: FutureBuilder<List<HistoryItem>>(
+              future: orderHistory,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No pending orders found.'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      HistoryItem history = snapshot.data![index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            'Order No: ${history.orderId}\nItem: ${history.item}\nQuantity: ${history.quantity}\nPrice: ${history.price}\nTotal: ${history.total}\nNote: ${history.note}',
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  // Implement edit logic
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  // Implement delete logic
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            // Delete logic
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),
@@ -153,7 +191,9 @@ class _PendingList extends StatelessWidget {
 }
 
 class _ReadyList extends StatelessWidget {
-  const _ReadyList({Key? key}) : super(key: key);
+  final Future<List<HistoryItem>> orderHistory;
+
+  _ReadyList({Key? key, required this.orderHistory}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -161,9 +201,8 @@ class _ReadyList extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            // rgb(240, 225, 218)
             Color(0xFFDAB3AC),
-            Color(0xFFF0E1DA), // rgb(218, 179, 172)
+            Color(0xFFF0E1DA),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -186,33 +225,47 @@ class _ReadyList extends StatelessWidget {
           ),
           const Text('4 Pendings      2 Ready'),
           Expanded(
-            child: ListView.builder(
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: const Text(
-                      'String Hoppers\nVariation - red  - 2\nAdd Ones - fish curry\nTotal Price - Rs. 400.00',
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            // Edit logic
-                          },
+            child: FutureBuilder<List<HistoryItem>>(
+              future: orderHistory,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No ready orders found.'));
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      HistoryItem history = snapshot.data![index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(
+                            'Order No: ${history.orderId}\nItem: ${history.item}\nQuantity: ${history.quantity}\nPrice: ${history.price}\nTotal: ${history.total}\nNote: ${history.note}',
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  // Implement edit logic
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  // Implement delete logic
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            // Delete logic
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),
