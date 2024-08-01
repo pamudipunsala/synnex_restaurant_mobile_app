@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
+import 'package:restaurant_pos_mobile/view/edit_screen.dart';
+import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
@@ -14,18 +17,15 @@ class OrderHistoryPage extends StatefulWidget {
 class _OrderHistoryState extends State<OrderHistoryPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Future<List<HistoryItem>> _orderHistory;
+  List<HistoryItem> _originalHistoryItems = [];
+  List<HistoryItem> _filteredHistoryItems = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _orderHistory = Future.value([]); // Initialize with an empty list
-    fetchOrderHistory().then((history) {
-      setState(() {
-        _orderHistory = Future.value(history);
-      });
-    });
+    _fetchOrderHistory(); // Fetch order history and set state
   }
 
   @override
@@ -34,10 +34,13 @@ class _OrderHistoryState extends State<OrderHistoryPage>
     super.dispose();
   }
 
-  Future<List<HistoryItem>> fetchOrderHistory() async {
+  Future<void> _fetchOrderHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com'),
-      body: {'history_id': '1'},
+      body: {'history_id': userId},
     );
 
     print('Response status: ${response.statusCode}');
@@ -46,9 +49,13 @@ class _OrderHistoryState extends State<OrderHistoryPage>
     if (response.statusCode == 200) {
       try {
         List<dynamic> jsonResponse = json.decode(response.body);
-        return jsonResponse
+        List<HistoryItem> historyItems = jsonResponse
             .map<HistoryItem>((order) => HistoryItem.fromJson(order))
             .toList();
+        setState(() {
+          _originalHistoryItems = historyItems;
+          _filteredHistoryItems = historyItems;
+        });
       } catch (e) {
         throw Exception('Failed to parse order history data: $e');
       }
@@ -56,6 +63,21 @@ class _OrderHistoryState extends State<OrderHistoryPage>
       throw Exception(
           'Failed to load order history, status code: ${response.statusCode}');
     }
+  }
+
+  void _filterHistoryItems(String query) {
+    setState(() {
+      _searchQuery = query;
+      if (_searchQuery.isEmpty) {
+        _filteredHistoryItems = _originalHistoryItems;
+      } else {
+        _filteredHistoryItems = _originalHistoryItems
+            .where((item) =>
+                item.orderId.contains(_searchQuery) ||
+                item.date.contains(_searchQuery))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -96,8 +118,12 @@ class _OrderHistoryState extends State<OrderHistoryPage>
         body: TabBarView(
           controller: _tabController,
           children: [
-            _PendingList(orderHistory: _orderHistory),
-            _ReadyList(orderHistory: _orderHistory),
+            _PendingList(
+                orderHistory: _filteredHistoryItems,
+                onSearch: _filterHistoryItems),
+            _ReadyList(
+                orderHistory: _filteredHistoryItems,
+                onSearch: _filterHistoryItems),
           ],
         ),
       ),
@@ -106,9 +132,12 @@ class _OrderHistoryState extends State<OrderHistoryPage>
 }
 
 class _PendingList extends StatelessWidget {
-  final Future<List<HistoryItem>> orderHistory;
+  final List<HistoryItem> orderHistory;
+  final ValueChanged<String> onSearch;
+  OrderHistoryScreen htr = OrderHistoryScreen();
 
-  _PendingList({Key? key, required this.orderHistory}) : super(key: key);
+  _PendingList({Key? key, required this.orderHistory, required this.onSearch})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -133,56 +162,44 @@ class _PendingList extends StatelessWidget {
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                // Implement search logic
-              },
+              onChanged: onSearch,
             ),
           ),
           const Text('4 Pendings      2 Ready'),
           Expanded(
-            child: FutureBuilder<List<HistoryItem>>(
-              future: orderHistory,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No pending orders found.'));
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
+            child: orderHistory.isEmpty
+                ? const Center(child: Text('No pending orders found.'))
+                : ListView.builder(
+                    itemCount: orderHistory.length,
                     itemBuilder: (context, index) {
-                      HistoryItem history = snapshot.data![index];
+                      HistoryItem history = orderHistory[index];
                       return Card(
                         child: ListTile(
                           title: Text(
-                            'Order No: ${history.orderId}\nItem: ${history.item}\nQuantity: ${history.quantity}\nPrice: ${history.price}\nTotal: ${history.total}\nNote: ${history.note}',
+                            'Order No: ${history.orderId}\nDate: ${history.date}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
+                              ElevatedButton(
                                 onPressed: () {
-                                  // Implement edit logic
+                                  htr.toEditScreen(context);
                                 },
+                                child: Text('View'),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
+                              SizedBox(width: 8),
+                              ElevatedButton(
                                 onPressed: () {
-                                  // Implement delete logic
+                                  htr.toEditScreen(context);
                                 },
+                                child: Text('Edit'),
                               ),
                             ],
                           ),
                         ),
                       );
                     },
-                  );
-                }
-              },
-            ),
+                  ),
           ),
         ],
       ),
@@ -191,9 +208,12 @@ class _PendingList extends StatelessWidget {
 }
 
 class _ReadyList extends StatelessWidget {
-  final Future<List<HistoryItem>> orderHistory;
+  final List<HistoryItem> orderHistory;
+  final ValueChanged<String> onSearch;
+  OrderHistoryScreen htr = OrderHistoryScreen();
 
-  _ReadyList({Key? key, required this.orderHistory}) : super(key: key);
+  _ReadyList({Key? key, required this.orderHistory, required this.onSearch})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -218,56 +238,44 @@ class _ReadyList extends StatelessWidget {
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                // Implement search logic
-              },
+              onChanged: onSearch,
             ),
           ),
           const Text('4 Pendings      2 Ready'),
           Expanded(
-            child: FutureBuilder<List<HistoryItem>>(
-              future: orderHistory,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No ready orders found.'));
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
+            child: orderHistory.isEmpty
+                ? const Center(child: Text('No ready orders found.'))
+                : ListView.builder(
+                    itemCount: orderHistory.length,
                     itemBuilder: (context, index) {
-                      HistoryItem history = snapshot.data![index];
+                      HistoryItem history = orderHistory[index];
                       return Card(
                         child: ListTile(
                           title: Text(
-                            'Order No: ${history.orderId}\nItem: ${history.item}\nQuantity: ${history.quantity}\nPrice: ${history.price}\nTotal: ${history.total}\nNote: ${history.note}',
+                            'Order No: ${history.orderId}\nDate: ${history.date}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
+                              ElevatedButton(
                                 onPressed: () {
-                                  // Implement edit logic
+                                  htr.toEditScreen(context);
                                 },
+                                child: Text('View'),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
+                              SizedBox(width: 8),
+                              ElevatedButton(
                                 onPressed: () {
-                                  // Implement delete logic
+                                  htr.toEditScreen(context);
                                 },
+                                child: Text('Edit'),
                               ),
                             ],
                           ),
                         ),
                       );
                     },
-                  );
-                }
-              },
-            ),
+                  ),
           ),
         ],
       ),

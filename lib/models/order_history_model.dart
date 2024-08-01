@@ -2,9 +2,9 @@ import 'dart:ffi';
 
 class HistoryItem {
   final String orderId;
-  final String item;
-  final int quantity;
-  final double price;
+  final String date;
+  final String tabelNo;
+  final String total_payable;
   final double total;
   final String note;
   final String customer;
@@ -14,9 +14,9 @@ class HistoryItem {
 
   HistoryItem({
     required this.orderId,
-    required this.item,
-    required this.quantity,
-    required this.price,
+    required this.date,
+    required this.tabelNo,
+    required this.total_payable,
     required this.total,
     required this.note,
     required this.customer,
@@ -28,9 +28,9 @@ class HistoryItem {
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
       orderId: json['o_no'] ?? 'Unknown', // Provide default values
-      item: json['item'] ?? 'Unknown',
-      quantity: json['quantity'] ?? 0,
-      price: json['price']?.toDouble() ?? 0.0,
+      date: json['created_date'] ?? 'Unknown',
+      tabelNo: json['tabel_no'] ?? 0,
+      total_payable: json['total_payable'] ?? 0,
       total: json['total']?.toDouble() ?? 0.0,
       note: json['note'] ?? '',
       customer: '',
