@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -155,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
-                                  'Joined Date: ${userDetails!['created_date']}',
+                                  'Joined Date:${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(userDetails!['created_date']))}',
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ],

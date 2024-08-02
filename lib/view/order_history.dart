@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
 import 'package:restaurant_pos_mobile/view/edit_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
@@ -134,7 +135,6 @@ class _OrderHistoryState extends State<OrderHistoryPage>
 class _PendingList extends StatelessWidget {
   final List<HistoryItem> orderHistory;
   final ValueChanged<String> onSearch;
-  OrderHistoryScreen htr = OrderHistoryScreen();
 
   _PendingList({Key? key, required this.orderHistory, required this.onSearch})
       : super(key: key);
@@ -176,23 +176,42 @@ class _PendingList extends StatelessWidget {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            'Order No: ${history.orderId}\nDate: ${history.date}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                            'Order No: ${history.orderId}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: const Color.fromARGB(
+                                      255, 71, 4, 4), // Text color
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        12.0), // Rounded corners
+                                  ),
+                                  elevation: 8, // Shadow effect
+                                  textStyle: GoogleFonts.archivo(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18, // Adjust font size
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () {
-                                  htr.toEditScreen(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditScreenPage(
+                                        orderId: history.orderId,
+                                        orderDetails: [], // Pass any additional order details if needed
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Text('View'),
-                              ),
-                              SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  htr.toEditScreen(context);
-                                },
-                                child: Text('Edit'),
                               ),
                             ],
                           ),
@@ -210,7 +229,6 @@ class _PendingList extends StatelessWidget {
 class _ReadyList extends StatelessWidget {
   final List<HistoryItem> orderHistory;
   final ValueChanged<String> onSearch;
-  OrderHistoryScreen htr = OrderHistoryScreen();
 
   _ReadyList({Key? key, required this.orderHistory, required this.onSearch})
       : super(key: key);
@@ -252,21 +270,40 @@ class _ReadyList extends StatelessWidget {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            'Order No: ${history.orderId}\nDate: ${history.date}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                            'Order No: ${history.orderId}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: const Color.fromARGB(
+                                      255, 71, 4, 4), // Text color
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0, horizontal: 24.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        12.0), // Rounded corners
+                                  ),
+                                  elevation: 8, // Shadow effect
+                                  textStyle: GoogleFonts.archivo(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18, // Adjust font size
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () {
-                                  htr.toEditScreen(context);
-                                },
-                                child: Text('View'),
-                              ),
-                              SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  htr.toEditScreen(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditScreenPage(
+                                        orderId: history.orderId,
+                                        orderDetails: [], // Pass any additional order details if needed
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Text('Edit'),
                               ),
