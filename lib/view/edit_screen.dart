@@ -5,10 +5,12 @@ import 'package:http/http.dart' as http;
 
 class EditScreenPage extends StatefulWidget {
   final String orderId;
+  final String tabelNo; // Add this line
 
   const EditScreenPage({
     Key? key,
     required this.orderId,
+    required this.tabelNo, // Add this line
     required List orderDetails,
   }) : super(key: key);
 
@@ -172,8 +174,8 @@ class _EditScreenState extends State<EditScreenPage> {
                 },
               ),
             ),
-            const Text('Table no : 01'),
-            const Text('Order no : 0001'),
+            Text('Table no : ${widget.tabelNo}'), // Display table number
+            Text('Order no : ${widget.orderId}'), // Display order number
             Expanded(
               child: ListView.builder(
                 itemCount: orderItems.length,
@@ -224,17 +226,16 @@ class _EditScreenState extends State<EditScreenPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor:
-                    const Color.fromARGB(255, 71, 4, 4), // Text color
+                backgroundColor: const Color.fromARGB(255, 71, 4, 4),
                 padding: const EdgeInsets.symmetric(
-                    vertical: 12.0, horizontal: 24.0),
+                    vertical: 10.0, horizontal: 20.0),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-                elevation: 8, // Shadow effect
+                elevation: 8,
                 textStyle: GoogleFonts.archivo(
                   textStyle: const TextStyle(
-                    fontSize: 18, // Adjust font size
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -242,6 +243,7 @@ class _EditScreenState extends State<EditScreenPage> {
               onPressed: _submitChanges,
               child: const Text('Save Changes'),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -46,7 +46,6 @@ class _CartScreenState extends State<CartScreenPage> {
     if (widget.cartItems.isNotEmpty && widget.cartItems.last.comId.isNotEmpty) {
       generateOrderNo(widget.comId);
     } else {
-      // Handle the case where comId is missing
       print("Error: comId is missing.");
     }
   }
@@ -71,6 +70,11 @@ class _CartScreenState extends State<CartScreenPage> {
   Future<void> generateOrderNo(String? comId) async {
     print('Generating order number...');
 
+    if (comId == null || comId.isEmpty) {
+      print('Error: comId is missing or empty');
+      throw Exception('Empty or invalid com_id received');
+    }
+
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com'),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -85,50 +89,34 @@ class _CartScreenState extends State<CartScreenPage> {
         throw Exception('Empty response body');
       }
 
-      final List<dynamic> data = json.decode(response.body);
-      final comId = data.isNotEmpty ? data[0]['com_id'] : null;
-      print('Received com_id: $comId');
+      final List<dynamic> dataList = json.decode(response.body);
+      if (dataList.isNotEmpty) {
+        final Map<String, dynamic> data = dataList.first;
+        final latestCode = data['code'];
+        final gen = data['gen'];
+        final prefix = data['order_pref'];
+        print('Latest code: $latestCode');
+        print('gen value: $gen');
+        print('Prefix: $prefix');
 
-      if (comId != null && comId.isNotEmpty) {
-        final orderResponse = await http.post(
-          Uri.parse('https://mobileapp.synnexcloudpos.com'),
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: {'com_id': comId},
-        );
+        if (latestCode != null) {
+          // Increment the latest code to generate the next order number
+          int nextCode = int.parse(latestCode) + 1;
+          String nextOrderNo =
+              prefix + nextCode.toString().padLeft(int.parse(gen), '0');
 
-        print('Order response status: ${orderResponse.statusCode}');
-        print('Order response body: ${orderResponse.body}');
+          setState(() {
+            orderNo = nextOrderNo;
+          });
 
-        if (orderResponse.statusCode == 200) {
-          if (orderResponse.body.isEmpty) {
-            throw Exception('Empty order response body');
-          }
-
-          final orderData = json.decode(orderResponse.body);
-          final latestOrderNo =
-              orderData.isNotEmpty ? orderData[0]['o_no'] : null;
-          print('Latest order number fetched: $latestOrderNo');
-
-          if (latestOrderNo != null) {
-            final nextOrderNo =
-                (int.parse(latestOrderNo) + 1).toString().padLeft(3, '0');
-            setState(() {
-              orderNo = nextOrderNo;
-            });
-            print('Next order number generated: $orderNo');
-          } else {
-            setState(() {
-              orderNo = '001';
-            });
-            print('Starting order number from 001');
-          }
+          print('Next order number generated: $orderNo');
         } else {
-          print('Failed to fetch order number: ${orderResponse.statusCode}');
-          throw Exception('Failed to fetch order number');
+          print('Received empty or invalid code');
+          throw Exception('Empty or invalid code received');
         }
       } else {
-        print('Received empty or invalid com_id');
-        throw Exception('Empty or invalid com_id received');
+        print('Received empty list');
+        throw Exception('Empty list received');
       }
     } else {
       print('Failed to fetch com_id: ${response.statusCode}');

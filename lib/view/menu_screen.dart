@@ -230,10 +230,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               note: menu.noteController.text,
                               tableNo: tableNo,
                               finalNote: note,
-                              comId: selectedProduct[
-                                  'com_id'], // Accessing com_id from selectedProduct
-                              productId: int.parse(
-                                  selectedProduct['p_id']), // Accessing p_id
+                              comId: selectedProduct['com_id'], // Pass com_id
+                              productId: int.parse(selectedProduct['p_id']),
                               kotType: products.firstWhere(
                                   (product) =>
                                       int.parse(product['p_id']) == parentId,
@@ -405,7 +403,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
               builder: (context) => CartScreenPage(
                 cartItems: cartItems,
                 tableNo: widget.tableNo,
-                comId: widget.comId,
+                comId: widget.comId, // Pass comId
                 userId: widget.userId,
               ),
             ),

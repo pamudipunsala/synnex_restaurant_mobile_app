@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
 import 'package:restaurant_pos_mobile/view/edit_screen.dart';
-import 'package:restaurant_pos_mobile/view_models/order_history_view_model.dart';
+import 'package:restaurant_pos_mobile/view/view_order_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
@@ -204,14 +204,49 @@ class _PendingList extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => EditScreenPage(
+                                      builder: (context) => ViewScreenPage(
                                         orderId: history.orderId,
+                                        tabelNo: history.tabelNo,
                                         orderDetails: [], // Pass any additional order details if needed
                                       ),
                                     ),
                                   );
                                 },
-                                child: Text('View'),
+                                child: const Text('View'),
+                              ),
+                              const SizedBox(width: 10),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: const Color.fromARGB(
+                                      255, 71, 4, 4), // Text color
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 20.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        12.0), // Rounded corners
+                                  ),
+                                  elevation: 8, // Shadow effect
+                                  textStyle: GoogleFonts.archivo(
+                                    textStyle: const TextStyle(
+                                      fontSize: 18, // Adjust font size
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditScreenPage(
+                                        orderId: history.orderId,
+                                        tabelNo: history.tabelNo,
+                                        orderDetails: [], // Pass any additional order details if needed
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text('Edit'),
                               ),
                             ],
                           ),
@@ -300,7 +335,9 @@ class _ReadyList extends StatelessWidget {
                                     MaterialPageRoute(
                                       builder: (context) => EditScreenPage(
                                         orderId: history.orderId,
-                                        orderDetails: [], // Pass any additional order details if needed
+                                        orderDetails: [],
+                                        tabelNo:
+                                            '', // Pass any additional order details if needed
                                       ),
                                     ),
                                   );
