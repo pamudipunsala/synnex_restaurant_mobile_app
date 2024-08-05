@@ -35,6 +35,7 @@ class _CartScreenState extends State<CartScreenPage> {
   String noteText = '';
   double totalPrice = 0.0;
   int? oId;
+  String? generatedComId;
 
   @override
   void initState() {
@@ -94,19 +95,20 @@ class _CartScreenState extends State<CartScreenPage> {
         final Map<String, dynamic> data = dataList.first;
         final latestCode = data['code'];
         final gen = data['gen'];
-        final prefix = data['order_pref'];
+        final orderPref = data['order_pref'];
         print('Latest code: $latestCode');
         print('gen value: $gen');
-        print('Prefix: $prefix');
+        print('Order prefix: $orderPref');
 
         if (latestCode != null) {
           // Increment the latest code to generate the next order number
-          int nextCode = int.parse(latestCode) + 1;
+          int nextCode = int.parse(latestCode);
           String nextOrderNo =
-              prefix + nextCode.toString().padLeft(int.parse(gen), '0');
+              orderPref + nextCode.toString().padLeft(int.parse(gen), '0');
 
           setState(() {
             orderNo = nextOrderNo;
+            generatedComId = comId;
           });
 
           print('Next order number generated: $orderNo');
@@ -137,9 +139,7 @@ class _CartScreenState extends State<CartScreenPage> {
   }
 
   Future<void> submitOrder() async {
-    final comId = widget.cartItems.isNotEmpty
-        ? widget.cartItems.last.comId
-        : widget.comId;
+    final comId = generatedComId ?? widget.comId;
     final currentDate = DateTime.now();
     final formattedDateTime =
         '${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')} ${currentDate.hour.toString().padLeft(2, '0')}:${currentDate.minute.toString().padLeft(2, '0')}:${currentDate.second.toString().padLeft(2, '0')}';
@@ -148,7 +148,7 @@ class _CartScreenState extends State<CartScreenPage> {
     final orderData = {
       'o_no': orderNo,
       'tabel_no': widget.tableNo.toString(),
-      'com_id': comId,
+      'com_id': comId, // Ensure comId is passed here
       'total_payable': totalPrice + (totalPrice * 0.05),
       'created_date': formattedDateTime,
       'total_discount': 0.00,
@@ -199,7 +199,7 @@ class _CartScreenState extends State<CartScreenPage> {
                     'total': items.price * items.quantity,
                     'kot_type': items.kotType,
                     'o_id': oId,
-                    'com_id': comId,
+                    'com_id': comId, // Ensure comId is passed here
                   })
               .toList();
 
