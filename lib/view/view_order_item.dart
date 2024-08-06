@@ -5,12 +5,14 @@ import 'package:http/http.dart' as http;
 
 class ViewScreenPage extends StatefulWidget {
   final String orderId;
-  final String tabelNo; // Add this line
+  final String orderNo;
+  final String tabelNo;
 
   const ViewScreenPage({
     Key? key,
     required this.orderId,
-    required this.tabelNo, // Add this line
+    required this.orderNo,
+    required this.tabelNo, 
     required List orderDetails,
   }) : super(key: key);
 
@@ -64,42 +66,6 @@ class _ViewScreenState extends State<ViewScreenPage> {
     }
   }
 
-  Future<void> _submitChanges() async {
-    final updatedItems = orderItems.map((item) {
-      final itemId = item['item_id'];
-      final quantity = quantities[itemId] ?? item['quantity'];
-      final price =
-          (item['price'] as num).toDouble(); // Ensure price is a double
-      final totalPrice = price * quantity;
-
-      return {
-        'item_id': itemId,
-        'quantity': quantity,
-        'item': item['item'],
-        'price': price,
-        'note': item['note'],
-        'total_before_discount': item['total_before_discount'],
-        'discout': item['discout'],
-        'total': totalPrice,
-        'kot_type': item['kot_type'],
-        'o_id': item['o_id'],
-        'com_id': item['com_id'],
-      };
-    }).toList();
-
-    final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com/editorder.php'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(updatedItems),
-    );
-
-    if (response.statusCode == 200) {
-      print('Response: ${response.body}');
-    } else {
-      print('Error: ${response.statusCode}');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +115,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
               ),
             ),
             Text('Table no : ${widget.tabelNo}'),
-            Text('Order no : ${widget.orderId}'),
+            Text('Order no : ${widget.orderNo}'),
             Expanded(
               child: ListView.builder(
                 itemCount: orderItems.length,

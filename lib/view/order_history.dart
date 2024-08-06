@@ -176,7 +176,7 @@ class _PendingList extends StatelessWidget {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            'Order No: ${history.orderId}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                            'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -207,7 +207,8 @@ class _PendingList extends StatelessWidget {
                                       builder: (context) => ViewScreenPage(
                                         orderId: history.orderId,
                                         tabelNo: history.tabelNo,
-                                        orderDetails: [], // Pass any additional order details if needed
+                                        orderDetails: [],
+                                        orderNo: history.orderNo,
                                       ),
                                     ),
                                   );
@@ -240,6 +241,7 @@ class _PendingList extends StatelessWidget {
                                     MaterialPageRoute(
                                       builder: (context) => EditScreenPage(
                                         orderId: history.orderId,
+                                        orderNo: history.orderNo,
                                         tabelNo: history.tabelNo,
                                         orderDetails: [], // Pass any additional order details if needed
                                       ),
@@ -336,8 +338,8 @@ class _ReadyList extends StatelessWidget {
                                       builder: (context) => EditScreenPage(
                                         orderId: history.orderId,
                                         orderDetails: [],
-                                        tabelNo:
-                                            '', // Pass any additional order details if needed
+                                        tabelNo: '',
+                                        orderNo: history.orderId,
                                       ),
                                     ),
                                   );

@@ -23,7 +23,9 @@ class OrderHistoryScreen {
         MaterialPageRoute(
             builder: ((context) => const EditScreenPage(
                   orderDetails: [],
-                  orderId: '', tabelNo: '',
+                  orderId: '',
+                  tabelNo: '',
+                  orderNo: '',
                 ))));
   }
 }

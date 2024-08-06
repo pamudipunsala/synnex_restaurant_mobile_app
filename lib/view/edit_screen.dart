@@ -5,12 +5,14 @@ import 'package:http/http.dart' as http;
 
 class EditScreenPage extends StatefulWidget {
   final String orderId;
-  final String tabelNo; // Add this line
+  final String tabelNo;
+  final String orderNo;
 
   const EditScreenPage({
     Key? key,
     required this.orderId,
-    required this.tabelNo, // Add this line
+    required this.tabelNo,
+    required this.orderNo,
     required List orderDetails,
   }) : super(key: key);
 
