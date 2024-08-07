@@ -71,7 +71,6 @@ class _MenuScreenState extends State<MenuScreenPage> {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'category_id': '1',
-          'com_id': widget.comId,
         },
       );
 
