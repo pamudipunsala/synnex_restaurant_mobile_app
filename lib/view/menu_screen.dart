@@ -23,6 +23,7 @@ class MenuScreenPage extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreenPage> {
   List<dynamic> products = [];
   List<dynamic> filteredProducts = [];
+  List<dynamic> categories = [];
   MenuScreen menu = MenuScreen();
   String _selectedOption = 'Category';
   late int selectedRadioValue = -2;
@@ -32,6 +33,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   void initState() {
     super.initState();
     fetchProducts();
+    fetchCategories();
   }
 
   Future<void> fetchProducts() async {
@@ -59,6 +61,34 @@ class _MenuScreenState extends State<MenuScreenPage> {
       }
     } catch (e) {
       print('Error fetching products: $e');
+    }
+  }
+
+  Future<void> fetchCategories() async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'category_id': '1',
+          'com_id': widget.comId,
+        },
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        setState(() {
+          categories = json.decode(response.body);
+        });
+        print('Categories fetched successfully: $categories');
+      } else {
+        print('Failed to load categories, status code: ${response.statusCode}');
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      print('Error fetching categories: $e');
     }
   }
 
@@ -237,7 +267,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       int.parse(product['p_id']) == parentId,
                                   orElse: () => {'kot_type': 0})['kot_type'],
                               productName: null,
-                              userId: userId, oId: 1,
+                              userId: userId, oId: 1, vat: '',
                             ));
                           });
                           Navigator.of(context).pop();
@@ -307,30 +337,31 @@ class _MenuScreenState extends State<MenuScreenPage> {
               ),
               DropdownButton<String>(
                 value: _selectedOption,
-                items: const [
-                  DropdownMenuItem(
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedOption = newValue!;
+                    if (_selectedOption == 'Category') {
+                      filteredProducts = List.from(products);
+                    } else {
+                      filteredProducts = products
+                          .where((product) =>
+                              product['category'] == _selectedOption)
+                          .toList();
+                    }
+                  });
+                },
+                items: [
+                  const DropdownMenuItem<String>(
                     value: 'Category',
                     child: Text('Category'),
                   ),
-                  DropdownMenuItem(
-                    value: 'Breakfast',
-                    child: Text('Breakfast'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Lunch',
-                    child: Text('Lunch'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Dinner',
-                    child: Text('Dinner'),
-                  ),
+                  ...categories.map((category) {
+                    return DropdownMenuItem<String>(
+                      value: category['name'].toString(),
+                      child: Text(category['name'].toString()),
+                    );
+                  }).toList(),
                 ],
-                style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedOption = value!;
-                  });
-                },
               ),
               const SizedBox(height: 8),
               SizedBox(

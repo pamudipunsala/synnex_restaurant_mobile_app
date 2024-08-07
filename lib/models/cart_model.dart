@@ -27,7 +27,7 @@ class CartItem {
     required this.productId,
     required this.kotType,
     required this.userId,
-    required this.oId,
+    required this.oId, required String vat,
   });
 
   Map<String, dynamic> toJson() {

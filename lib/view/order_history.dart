@@ -112,7 +112,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
             indicatorColor: const Color.fromARGB(255, 255, 255, 255),
             tabs: const [
               Tab(text: 'Pendings'),
-              Tab(text: 'Ready'),
+              // Tab(text: 'Ready'),
             ],
           ),
         ),
@@ -165,7 +165,7 @@ class _PendingList extends StatelessWidget {
               onChanged: onSearch,
             ),
           ),
-          const Text('4 Pendings      2 Ready'),
+          // const Text('4 Pendings      2 Ready'),
           Expanded(
             child: orderHistory.isEmpty
                 ? const Center(child: Text('No pending orders found.'))
