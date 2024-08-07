@@ -159,7 +159,7 @@ class _CartScreenState extends State<CartScreenPage> {
       'delivery': 0,
       'waiter': widget.userId.toString(),
       'added_by': widget.userId.toString(),
-      'status': 0,
+      'status': 1,
       'order_note': allNotes,
       'o_type': 1,
       'customer': '1',
