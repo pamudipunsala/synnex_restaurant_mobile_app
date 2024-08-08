@@ -50,8 +50,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
+        List<dynamic> allProducts = json.decode(response.body);
         setState(() {
-          products = json.decode(response.body);
+          // Filter products by com_id
+          products = allProducts
+              .where((product) => product['com_id'] == widget.comId)
+              .toList();
           filteredProducts = List.from(products);
         });
         print('Products fetched successfully: $products');
@@ -79,7 +83,10 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          categories = json.decode(response.body);
+          categories = json
+              .decode(response.body)
+              .where((category) => category['com_id'] == widget.comId)
+              .toList();
         });
         print('Categories fetched successfully: $categories');
       } else {
@@ -364,11 +371,11 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: 'Category',
-                    child: Text('Category'),
+                    child: Text('Select a Category'),
                   ),
                   ...categories.map((category) {
                     return DropdownMenuItem<String>(
-                      value: category['name'].toString(),
+                      value: category['pc_id'].toString(),
                       child: Text(category['name'].toString()),
                     );
                   }).toList(),
@@ -445,7 +452,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
               builder: (context) => CartScreenPage(
                 cartItems: cartItems,
                 tableNo: widget.tableNo,
-                comId: widget.comId, // Pass comId
+                comId: widget.comId,
                 userId: widget.userId,
               ),
             ),
