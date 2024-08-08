@@ -147,9 +147,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
   void showVariationsDialog(BuildContext context, int parentId) {
     bool isChecked = false;
     int? selectedRadioInDialog = -1;
-    double selectedRadioPrice = 0.0;
-    double checkboxPrice = 200.0;
-    double totalPrice = 0.0;
+    double selectedRadioPrice = 0.00;
+    double checkboxPrice = 200.00;
+    double totalPrice = 0.00;
     int tableNo = widget.tableNo;
     String userId = widget.userId;
     String note = '';
@@ -177,7 +177,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   void updateTotalPrice() {
                     setState(() {
                       totalPrice = selectedRadioPrice +
-                          (isChecked ? checkboxPrice : 0.0);
+                          (isChecked ? checkboxPrice : 0.00);
                     });
                   }
 
@@ -194,7 +194,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                           for (var variation in variations)
                             RadioListTile(
                               title: Text(
-                                  '${variation['name'] ?? 'Unknown'}  Rs.${variation['regular_price'] ?? '0.00'}'),
+                                  '${variation['name'] ?? 'Unknown'}  Rs.${double.parse(variation['regular_price'] ?? '0.00').toStringAsFixed(2)}'),
                               value: int.parse(variation['p_id'] ?? '0'),
                               groupValue: selectedRadioInDialog,
                               onChanged: (val) {
@@ -223,7 +223,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               });
                             },
                           ),
-                          Text('Total: Rs.$totalPrice'),
+                          Text('Total: Rs.${totalPrice.toStringAsFixed(2)}'),
                           const SizedBox(height: 20),
                           TextField(
                             controller: menu.noteController,
@@ -427,7 +427,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${product['name']}\nRs.${product['regular_price']}',
+                              '${product['name']}\nRs.${double.parse(product['regular_price'] ?? '0.00').toStringAsFixed(2)}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                   fontSize: 10,

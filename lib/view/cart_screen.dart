@@ -227,6 +227,7 @@ class _CartScreenState extends State<CartScreenPage> {
               noteText = '';
             });
             saveNote();
+            Navigator.pop(context);
           } else {
             print(
                 'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');
@@ -320,7 +321,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ons - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price * item.quantity}',
+                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ons - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price.toStringAsFixed(2) * item.quantity}',
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -365,7 +366,7 @@ class _CartScreenState extends State<CartScreenPage> {
                   style: TextStyle(fontSize: 16.0),
                 ),
               ),
-            Text('Total Price = Rs. $totalPrice',
+            Text('Total: Rs.${totalPrice.toStringAsFixed(2)}',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
             ElevatedButton(

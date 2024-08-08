@@ -104,28 +104,124 @@ class _OrderHistoryState extends State<OrderHistoryPage>
               ),
             ],
           ),
-          bottom: TabBar(
-            controller: _tabController,
-            labelColor: const Color.fromARGB(255, 255, 255, 255),
-            unselectedLabelColor:
-                const Color.fromARGB(255, 255, 255, 255).withOpacity(0.6),
-            indicatorColor: const Color.fromARGB(255, 255, 255, 255),
-            tabs: const [
-              Tab(text: 'Pendings'),
-              // Tab(text: 'Ready'),
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFDAB3AC),
+                Color(0xFFF0E1DA),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: _filterHistoryItems,
+                ),
+              ),
+              Expanded(
+                child: _filteredHistoryItems.isEmpty
+                    ? const Center(child: Text('No orders found.'))
+                    : ListView.builder(
+                        itemCount: _filteredHistoryItems.length,
+                        itemBuilder: (context, index) {
+                          HistoryItem history = _filteredHistoryItems[index];
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                              ),
+                              subtitle: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 71, 4, 4), // Text color
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            12.0), // Rounded corners
+                                      ),
+                                      elevation: 8, // Shadow effect
+                                      textStyle: GoogleFonts.archivo(
+                                        textStyle: const TextStyle(
+                                          fontSize: 18, // Adjust font size
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ViewScreenPage(
+                                            orderId: history.orderId,
+                                            tabelNo: history.tabelNo,
+                                            orderDetails: [],
+                                            orderNo: history.orderNo,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('View'),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 71, 4, 4), // Text color
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            12.0), // Rounded corners
+                                      ),
+                                      elevation: 8, // Shadow effect
+                                      textStyle: GoogleFonts.archivo(
+                                        textStyle: const TextStyle(
+                                          fontSize: 18, // Adjust font size
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditScreenPage(
+                                            orderId: history.orderId,
+                                            orderNo: history.orderNo,
+                                            tabelNo: history.tabelNo,
+                                            orderDetails: [],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Text('Edit'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _PendingList(
-                orderHistory: _filteredHistoryItems,
-                onSearch: _filterHistoryItems),
-            _ReadyList(
-                orderHistory: _filteredHistoryItems,
-                onSearch: _filterHistoryItems),
-          ],
         ),
       ),
     );
