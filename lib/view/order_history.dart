@@ -72,11 +72,12 @@ class _OrderHistoryState extends State<OrderHistoryPage>
       if (_searchQuery.isEmpty) {
         _filteredHistoryItems = _originalHistoryItems;
       } else {
-        _filteredHistoryItems = _originalHistoryItems
-            .where((item) =>
-                item.orderId.contains(_searchQuery) ||
-                item.date.contains(_searchQuery))
-            .toList();
+        _filteredHistoryItems = _originalHistoryItems.where((item) {
+          return item.orderNo.contains(_searchQuery) ||
+              item.date.contains(_searchQuery) ||
+              item.tabelNo.contains(_searchQuery) ||
+              item.total_payable.contains(_searchQuery);
+        }).toList();
       }
     });
   }
