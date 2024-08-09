@@ -79,7 +79,7 @@ class _EditScreenState extends State<EditScreenPage> {
 
   void decrementQuantity(int itemId) {
     setState(() {
-      if (quantities[itemId] != null && quantities[itemId]! > 0) {
+      if (quantities[itemId] != null && quantities[itemId]! > 1) {
         quantities[itemId] = quantities[itemId]! - 1;
       }
     });
@@ -112,7 +112,7 @@ class _EditScreenState extends State<EditScreenPage> {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updatedItems),
     );
-
+    Navigator.pop(context);
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
     } else {
@@ -177,7 +177,7 @@ class _EditScreenState extends State<EditScreenPage> {
               ),
             ),
             Text('Table no : ${widget.tabelNo}'), // Display table number
-            Text('Order no : ${widget.orderId}'), // Display order number
+            Text('Order no : ${widget.orderNo}'), // Display order number
             Expanded(
               child: ListView.builder(
                 itemCount: orderItems.length,

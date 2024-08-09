@@ -310,7 +310,7 @@ class _CartScreenState extends State<CartScreenPage> {
                         widget.cartItems.removeAt(index);
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("${item.name} dismissed")),
+                        SnackBar(content: Text("Item Deleted Successfully")),
                       );
                     },
                     background:
@@ -407,7 +407,11 @@ class _CartScreenState extends State<CartScreenPage> {
                   ),
                 ),
               ),
-              onPressed: submitOrder,
+              onPressed: widget.cartItems.isNotEmpty
+                  ? () {
+                      submitOrder();
+                    }
+                  : null,
               child: Text('Place Order'),
             ),
             SizedBox(height: 18),
