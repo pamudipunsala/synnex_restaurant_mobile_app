@@ -103,8 +103,9 @@ class _CartScreenState extends State<CartScreenPage> {
         if (latestCode != null) {
           // Increment the latest code to generate the next order number
           int nextCode = int.parse(latestCode);
-          String nextOrderNo =
-              orderPref + nextCode.toString().padLeft(int.parse(gen), '0');
+          String nextOrderNo = orderPref +
+              widget.userId +
+              nextCode.toString().padLeft(int.parse(gen), '0');
 
           setState(() {
             orderNo = nextOrderNo;
@@ -138,6 +139,30 @@ class _CartScreenState extends State<CartScreenPage> {
     prefs.setString('noteText', noteText);
   }
 
+  Future<void> updateTableStatus() async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {
+          'tabel_no': widget.tableNo.toString(),
+          'com_id': widget.comId,
+        },
+      );
+
+      print('Update Table Status response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        print('Table status updated successfully.');
+      } else {
+        print('Failed to update table status.');
+        print('Response: ${response.body}');
+      }
+    } catch (e) {
+      print('Error updating table status: $e');
+    }
+  }
+
   Future<void> submitOrder() async {
     final comId = generatedComId ?? widget.comId;
     final currentDate = DateTime.now();
@@ -148,7 +173,7 @@ class _CartScreenState extends State<CartScreenPage> {
     final orderData = {
       'o_no': orderNo,
       'tabel_no': widget.tableNo.toString(),
-      'com_id': comId, // Ensure comId is passed here
+      'com_id': comId,
       'total_payable': totalPrice + (totalPrice * 0.05),
       'created_date': formattedDateTime,
       'total_discount': 0.00,
@@ -203,10 +228,6 @@ class _CartScreenState extends State<CartScreenPage> {
                   })
               .toList();
 
-          for (var item in itemsData) {
-            print('Item data: $item');
-          }
-
           print('Sending items data: $itemsData');
           final itemResponse = await http.post(
             Uri.parse('https://mobileapp.synnexcloudpos.com/addorder.php'),
@@ -219,6 +240,10 @@ class _CartScreenState extends State<CartScreenPage> {
 
           if (itemResponse.statusCode == 200) {
             print('Successfully inserted items');
+
+            // Update the table status here after successful order placement
+            await updateTableStatus();
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(result['message'])),
             );
