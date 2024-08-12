@@ -139,30 +139,6 @@ class _CartScreenState extends State<CartScreenPage> {
     prefs.setString('noteText', noteText);
   }
 
-  Future<void> updateTableStatus() async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://mobileapp.synnexcloudpos.com'),
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: {
-          'tabel_no': widget.tableNo.toString(),
-          'com_id': widget.comId,
-        },
-      );
-
-      print('Update Table Status response: ${response.body}');
-
-      if (response.statusCode == 200) {
-        print('Table status updated successfully.');
-      } else {
-        print('Failed to update table status.');
-        print('Response: ${response.body}');
-      }
-    } catch (e) {
-      print('Error updating table status: $e');
-    }
-  }
-
   Future<void> submitOrder() async {
     final comId = generatedComId ?? widget.comId;
     final currentDate = DateTime.now();
@@ -240,9 +216,6 @@ class _CartScreenState extends State<CartScreenPage> {
 
           if (itemResponse.statusCode == 200) {
             print('Successfully inserted items');
-
-            // Update the table status here after successful order placement
-            await updateTableStatus();
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(result['message'])),
