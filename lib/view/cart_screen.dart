@@ -382,6 +382,7 @@ class _CartScreenState extends State<CartScreenPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                
               ),
               onPressed: () {
                 cart.toMenu(context);

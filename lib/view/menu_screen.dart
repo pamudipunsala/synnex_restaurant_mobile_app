@@ -250,42 +250,95 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                     setState(() {
                                       final selectedProduct =
                                           products.firstWhere(
-                                              (product) =>
-                                                  int.parse(product['p_id']) ==
-                                                  parentId,
-                                              orElse: () => {
-                                                    'name': 'Unknown',
-                                                    'com_id': '',
-                                                    'p_id': 0
-                                                  });
+                                        (product) =>
+                                            int.parse(product['p_id']) ==
+                                            parentId,
+                                        orElse: () => {
+                                          'name': 'Unknown',
+                                          'com_id': '',
+                                          'p_id': 0
+                                        },
+                                      );
 
-                                      cartItems.add(CartItem(
-                                        name: selectedProduct['name'],
-                                        variation: variations.firstWhere(
-                                            (variation) =>
-                                                int.parse(variation['p_id']) ==
-                                                selectedRadioInDialog,
-                                            orElse: () =>
-                                                {'name': 'Unknown'})['name'],
-                                        quantity: 1,
-                                        addOns: isChecked ? 'Add Ones 1' : '',
-                                        price: totalPrice,
-                                        note: menu.noteController.text,
-                                        tableNo: tableNo,
-                                        finalNote: note,
-                                        comId: selectedProduct[
-                                            'com_id'], // Pass com_id
-                                        productId:
-                                            int.parse(selectedProduct['p_id']),
-                                        kotType: products.firstWhere(
+                                      final existingItemIndex =
+                                          cartItems.indexWhere(
+                                        (item) =>
+                                            item.name ==
+                                                selectedProduct['name'] &&
+                                            item.variation ==
+                                                variations.firstWhere(
+                                                  (variation) =>
+                                                      int.parse(
+                                                          variation['p_id']) ==
+                                                      selectedRadioInDialog,
+                                                  orElse: () =>
+                                                      {'name': 'Unknown'},
+                                                )['name'],
+                                      );
+
+                                      if (existingItemIndex != -1) {
+                                        // If item exists, update the quantity
+                                        cartItems[existingItemIndex] = CartItem(
+                                          name:
+                                              cartItems[existingItemIndex].name,
+                                          variation:
+                                              cartItems[existingItemIndex]
+                                                  .variation,
+                                          quantity: cartItems[existingItemIndex]
+                                                  .quantity +
+                                              1,
+                                          addOns: isChecked ? 'Add Ones 1' : '',
+                                          price: totalPrice,
+                                          note: menu.noteController.text,
+                                          tableNo: tableNo,
+                                          finalNote: note,
+                                          comId: selectedProduct[
+                                              'com_id'], // Pass com_id
+                                          productId: int.parse(
+                                              selectedProduct['p_id']),
+                                          kotType: products.firstWhere(
                                             (product) =>
                                                 int.parse(product['p_id']) ==
                                                 parentId,
-                                            orElse: () =>
-                                                {'kot_type': 0})['kot_type'],
-                                        productName: null,
-                                        userId: userId, oId: 1, vat: '',
-                                      ));
+                                            orElse: () => {'kot_type': 0},
+                                          )['kot_type'],
+                                          productName: null,
+                                          userId: userId,
+                                          oId: 1,
+                                          vat: '',
+                                        );
+                                      } else {
+                                        // If item does not exist, add new item
+                                        cartItems.add(CartItem(
+                                          name: selectedProduct['name'],
+                                          variation: variations.firstWhere(
+                                            (variation) =>
+                                                int.parse(variation['p_id']) ==
+                                                selectedRadioInDialog,
+                                            orElse: () => {'name': 'Unknown'},
+                                          )['name'],
+                                          quantity: 1,
+                                          addOns: isChecked ? 'Add Ones 1' : '',
+                                          price: totalPrice,
+                                          note: menu.noteController.text,
+                                          tableNo: tableNo,
+                                          finalNote: note,
+                                          comId: selectedProduct[
+                                              'com_id'], // Pass com_id
+                                          productId: int.parse(
+                                              selectedProduct['p_id']),
+                                          kotType: products.firstWhere(
+                                            (product) =>
+                                                int.parse(product['p_id']) ==
+                                                parentId,
+                                            orElse: () => {'kot_type': 0},
+                                          )['kot_type'],
+                                          productName: null,
+                                          userId: userId,
+                                          oId: 1,
+                                          vat: '',
+                                        ));
+                                      }
                                     });
                                     Navigator.of(context).pop();
                                   }
