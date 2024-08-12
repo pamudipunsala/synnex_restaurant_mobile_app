@@ -319,7 +319,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${item.name}\nTable No - ${item.tableNo} \nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ons - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${item.price.toStringAsFixed(2) * item.quantity}',
+                              '${item.name}\nTable No - ${item.tableNo}\nVariation - ${item.variation}\nQuantity - ${item.quantity}\nAdd Ons - ${item.addOns}\nNote - ${item.note}\nTotal Price - Rs. ${(item.price * item.quantity).toStringAsFixed(2)}',
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -382,7 +382,6 @@ class _CartScreenState extends State<CartScreenPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                
               ),
               onPressed: () {
                 cart.toMenu(context);
