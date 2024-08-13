@@ -1,12 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:restaurant_pos_mobile/view_models/splash_view_model.dart';
 
 class SplashScreenPage extends StatefulWidget {
   const SplashScreenPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
@@ -43,6 +43,12 @@ class _SplashScreenState extends State<SplashScreenPage>
 
   @override
   Widget build(BuildContext context) {
+    return Platform.isAndroid
+        ? _buildAndroidView(context)
+        : _buildIosView(context);
+  }
+
+  Widget _buildAndroidView(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -51,7 +57,36 @@ class _SplashScreenState extends State<SplashScreenPage>
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              // rgb(240, 225, 218)
+              Color(0xFFDAB3AC),
+              Color(0xFFF0E1DA),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: FadeTransition(
+            opacity: _animation,
+            child: Image.asset(
+              'assets/CinnamonLogo.png',
+              width: screenWidth * 0.98,
+              height: screenHeight * 0.98,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIosView(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return CupertinoPageScaffold(
+      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
               Color(0xFFDAB3AC),
               Color(0xFFF0E1DA),
             ],

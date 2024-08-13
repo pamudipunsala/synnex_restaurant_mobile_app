@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:restaurant_pos_mobile/view_models/dashboard_view_model.dart';
@@ -109,29 +111,37 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
-      floatingActionButton: Container(
-        width: screenWidth * 0.15, // Responsive width
-        height: screenWidth * 0.15, // Responsive height
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF470404),
-              Color(0xFFDAB3AC),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          shape: BoxShape.circle,
-        ),
-        child: FloatingActionButton(
-          backgroundColor: Colors.transparent,
-          foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          onPressed: () {
-            dashboard.toTables(context, widget.comId, widget.userId);
-          },
-          child: const Icon(Icons.add, size: 32), // Consistent icon size
-        ),
-      ),
+      floatingActionButton: Platform.isAndroid
+          ? Container(
+              width: screenWidth * 0.15, // Responsive width
+              height: screenWidth * 0.15, // Responsive height
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF470404),
+                    Color(0xFFDAB3AC),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: FloatingActionButton(
+                backgroundColor: Colors.transparent,
+                foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+                onPressed: () {
+                  dashboard.toTables(context, widget.comId, widget.userId);
+                },
+                child: const Icon(Icons.add, size: 32), // Consistent icon size
+              ),
+            )
+          : CupertinoButton(
+              color: Color.fromARGB(255, 71, 4, 4),
+              onPressed: () {
+                dashboard.toTables(context, widget.comId, widget.userId);
+              },
+              child: Icon(CupertinoIcons.add, size: 32),
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }

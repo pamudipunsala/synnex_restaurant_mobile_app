@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restaurant_pos_mobile/view_models/login_view_model.dart';
+import 'package:platform/platform.dart';
 
 class LoginScreenPage extends StatefulWidget {
   const LoginScreenPage({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class LoginScreenPage extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreenPage> {
   LoginScreen loginScreen = LoginScreen();
   final _formKey = GlobalKey<FormState>();
+  final Platform platform = const LocalPlatform(); // Initialize the platform
 
   Future<void> _login(BuildContext context) async {
     final username = loginScreen.usernameController.text;
@@ -118,7 +120,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'LogIn',
+                              platform.isIOS ? 'Log In' : 'Log In',
                               style: GoogleFonts.archivo(
                                 color: const Color.fromARGB(255, 71, 4, 4),
                                 fontSize: isSmallScreen ? 30 : 40,
@@ -221,7 +223,9 @@ class _LoginScreenState extends State<LoginScreenPage> {
                 ),
                 const SizedBox(height: 40.0),
                 Text(
-                  'Powered by Synnex IT Solutions 2024',
+                  platform.isIOS
+                      ? 'Powered by Synnex IT Solutions 2024 (iOS)'
+                      : 'Powered by Synnex IT Solutions 2024 (Android)',
                   style: GoogleFonts.archivo(
                     color: Colors.black54,
                     fontSize: isSmallScreen ? 12 : 14,
