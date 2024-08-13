@@ -11,7 +11,6 @@ class TableScreenPage extends StatefulWidget {
   const TableScreenPage({super.key, required this.comId, required this.userId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TableScreenState createState() => _TableScreenState();
 }
 
@@ -66,20 +65,15 @@ class _TableScreenState extends State<TableScreenPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Tables',
-              style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+        title: Text(
+          'Tables',
+          style: GoogleFonts.archivo(
+            textStyle: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ],
+          ),
         ),
       ),
       body: Container(
@@ -93,82 +87,81 @@ class _TableScreenState extends State<TableScreenPage> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                  fillColor: Color.fromARGB(255, 255, 255, 255),
+                ),
+                style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                onChanged: searchTables,
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                    hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                    fillColor: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                  onChanged: searchTables,
+                itemCount: filteredTables.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                      MediaQuery.of(context).size.width > 500 ? 3 : 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio:
+                      MediaQuery.of(context).size.width > 800 ? 1 : 1.2,
                 ),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                child: GridView.builder(
-                  itemCount: filteredTables.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 4,
-                    mainAxisSpacing: 4,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    final table = filteredTables[index];
+                itemBuilder: (BuildContext context, int index) {
+                  final table = filteredTables[index];
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuScreenPage(
-                              tableNo: int.parse(table['tabel_no']),
-                              comId: widget.comId,
-                              userId: widget.userId,
-                            ),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MenuScreenPage(
+                            tableNo: int.parse(table['tabel_no']),
+                            comId: widget.comId,
+                            userId: widget.userId,
                           ),
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 1,
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Table No: ${table['tabel_no']}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Color.fromARGB(255, 71, 4, 4)),
-                            ),
-                          ],
-                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Table No: ${table['tabel_no']}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 71, 4, 4)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

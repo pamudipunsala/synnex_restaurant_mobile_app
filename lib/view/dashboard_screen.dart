@@ -19,36 +19,24 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Dashboard',
-              style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+        title: Text(
+          'Dashboard',
+          style: GoogleFonts.archivo(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: screenWidth * 0.05, // Responsive font size
+              fontWeight: FontWeight.bold,
             ),
-          ],
+          ),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.all(8.0),
-        //     child: Image.asset(
-        //       'assets/img1.png',
-        //       width: 50,
-        //       height: 50,
-        //     ),
-        //   ),
-        // ],
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -72,9 +60,9 @@ class _DashboardPageState extends State<DashboardPage> {
                       'Restaurant Pos Mobile',
                       textAlign: TextAlign.center,
                       textStyle: GoogleFonts.archivo(
-                        textStyle: const TextStyle(
-                          color: Color.fromARGB(255, 71, 4, 4),
-                          fontSize: 30, // Adjust the font size as needed
+                        textStyle: TextStyle(
+                          color: const Color.fromARGB(255, 71, 4, 4),
+                          fontSize: screenWidth * 0.08, // Responsive font size
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -93,37 +81,37 @@ class _DashboardPageState extends State<DashboardPage> {
                   'Restaurant Pos Mobile',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.archivo(
-                    textStyle: const TextStyle(
-                      color: Color.fromARGB(255, 71, 4, 4),
-                      fontSize: 30, // Adjust the font size as needed
+                    textStyle: TextStyle(
+                      color: const Color.fromARGB(255, 71, 4, 4),
+                      fontSize: screenWidth * 0.08, // Responsive font size
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              const SizedBox(height: 60.0),
-              _build3DButton('Menu', () {
+              SizedBox(height: screenHeight * 0.07), // Responsive spacing
+              _build3DButton('Menu', screenWidth, screenHeight, () {
                 dashboard.toMenu(context, widget.comId, widget.userId);
               }),
-              const SizedBox(height: 16),
-              _build3DButton('Order History', () {
+              SizedBox(height: screenHeight * 0.02),
+              _build3DButton('Order History', screenWidth, screenHeight, () {
                 dashboard.toOrderHistory(context, widget.comId);
               }),
-              const SizedBox(height: 16),
-              _build3DButton('Profile', () {
+              SizedBox(height: screenHeight * 0.02),
+              _build3DButton('Profile', screenWidth, screenHeight, () {
                 dashboard.toProfile(context);
               }),
-              const SizedBox(height: 16),
-              _build3DButton('Logout', () {
+              SizedBox(height: screenHeight * 0.02),
+              _build3DButton('Logout', screenWidth, screenHeight, () {
                 dashboard.isLogout(context);
               }),
-              const SizedBox(height: 80.0),
+              SizedBox(height: screenHeight * 0.1), // Responsive spacing
             ],
           ),
         ),
       ),
       floatingActionButton: Container(
-        width: 70, // Adjust the width as needed
-        height: 70,
+        width: screenWidth * 0.15, // Responsive width
+        height: screenWidth * 0.15, // Responsive height
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -141,7 +129,7 @@ class _DashboardPageState extends State<DashboardPage> {
           onPressed: () {
             dashboard.toTables(context, widget.comId, widget.userId);
           },
-          child: const Icon(Icons.add),
+          child: const Icon(Icons.add, size: 32), // Consistent icon size
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
@@ -149,7 +137,8 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // Function to build 3D button
-  Widget _build3DButton(String text, VoidCallback onPressed) {
+  Widget _build3DButton(String text, double screenWidth, double screenHeight,
+      VoidCallback onPressed) {
     return Material(
       elevation: 8, // Shadow depth
       borderRadius: BorderRadius.circular(10),
@@ -171,9 +160,10 @@ class _DashboardPageState extends State<DashboardPage> {
             shadowColor: Colors.black.withOpacity(1),
             elevation: 8,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10), // Square corners
+              borderRadius: BorderRadius.circular(10),
             ),
-            fixedSize: const Size(220, 80),
+            fixedSize: Size(screenWidth * 0.6,
+                screenHeight * 0.1), // Responsive button size
           ).copyWith(
             backgroundColor: WidgetStateProperty.resolveWith<Color?>(
               (states) => Colors.transparent,
@@ -182,8 +172,11 @@ class _DashboardPageState extends State<DashboardPage> {
           onPressed: onPressed,
           child: Text(
             text,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.045, // Responsive font size
+            ),
           ),
         ),
       ),

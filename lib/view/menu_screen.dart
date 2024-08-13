@@ -357,6 +357,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
@@ -368,9 +371,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
             Text(
               'Menu',
               style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: screenWidth * 0.05,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -393,16 +396,22 @@ class _MenuScreenState extends State<MenuScreenPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(screenWidth * 0.02),
                 child: TextField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: Icon(Icons.search, size: screenWidth * 0.06),
                     border: OutlineInputBorder(),
-                    hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                    hintStyle: TextStyle(
+                      color: const Color.fromARGB(255, 71, 4, 4),
+                      fontSize: screenWidth * 0.04,
+                    ),
                     fillColor: Color.fromARGB(255, 255, 255, 255),
                   ),
-                  style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 71, 4, 4),
+                    fontSize: screenWidth * 0.04,
+                  ),
                   onChanged: searchProducts,
                 ),
               ),
@@ -433,8 +442,11 @@ class _MenuScreenState extends State<MenuScreenPage> {
                     );
                   }).toList(),
                 ],
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 71, 4, 4),
+                    fontSize: screenWidth * 0.04),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: screenHeight * 0.02),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.75,
                 child: GridView.builder(
@@ -474,16 +486,16 @@ class _MenuScreenState extends State<MenuScreenPage> {
                           children: [
                             Image.asset(
                               imageUrl,
-                              height: 70,
-                              width: 70,
+                              height: screenHeight * 0.08,
+                              width: screenWidth * 0.2,
                               fit: BoxFit.cover,
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: screenHeight * 0.01),
                             Text(
                               '${product['name']}\nRs.${double.parse(product['regular_price'] ?? '0.00').toStringAsFixed(2)}',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontSize: 10,
+                              style: TextStyle(
+                                  fontSize: screenHeight * 0.01,
                                   color: Color.fromARGB(255, 71, 4, 4)),
                             ),
                           ],

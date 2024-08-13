@@ -43,6 +43,8 @@ class _SplashScreenState extends State<SplashScreenPage>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       body: Container(
@@ -51,7 +53,7 @@ class _SplashScreenState extends State<SplashScreenPage>
             colors: [
               // rgb(240, 225, 218)
               Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA), // rgb(218, 179, 172)
+              Color(0xFFF0E1DA),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -61,10 +63,9 @@ class _SplashScreenState extends State<SplashScreenPage>
           child: FadeTransition(
             opacity: _animation,
             child: Image.asset(
-              'assets/CinnamonLogo.png', // Path to your image logo
-              width: 400, // Adjust the width as needed
-              height: 400, // Adjust the height as needed
-              // You can add more animations here if needed
+              'assets/CinnamonLogo.png',
+              width: screenWidth * 0.98,
+              height: screenHeight * 0.98,
             ),
           ),
         ),

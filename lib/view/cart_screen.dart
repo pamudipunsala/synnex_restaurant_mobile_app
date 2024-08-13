@@ -367,50 +367,60 @@ class _CartScreenState extends State<CartScreenPage> {
             Text('Total: Rs.${totalPrice.toStringAsFixed(2)}',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
-                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                ),
-                elevation: 8, // Shadow effect
-                textStyle: GoogleFonts.archivo(
-                  textStyle: const TextStyle(
-                    fontSize: 18, // Adjust font size
-                    fontWeight: FontWeight.bold,
+            SizedBox(
+              width: 150,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Rounded corners
+                  ),
+                  elevation: 8, // Shadow effect
+                  textStyle: GoogleFonts.archivo(
+                    textStyle: const TextStyle(
+                      fontSize: 18, // Adjust font size
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                onPressed: () {
+                  cart.toMenu(context);
+                },
+                child: Text('Add More'),
               ),
-              onPressed: () {
-                cart.toMenu(context);
-              },
-              child: Text('Add More'),
             ),
             SizedBox(height: 12),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
-                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                ),
-                elevation: 8, // Shadow effect
-                textStyle: GoogleFonts.archivo(
-                  textStyle: const TextStyle(
-                    fontSize: 18, // Adjust font size
-                    fontWeight: FontWeight.bold,
+            SizedBox(
+              width: 150,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
+                  padding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Rounded corners
+                  ),
+                  elevation: 8, // Shadow effect
+                  textStyle: GoogleFonts.archivo(
+                    textStyle: const TextStyle(
+                      fontSize: 18, // Adjust font size
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+                onPressed: widget.cartItems.isNotEmpty
+                    ? () {
+                        submitOrder();
+                      }
+                    : null,
+                child: Text('Place Order'),
               ),
-              onPressed: widget.cartItems.isNotEmpty
-                  ? () {
-                      submitOrder();
-                    }
-                  : null,
-              child: Text('Place Order'),
             ),
             SizedBox(height: 18),
           ],

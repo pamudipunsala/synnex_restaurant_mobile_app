@@ -28,9 +28,6 @@ class _LoginScreenState extends State<LoginScreenPage> {
       },
     );
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 
@@ -39,9 +36,6 @@ class _LoginScreenState extends State<LoginScreenPage> {
         final comId = responseData[0]['com_id'].toString();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('userId', userId.toString());
-
-        print('Stored userId: $userId');
-        print('Stored comId: $comId');
 
         loginScreen.toDashboard(context, comId, userId);
       } else {
@@ -74,6 +68,10 @@ class _LoginScreenState extends State<LoginScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Use MediaQuery to get the screen size and adjust layout accordingly
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -88,7 +86,10 @@ class _LoginScreenState extends State<LoginScreenPage> {
         ),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.symmetric(
+              horizontal: isSmallScreen ? 20.0 : size.width * 0.1,
+              vertical: size.height * 0.05,
+            ),
             child: Column(
               children: [
                 Container(
@@ -120,7 +121,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                               'LogIn',
                               style: GoogleFonts.archivo(
                                 color: const Color.fromARGB(255, 71, 4, 4),
-                                fontSize: 40,
+                                fontSize: isSmallScreen ? 30 : 40,
                               ),
                             ),
                             const SizedBox(height: 40.0),
@@ -129,7 +130,8 @@ class _LoginScreenState extends State<LoginScreenPage> {
                                 inputDecorationTheme:
                                     const InputDecorationTheme(
                                   labelStyle: TextStyle(
-                                      color: Color.fromARGB(255, 71, 4, 4)),
+                                    color: Color.fromARGB(255, 71, 4, 4),
+                                  ),
                                 ),
                               ),
                               child: TextFormField(
@@ -171,21 +173,16 @@ class _LoginScreenState extends State<LoginScreenPage> {
                             const SizedBox(height: 40.0),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors
-                                    .transparent, // Make the button background transparent
+                                backgroundColor: Colors.transparent,
                                 shadowColor: Colors.black.withOpacity(1),
-                                fixedSize: const Size(220, 70),
+                                fixedSize: Size(
+                                  isSmallScreen ? 180 : 220,
+                                  isSmallScreen ? 50 : 70,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Adjust this value to reduce the border radius
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                elevation:
-                                    0, // Set elevation to 0 to remove default shadow
-                              ).copyWith(
-                                backgroundColor:
-                                    WidgetStateProperty.resolveWith<Color?>(
-                                  (states) => Colors.transparent,
-                                ),
+                                elevation: 0,
                               ),
                               onPressed: () {
                                 if (_formKey.currentState?.validate() ??
@@ -203,19 +200,19 @@ class _LoginScreenState extends State<LoginScreenPage> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Match the border radius of the button
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Login',
                                   style: GoogleFonts.archivo(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 20,
+                                    color: const Color.fromARGB(
+                                        255, 255, 255, 255),
+                                    fontSize: isSmallScreen ? 18 : 20,
                                   ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -227,7 +224,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
                   'Powered by Synnex IT Solutions 2024',
                   style: GoogleFonts.archivo(
                     color: Colors.black54,
-                    fontSize: 14,
+                    fontSize: isSmallScreen ? 12 : 14,
                   ),
                 ),
               ],

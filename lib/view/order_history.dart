@@ -26,7 +26,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _fetchOrderHistory(); // Fetch order history and set state
+    _fetchOrderHistory();
   }
 
   @override
@@ -90,29 +90,21 @@ class _OrderHistoryState extends State<OrderHistoryPage>
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 71, 4, 4),
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                'Order History',
-                style: GoogleFonts.archivo(
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          title: Text(
+            'Order History',
+            style: GoogleFonts.archivo(
+              textStyle: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.width * 0.05,
+                fontWeight: FontWeight.bold,
               ),
-            ],
+            ),
           ),
         ),
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color(0xFFDAB3AC),
-                Color(0xFFF0E1DA),
-              ],
+              colors: [Color(0xFFDAB3AC), Color(0xFFF0E1DA)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -120,7 +112,10 @@ class _OrderHistoryState extends State<OrderHistoryPage>
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.05,
+                  vertical: MediaQuery.of(context).size.height * 0.02,
+                ),
                 child: TextField(
                   decoration: const InputDecoration(
                     hintText: 'Search...',
@@ -138,9 +133,19 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                         itemBuilder: (context, index) {
                           HistoryItem history = _filteredHistoryItems[index];
                           return Card(
+                            margin: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.05,
+                              vertical:
+                                  MediaQuery.of(context).size.height * 0.01,
+                            ),
                             child: ListTile(
                               title: Text(
                                 'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                                style: TextStyle(
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04,
+                                ),
                               ),
                               subtitle: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -148,18 +153,26 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 71, 4, 4), // Text color
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 20.0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0), // Rounded corners
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 71, 4, 4),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical:
+                                            MediaQuery.of(context).size.height *
+                                                0.015,
+                                        horizontal:
+                                            MediaQuery.of(context).size.width *
+                                                0.05,
                                       ),
-                                      elevation: 8, // Shadow effect
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
                                       textStyle: GoogleFonts.archivo(
-                                        textStyle: const TextStyle(
-                                          fontSize: 18, // Adjust font size
+                                        textStyle: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.045,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -179,22 +192,32 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                                     },
                                     child: const Text('View'),
                                   ),
-                                  const SizedBox(width: 10),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.02),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 71, 4, 4), // Text color
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 20.0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            12.0), // Rounded corners
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 71, 4, 4),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical:
+                                            MediaQuery.of(context).size.height *
+                                                0.015,
+                                        horizontal:
+                                            MediaQuery.of(context).size.width *
+                                                0.05,
                                       ),
-                                      elevation: 8, // Shadow effect
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
                                       textStyle: GoogleFonts.archivo(
-                                        textStyle: const TextStyle(
-                                          fontSize: 18, // Adjust font size
+                                        textStyle: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.045,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -212,7 +235,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                                         ),
                                       );
                                     },
-                                    child: Text('Edit'),
+                                    child: const Text('Edit'),
                                   ),
                                 ],
                               ),
@@ -224,233 +247,6 @@ class _OrderHistoryState extends State<OrderHistoryPage>
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _PendingList extends StatelessWidget {
-  final List<HistoryItem> orderHistory;
-  final ValueChanged<String> onSearch;
-
-  _PendingList({Key? key, required this.orderHistory, required this.onSearch})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFFDAB3AC),
-            Color(0xFFF0E1DA),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: onSearch,
-            ),
-          ),
-          // const Text('4 Pendings      2 Ready'),
-          Expanded(
-            child: orderHistory.isEmpty
-                ? const Center(child: Text('No pending orders found.'))
-                : ListView.builder(
-                    itemCount: orderHistory.length,
-                    itemBuilder: (context, index) {
-                      HistoryItem history = orderHistory[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                            'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(
-                                      255, 71, 4, 4), // Text color
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 20.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.0), // Rounded corners
-                                  ),
-                                  elevation: 8, // Shadow effect
-                                  textStyle: GoogleFonts.archivo(
-                                    textStyle: const TextStyle(
-                                      fontSize: 18, // Adjust font size
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ViewScreenPage(
-                                        orderId: history.orderId,
-                                        tabelNo: history.tabelNo,
-                                        orderDetails: [],
-                                        orderNo: history.orderNo,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Text('View'),
-                              ),
-                              const SizedBox(width: 10),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(
-                                      255, 71, 4, 4), // Text color
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 20.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.0), // Rounded corners
-                                  ),
-                                  elevation: 8, // Shadow effect
-                                  textStyle: GoogleFonts.archivo(
-                                    textStyle: const TextStyle(
-                                      fontSize: 18, // Adjust font size
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditScreenPage(
-                                        orderId: history.orderId,
-                                        orderNo: history.orderNo,
-                                        tabelNo: history.tabelNo,
-                                        orderDetails: [], // Pass any additional order details if needed
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Text('Edit'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReadyList extends StatelessWidget {
-  final List<HistoryItem> orderHistory;
-  final ValueChanged<String> onSearch;
-
-  _ReadyList({Key? key, required this.orderHistory, required this.onSearch})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFFDAB3AC),
-            Color(0xFFF0E1DA),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-              onChanged: onSearch,
-            ),
-          ),
-          const Text('4 Pendings      2 Ready'),
-          Expanded(
-            child: orderHistory.isEmpty
-                ? const Center(child: Text('No ready orders found.'))
-                : ListView.builder(
-                    itemCount: orderHistory.length,
-                    itemBuilder: (context, index) {
-                      HistoryItem history = orderHistory[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                            'Order No: ${history.orderId}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  backgroundColor: const Color.fromARGB(
-                                      255, 71, 4, 4), // Text color
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 24.0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        12.0), // Rounded corners
-                                  ),
-                                  elevation: 8, // Shadow effect
-                                  textStyle: GoogleFonts.archivo(
-                                    textStyle: const TextStyle(
-                                      fontSize: 18, // Adjust font size
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditScreenPage(
-                                        orderId: history.orderId,
-                                        orderDetails: [],
-                                        tabelNo: '',
-                                        orderNo: history.orderId,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Text('Edit'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
       ),
     );
   }

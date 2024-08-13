@@ -79,6 +79,18 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Scale text and element sizes based on screen width
+    final double fontSize = screenWidth * 0.05;
+    final double imageWidth = screenWidth * 0.4;
+    final double imageHeight = screenHeight * 0.2;
+    final double cardMargin = screenWidth * 0.05;
+    final double cardPadding = screenWidth * 0.05;
+    final double contentSpacing = screenHeight * 0.02;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
@@ -90,9 +102,9 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
             Text(
               'Profile',
               style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
+                textStyle: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -104,9 +116,8 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              // rgb(240, 225, 218)
               Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA), // rgb(218, 179, 172)
+              Color(0xFFF0E1DA),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -119,63 +130,63 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Profile Details',
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: fontSize,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 71, 4, 4),
+                            color: const Color.fromARGB(255, 71, 4, 4),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: contentSpacing),
                         Card(
                           elevation: 5,
-                          margin: const EdgeInsets.all(20),
+                          margin: EdgeInsets.all(cardMargin),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(20),
+                            padding: EdgeInsets.all(cardPadding),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Image.asset(
                                   'assets/img1.png',
-                                  width: 150,
-                                  height: 150,
+                                  width: imageWidth,
+                                  height: imageHeight,
                                 ),
-                                const SizedBox(height: 20),
+                                SizedBox(height: contentSpacing),
                                 Text(
                                   'User Name: ${userDetails!['u_name']}',
-                                  style: const TextStyle(fontSize: 14),
+                                  style: TextStyle(fontSize: fontSize * 0.7),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: contentSpacing),
                                 Text(
                                   'Email: ${userDetails!['user_email']}',
-                                  style: const TextStyle(fontSize: 14),
+                                  style: TextStyle(fontSize: fontSize * 0.7),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: contentSpacing),
                                 Text(
-                                  'Joined Date:${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(userDetails!['created_date']))}',
-                                  style: const TextStyle(fontSize: 14),
+                                  'Joined Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(userDetails!['created_date']))}',
+                                  style: TextStyle(fontSize: fontSize * 0.7),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        const SizedBox(height: 80),
+                        SizedBox(height: contentSpacing * 2),
                         Text(
                           'Powered by Synnex IT Solutions 2024',
                           style: GoogleFonts.archivo(
                             color: Colors.black54,
-                            fontSize: 14,
+                            fontSize: fontSize * 0.5,
                           ),
-                        ), // Additional space after the card item
+                        ),
                       ],
                     )
                   : Text(
                       errorMessage,
-                      style: const TextStyle(color: Colors.red, fontSize: 18),
+                      style: TextStyle(color: Colors.red, fontSize: fontSize),
                     ),
         ),
       ),
