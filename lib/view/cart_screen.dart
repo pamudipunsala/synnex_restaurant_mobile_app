@@ -7,7 +7,6 @@ import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -233,7 +232,7 @@ class _CartScreenState extends State<CartScreenPage> {
             print(
                 'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to insert items.')),
+              const SnackBar(content: Text('Failed to insert items.')),
             );
           }
         } else {
@@ -243,13 +242,13 @@ class _CartScreenState extends State<CartScreenPage> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit order')),
+          const SnackBar(content: Text('Failed to submit order')),
         );
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error submitting order')),
+        const SnackBar(content: Text('Error submitting order')),
       );
     }
   }
@@ -261,6 +260,8 @@ class _CartScreenState extends State<CartScreenPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: Platform.isIOS
@@ -331,11 +332,12 @@ class _CartScreenState extends State<CartScreenPage> {
                         widget.cartItems.removeAt(index);
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Item Deleted Successfully")),
+                        const SnackBar(
+                            content: Text("Item Deleted Successfully")),
                       );
                     },
-                    background:
-                        Container(color: Color.fromARGB(255, 170, 131, 128)),
+                    background: Container(
+                        color: const Color.fromARGB(255, 170, 131, 128)),
                     child: Card(
                       elevation: Platform.isIOS ? 4.0 : 2.0,
                       shape: Platform.isIOS
@@ -356,7 +358,7 @@ class _CartScreenState extends State<CartScreenPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 IconButton(
-                                  icon: Icon(Icons.remove),
+                                  icon: const Icon(Icons.remove),
                                   onPressed: () {
                                     setState(() {
                                       if (item.quantity > 1) {
@@ -368,7 +370,7 @@ class _CartScreenState extends State<CartScreenPage> {
                                 ),
                                 Text(item.quantity.toString()),
                                 IconButton(
-                                  icon: Icon(Icons.add),
+                                  icon: const Icon(Icons.add),
                                   onPressed: () {
                                     setState(() {
                                       item.quantity++;
@@ -388,20 +390,23 @@ class _CartScreenState extends State<CartScreenPage> {
             ),
             if (widget.cartItems.isNotEmpty && noteText.isNotEmpty)
               Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 color: Colors.grey[200],
                 child: Text(
                   'Note: $noteText',
-                  style: TextStyle(fontSize: 16.0),
+                  style: const TextStyle(fontSize: 16.0),
                 ),
               ),
             Text('Total: Rs.${totalPrice.toStringAsFixed(2)}',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-            SizedBox(height: 16),
+                style: const TextStyle(
+                    fontSize: 18.0, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Platform.isIOS
                   ? Container(
+                      width: screenWidth * 0.45,
+                      height: screenHeight * 0.06,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(
                             255, 71, 4, 4), // Custom button color
@@ -420,41 +425,44 @@ class _CartScreenState extends State<CartScreenPage> {
                         ),
                       ),
                     )
-                  : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor:
-                            Color.fromARGB(255, 71, 4, 4), // Text color
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 24.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Rounded corners
-                        ),
-                        elevation: 8, // Shadow effect
-                        textStyle: GoogleFonts.archivo(
-                          textStyle: const TextStyle(
-                            fontSize: 18, // Adjust font size
-                            fontWeight: FontWeight.bold,
+                  : SizedBox(
+                      width: screenWidth * 0.45,
+                      height: screenHeight * 0.06,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              const Color.fromARGB(255, 71, 4, 4), // Text color
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 24.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(12.0), // Rounded corners
+                          ),
+                          elevation: 8, // Shadow effect
+                          textStyle: GoogleFonts.archivo(
+                            textStyle: const TextStyle(
+                              fontSize: 18, // Adjust font size
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                        onPressed: () {
+                          cart.toMenu(context);
+                        },
+                        child: const Text('Add More'),
                       ),
-                      onPressed: () {
-                        cart.toMenu(context);
-                      },
-                      child: Text('Add More'),
                     ),
             ),
-            SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Platform.isIOS
                   ? Container(
+                      width: screenWidth * 0.45,
+                      height: screenHeight * 0.06,
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(
-                            255, 71, 4, 4), // Custom button color
-                        borderRadius:
-                            BorderRadius.circular(12.0), // Rounded corners
+                        color: const Color.fromARGB(255, 71, 4, 4),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: CupertinoButton(
                         padding: const EdgeInsets.symmetric(
@@ -462,38 +470,40 @@ class _CartScreenState extends State<CartScreenPage> {
                         onPressed: submitOrder,
                         child: const Text(
                           'Place Order',
-                          style: TextStyle(color: Colors.white), // Text color
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     )
-                  : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor:
-                            Color.fromARGB(255, 71, 4, 4), // Text color
-                        padding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 24.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Rounded corners
-                        ),
-                        elevation: 8, // Shadow effect
-                        textStyle: GoogleFonts.archivo(
-                          textStyle: const TextStyle(
-                            fontSize: 18, // Adjust font size
-                            fontWeight: FontWeight.bold,
+                  : SizedBox(
+                      width: screenWidth * 0.45,
+                      height: screenHeight * 0.06,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 24.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 8,
+                          textStyle: GoogleFonts.archivo(
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                        onPressed: widget.cartItems.isNotEmpty
+                            ? () {
+                                submitOrder();
+                              }
+                            : null,
+                        child: const Text('Place Order'),
                       ),
-                      onPressed: widget.cartItems.isNotEmpty
-                          ? () {
-                              submitOrder();
-                            }
-                          : null,
-                      child: Text('Place Order'),
                     ),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
           ],
         ),
       ),
