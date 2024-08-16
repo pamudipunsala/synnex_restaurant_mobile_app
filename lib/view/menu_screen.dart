@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io'; // Import this to use Platform-specific checks
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // Import this for Cupertino widgets
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
@@ -162,12 +164,14 @@ class _MenuScreenState extends State<MenuScreenPage> {
           future: fetchVariations(parentId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const AlertDialog(
-                content: Center(child: CircularProgressIndicator()),
+              return _buildPlatformSpecificAlertDialog(
+                content: const Center(child: CircularProgressIndicator()),
+                actions: [],
               );
             } else if (snapshot.hasError) {
-              return AlertDialog(
+              return _buildPlatformSpecificAlertDialog(
                 content: Text('Error: ${snapshot.error}'),
+                actions: [],
               );
             } else {
               var variations = snapshot.data!;
@@ -181,168 +185,173 @@ class _MenuScreenState extends State<MenuScreenPage> {
                     });
                   }
 
-                  return AlertDialog(
+                  return _buildPlatformSpecificAlertDialog(
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
                           const Text(
                             'Select the Variant',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 71, 4, 4)),
-                          ),
-                          for (var variation in variations)
-                            RadioListTile(
-                              title: Text(
-                                  '${variation['name'] ?? 'Unknown'}  Rs.${double.parse(variation['regular_price'] ?? '0.00').toStringAsFixed(2)}'),
-                              value: int.parse(variation['p_id'] ?? '0'),
-                              groupValue: selectedRadioInDialog,
-                              onChanged: (val) {
-                                setState(() {
-                                  selectedRadioInDialog = val;
-                                  selectedRadioPrice = double.parse(
-                                      variation['regular_price'] ?? '0.00');
-                                  updateTotalPrice();
-                                  isVariationSelected = true;
-                                });
-                              },
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 71, 4, 4),
+                              fontSize: 16,
                             ),
-                          const Text(
-                            'Add Ones',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
                           ),
-                          CheckboxListTile(
-                            controlAffinity: ListTileControlAffinity.leading,
-                            title: const Text('Add Ones 1  Rs.200.00'),
-                            value: isChecked,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                isChecked = value!;
-                                updateTotalPrice();
-                              });
-                            },
+                          Material(
+                            color: const Color.fromARGB(
+                                255, 255, 255, 255), // Transparent background
+                            child: Column(
+                              children: [
+                                for (var variation in variations)
+                                  RadioListTile(
+                                    title: Text(
+                                        '${variation['name'] ?? 'Unknown'}  Rs.${double.parse(variation['regular_price'] ?? '0.00').toStringAsFixed(2)}'),
+                                    value: int.parse(variation['p_id'] ?? '0'),
+                                    groupValue: selectedRadioInDialog,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        selectedRadioInDialog = val;
+                                        selectedRadioPrice = double.parse(
+                                            variation['regular_price'] ??
+                                                '0.00');
+                                        updateTotalPrice();
+                                        isVariationSelected = true;
+                                      });
+                                    },
+                                  ),
+                                const Text(
+                                  'Add Ones',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Color.fromARGB(255, 71, 4, 4)),
+                                ),
+                                CheckboxListTile(
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                  title: const Text('Add Ones 1  Rs.200.00'),
+                                  value: isChecked,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      isChecked = value!;
+                                      updateTotalPrice();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                           Text('Total: Rs.${totalPrice.toStringAsFixed(2)}'),
                           const SizedBox(height: 20),
-                          TextField(
-                            controller: menu.noteController,
-                            decoration: const InputDecoration(
-                              labelText: 'Add a note',
-                              border: OutlineInputBorder(),
+                          Material(
+                            child: TextField(
+                              controller: menu.noteController,
+                              decoration: const InputDecoration(
+                                labelText: 'Add a note',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                     actions: <Widget>[
-                      TextButton(
-                        child: const Text('Cancel'),
+                      _buildPlatformSpecificDialogButton(
+                        label: 'Cancel',
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed:
-                            isVariationSelected // Only enable the button if a variation is selected
-                                ? () {
-                                    setState(() {
-                                      final selectedProduct =
-                                          products.firstWhere(
+                      _buildPlatformSpecificDialogButton(
+                        label: 'OK',
+                        onPressed: isVariationSelected
+                            ? () {
+                                setState(() {
+                                  final selectedProduct = products.firstWhere(
+                                    (product) =>
+                                        int.parse(product['p_id']) == parentId,
+                                    orElse: () => {
+                                      'name': 'Unknown',
+                                      'com_id': '',
+                                      'p_id': 0
+                                    },
+                                  );
+
+                                  final existingItemIndex =
+                                      cartItems.indexWhere(
+                                    (item) =>
+                                        item.name == selectedProduct['name'] &&
+                                        item.variation ==
+                                            variations.firstWhere(
+                                              (variation) =>
+                                                  int.parse(
+                                                      variation['p_id']) ==
+                                                  selectedRadioInDialog,
+                                              orElse: () => {'name': 'Unknown'},
+                                            )['name'],
+                                  );
+
+                                  if (existingItemIndex != -1) {
+                                    cartItems[existingItemIndex] = CartItem(
+                                      name: cartItems[existingItemIndex].name,
+                                      variation: cartItems[existingItemIndex]
+                                          .variation,
+                                      quantity: cartItems[existingItemIndex]
+                                              .quantity +
+                                          1,
+                                      addOns: isChecked ? 'Add Ones 1' : '',
+                                      price: totalPrice,
+                                      note: menu.noteController.text,
+                                      tableNo: tableNo,
+                                      finalNote: note,
+                                      comId: selectedProduct['com_id'],
+                                      productId:
+                                          int.parse(selectedProduct['p_id']),
+                                      kotType: products.firstWhere(
                                         (product) =>
                                             int.parse(product['p_id']) ==
                                             parentId,
-                                        orElse: () => {
-                                          'name': 'Unknown',
-                                          'com_id': '',
-                                          'p_id': 0
-                                        },
-                                      );
-
-                                      final existingItemIndex =
-                                          cartItems.indexWhere(
-                                        (item) =>
-                                            item.name ==
-                                                selectedProduct['name'] &&
-                                            item.variation ==
-                                                variations.firstWhere(
-                                                  (variation) =>
-                                                      int.parse(
-                                                          variation['p_id']) ==
-                                                      selectedRadioInDialog,
-                                                  orElse: () =>
-                                                      {'name': 'Unknown'},
-                                                )['name'],
-                                      );
-
-                                      if (existingItemIndex != -1) {
-                                        // If item exists, update the quantity
-                                        cartItems[existingItemIndex] = CartItem(
-                                          name:
-                                              cartItems[existingItemIndex].name,
-                                          variation:
-                                              cartItems[existingItemIndex]
-                                                  .variation,
-                                          quantity: cartItems[existingItemIndex]
-                                                  .quantity +
-                                              1,
-                                          addOns: isChecked ? 'Add Ones 1' : '',
-                                          price: totalPrice,
-                                          note: menu.noteController.text,
-                                          tableNo: tableNo,
-                                          finalNote: note,
-                                          comId: selectedProduct[
-                                              'com_id'], // Pass com_id
-                                          productId: int.parse(
-                                              selectedProduct['p_id']),
-                                          kotType: products.firstWhere(
-                                            (product) =>
-                                                int.parse(product['p_id']) ==
-                                                parentId,
-                                            orElse: () => {'kot_type': 0},
-                                          )['kot_type'],
-                                          productName: null,
-                                          userId: userId,
-                                          oId: 1,
-                                          vat: '',
-                                        );
-                                      } else {
-                                        // If item does not exist, add new item
-                                        cartItems.add(CartItem(
-                                          name: selectedProduct['name'],
-                                          variation: variations.firstWhere(
-                                            (variation) =>
-                                                int.parse(variation['p_id']) ==
-                                                selectedRadioInDialog,
-                                            orElse: () => {'name': 'Unknown'},
-                                          )['name'],
-                                          quantity: 1,
-                                          addOns: isChecked ? 'Add Ones 1' : '',
-                                          price: totalPrice,
-                                          note: menu.noteController.text,
-                                          tableNo: tableNo,
-                                          finalNote: note,
-                                          comId: selectedProduct[
-                                              'com_id'], // Pass com_id
-                                          productId: int.parse(
-                                              selectedProduct['p_id']),
-                                          kotType: products.firstWhere(
-                                            (product) =>
-                                                int.parse(product['p_id']) ==
-                                                parentId,
-                                            orElse: () => {'kot_type': 0},
-                                          )['kot_type'],
-                                          productName: null,
-                                          userId: userId,
-                                          oId: 1,
-                                          vat: '',
-                                        ));
-                                      }
-                                    });
-                                    Navigator.of(context).pop();
+                                        orElse: () => {'kot_type': 0},
+                                      )['kot_type'],
+                                      productName: null,
+                                      userId: userId,
+                                      oId: 1,
+                                      vat: '',
+                                    );
+                                  } else {
+                                    cartItems.add(CartItem(
+                                      name: selectedProduct['name'],
+                                      variation: variations.firstWhere(
+                                        (variation) =>
+                                            int.parse(variation['p_id']) ==
+                                            selectedRadioInDialog,
+                                        orElse: () => {'name': 'Unknown'},
+                                      )['name'],
+                                      quantity: 1,
+                                      addOns: isChecked ? 'Add Ones 1' : '',
+                                      price: totalPrice,
+                                      note: menu.noteController.text,
+                                      tableNo: tableNo,
+                                      finalNote: note,
+                                      comId: selectedProduct['com_id'],
+                                      productId:
+                                          int.parse(selectedProduct['p_id']),
+                                      kotType: products.firstWhere(
+                                        (product) =>
+                                            int.parse(product['p_id']) ==
+                                            parentId,
+                                        orElse: () => {'kot_type': 0},
+                                      )['kot_type'],
+                                      productName: null,
+                                      userId: userId,
+                                      oId: 1,
+                                      vat: '',
+                                    ));
                                   }
-                                : null,
+                                });
+                                Navigator.of(context).pop();
+                              }
+                            : null,
                       ),
                     ],
                   );
@@ -355,6 +364,48 @@ class _MenuScreenState extends State<MenuScreenPage> {
     );
   }
 
+  Widget _buildPlatformSpecificAlertDialog({
+    required Widget content,
+    required List<Widget> actions,
+  }) {
+    if (Platform.isIOS) {
+      return CupertinoAlertDialog(
+        content: content,
+        actions: actions,
+      );
+    } else {
+      return AlertDialog(
+        content: content,
+        actions: actions,
+      );
+    }
+  }
+
+  Widget _buildPlatformSpecificDialogButton({
+    required String label,
+    required VoidCallback? onPressed,
+  }) {
+    bool isHovered = false;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return MouseRegion(
+          onEnter: (_) => setState(() => isHovered = true),
+          onExit: (_) => setState(() => isHovered = false),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor:
+                  isHovered ? Color(0xFFDAB3AC) : Colors.transparent,
+              foregroundColor: Colors.black, // Change text color if needed
+            ),
+            onPressed: onPressed,
+            child: Text(label),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -362,25 +413,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Menu',
-              style: GoogleFonts.archivo(
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: screenWidth * 0.05,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: _buildPlatformSpecificAppBar(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -528,5 +561,75 @@ class _MenuScreenState extends State<MenuScreenPage> {
         child: const Icon(Icons.shopping_cart),
       ),
     );
+  }
+
+  PreferredSizeWidget _buildPlatformSpecificAppBar() {
+    if (Platform.isIOS) {
+      return CupertinoNavigationBar(
+        middle: Text(
+          'Menu',
+          style: GoogleFonts.archivo(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+      );
+    } else {
+      return AppBar(
+        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+        title: Text(
+          'Menu',
+          style: GoogleFonts.archivo(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 20, // Adjust the size based on screenWidth if needed
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildPlatformSpecificSearchField() {
+    if (Platform.isIOS) {
+      return CupertinoTextField(
+        placeholder: 'Search...',
+        prefix: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Icon(CupertinoIcons.search,
+              size: 20), // Adjust icon size if needed
+        ),
+        onChanged: searchProducts,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: const Color.fromARGB(255, 71, 4, 4)),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        style: TextStyle(
+          color: const Color.fromARGB(255, 71, 4, 4),
+          fontSize: 16,
+        ),
+      );
+    } else {
+      return TextField(
+        decoration: InputDecoration(
+          hintText: 'Search...',
+          prefixIcon: const Icon(Icons.search, size: 20),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: const Color.fromARGB(255, 71, 4, 4)),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onChanged: searchProducts,
+      );
+    }
   }
 }

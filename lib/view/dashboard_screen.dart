@@ -136,7 +136,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             )
           : CupertinoButton(
-              color: Color.fromARGB(255, 71, 4, 4),
+              color: const Color.fromARGB(255, 71, 4, 4),
               onPressed: () {
                 dashboard.toTables(context, widget.comId, widget.userId);
               },

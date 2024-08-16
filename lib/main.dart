@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 17, 58, 133)),
+          seedColor: const Color.fromARGB(255, 71, 4, 4),
+        ),
         useMaterial3: true,
       ),
       home: const SplashScreenPage(),

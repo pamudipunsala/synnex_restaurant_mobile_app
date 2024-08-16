@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -200,7 +203,7 @@ class _CartScreenState extends State<CartScreenPage> {
                     'total': items.price * items.quantity,
                     'kot_type': items.kotType,
                     'o_id': oId,
-                    'com_id': comId, // Ensure comId is passed here
+                    'com_id': comId,
                   })
               .toList();
 
@@ -259,26 +262,46 @@ class _CartScreenState extends State<CartScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Shopping Cart',
-              style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      appBar: Platform.isIOS
+          ? AppBar(
+              backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Shopping Cart',
+                    style: GoogleFonts.archivo(
+                      textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : AppBar(
+              backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Shopping Cart',
+                    style: GoogleFonts.archivo(
+                      textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -314,6 +337,14 @@ class _CartScreenState extends State<CartScreenPage> {
                     background:
                         Container(color: Color.fromARGB(255, 170, 131, 128)),
                     child: Card(
+                      elevation: Platform.isIOS ? 4.0 : 2.0,
+                      shape: Platform.isIOS
+                          ? RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            )
+                          : RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
                       child: ListTile(
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -367,70 +398,104 @@ class _CartScreenState extends State<CartScreenPage> {
             Text('Total: Rs.${totalPrice.toStringAsFixed(2)}',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            SizedBox(
-              width: 150,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
-                  padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Rounded corners
-                  ),
-                  elevation: 8, // Shadow effect
-                  textStyle: GoogleFonts.archivo(
-                    textStyle: const TextStyle(
-                      fontSize: 18, // Adjust font size
-                      fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Platform.isIOS
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(
+                            255, 71, 4, 4), // Custom button color
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Rounded corners
+                      ),
+                      child: CupertinoButton(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        onPressed: () {
+                          cart.toMenu(context);
+                        },
+                        child: const Text(
+                          'Add More',
+                          style: TextStyle(color: Colors.white), // Text color
+                        ),
+                      ),
+                    )
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Color.fromARGB(255, 71, 4, 4), // Text color
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(12.0), // Rounded corners
+                        ),
+                        elevation: 8, // Shadow effect
+                        textStyle: GoogleFonts.archivo(
+                          textStyle: const TextStyle(
+                            fontSize: 18, // Adjust font size
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        cart.toMenu(context);
+                      },
+                      child: Text('Add More'),
                     ),
-                  ),
-                ),
-                onPressed: () {
-                  cart.toMenu(context);
-                },
-                child: Text('Add More'),
-              ),
             ),
             SizedBox(height: 12),
-            SizedBox(
-              width: 150,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Color.fromARGB(255, 71, 4, 4), // Text color
-                  padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Rounded corners
-                  ),
-                  elevation: 8, // Shadow effect
-                  textStyle: GoogleFonts.archivo(
-                    textStyle: const TextStyle(
-                      fontSize: 18, // Adjust font size
-                      fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Platform.isIOS
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(
+                            255, 71, 4, 4), // Custom button color
+                        borderRadius:
+                            BorderRadius.circular(12.0), // Rounded corners
+                      ),
+                      child: CupertinoButton(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        onPressed: submitOrder,
+                        child: const Text(
+                          'Place Order',
+                          style: TextStyle(color: Colors.white), // Text color
+                        ),
+                      ),
+                    )
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor:
+                            Color.fromARGB(255, 71, 4, 4), // Text color
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 24.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(12.0), // Rounded corners
+                        ),
+                        elevation: 8, // Shadow effect
+                        textStyle: GoogleFonts.archivo(
+                          textStyle: const TextStyle(
+                            fontSize: 18, // Adjust font size
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      onPressed: widget.cartItems.isNotEmpty
+                          ? () {
+                              submitOrder();
+                            }
+                          : null,
+                      child: Text('Place Order'),
                     ),
-                  ),
-                ),
-                onPressed: widget.cartItems.isNotEmpty
-                    ? () {
-                        submitOrder();
-                      }
-                    : null,
-                child: Text('Place Order'),
-              ),
             ),
             SizedBox(height: 18),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: submitOrder,
-        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        child: const Icon(Icons.check),
       ),
     );
   }

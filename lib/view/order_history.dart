@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io'; // Import for platform-specific checks
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // Import for iOS-specific widgets
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
@@ -84,6 +86,8 @@ class _OrderHistoryState extends State<OrderHistoryPage>
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Platform.isIOS;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -116,14 +120,18 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                   horizontal: MediaQuery.of(context).size.width * 0.05,
                   vertical: MediaQuery.of(context).size.height * 0.02,
                 ),
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Search...',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: _filterHistoryItems,
-                ),
+                child: isIOS
+                    ? CupertinoSearchTextField(
+                        onChanged: _filterHistoryItems,
+                      )
+                    : TextField(
+                        decoration: const InputDecoration(
+                          hintText: 'Search...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: _filterHistoryItems,
+                      ),
               ),
               Expanded(
                 child: _filteredHistoryItems.isEmpty
@@ -150,93 +158,161 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                               subtitle: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 71, 4, 4),
-                                      padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            MediaQuery.of(context).size.height *
+                                  isIOS
+                                      ? CupertinoButton(
+                                          color: const Color.fromARGB(
+                                              255, 71, 4, 4),
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
                                                 0.015,
-                                        horizontal:
-                                            MediaQuery.of(context).size.width *
+                                            horizontal: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
                                                 0.05,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                      textStyle: GoogleFonts.archivo(
-                                        textStyle: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.045,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ViewScreenPage(
-                                            orderId: history.orderId,
-                                            tabelNo: history.tabelNo,
-                                            orderDetails: [],
-                                            orderNo: history.orderNo,
                                           ),
+                                          child: const Text('View'),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewScreenPage(
+                                                  orderId: history.orderId,
+                                                  tabelNo: history.tabelNo,
+                                                  orderDetails: [],
+                                                  orderNo: history.orderNo,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 71, 4, 4),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.015,
+                                              horizontal: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.05,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                            ),
+                                            textStyle: GoogleFonts.archivo(
+                                              textStyle: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.045,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ViewScreenPage(
+                                                  orderId: history.orderId,
+                                                  tabelNo: history.tabelNo,
+                                                  orderDetails: [],
+                                                  orderNo: history.orderNo,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('View'),
                                         ),
-                                      );
-                                    },
-                                    child: const Text('View'),
-                                  ),
                                   SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.02),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 71, 4, 4),
-                                      padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            MediaQuery.of(context).size.height *
+                                  isIOS
+                                      ? CupertinoButton(
+                                          color: const Color.fromARGB(
+                                              255, 71, 4, 4),
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
                                                 0.015,
-                                        horizontal:
-                                            MediaQuery.of(context).size.width *
+                                            horizontal: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
                                                 0.05,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                      ),
-                                      textStyle: GoogleFonts.archivo(
-                                        textStyle: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.045,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => EditScreenPage(
-                                            orderId: history.orderId,
-                                            orderNo: history.orderNo,
-                                            tabelNo: history.tabelNo,
-                                            orderDetails: [],
                                           ),
+                                          child: const Text('Edit'),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditScreenPage(
+                                                  orderId: history.orderId,
+                                                  orderNo: history.orderNo,
+                                                  tabelNo: history.tabelNo,
+                                                  orderDetails: [],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 71, 4, 4),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.015,
+                                              horizontal: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.05,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                            ),
+                                            textStyle: GoogleFonts.archivo(
+                                              textStyle: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.045,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditScreenPage(
+                                                  orderId: history.orderId,
+                                                  orderNo: history.orderNo,
+                                                  tabelNo: history.tabelNo,
+                                                  orderDetails: [],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('Edit'),
                                         ),
-                                      );
-                                    },
-                                    child: const Text('Edit'),
-                                  ),
                                 ],
                               ),
                             ),

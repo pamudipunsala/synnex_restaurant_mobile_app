@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io' show Platform;
 
 class ViewScreenPage extends StatefulWidget {
   final String orderId;
@@ -12,7 +14,7 @@ class ViewScreenPage extends StatefulWidget {
     Key? key,
     required this.orderId,
     required this.orderNo,
-    required this.tabelNo, 
+    required this.tabelNo,
     required List orderDetails,
   }) : super(key: key);
 
@@ -22,6 +24,7 @@ class ViewScreenPage extends StatefulWidget {
 
 class _ViewScreenState extends State<ViewScreenPage> {
   List orderItems = [];
+  List filteredItems = [];
   Map<int, int> quantities = {};
 
   @override
@@ -36,10 +39,6 @@ class _ViewScreenState extends State<ViewScreenPage> {
       body: {'o_id': widget.orderId},
     );
 
-    print('Response status: ${response.statusCode}');
-    print('Response headers: ${response.headers}');
-    print('Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       try {
         if (response.headers['content-type']?.contains('application/json') ==
@@ -48,6 +47,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
           if (decodedBody is List) {
             setState(() {
               orderItems = decodedBody;
+              filteredItems = orderItems; // Initially, show all items
               quantities = {
                 for (var item in orderItems) item['item_id']: item['quantity']
               };
@@ -64,6 +64,29 @@ class _ViewScreenState extends State<ViewScreenPage> {
     } else {
       throw Exception('Failed to load order items');
     }
+  }
+
+  void _filterItems(String query) {
+    setState(() {
+      filteredItems = orderItems.where((item) {
+        return item['item']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['price']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['note']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['quantity']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase());
+      }).toList();
+    });
   }
 
   @override
@@ -103,28 +126,30 @@ class _ViewScreenState extends State<ViewScreenPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  // Logic for search functionality can be implemented here
-                },
-              ),
+              child: Platform.isIOS
+                  ? CupertinoSearchTextField(
+                      placeholder: 'Search...',
+                      onChanged: _filterItems,
+                    )
+                  : TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: _filterItems,
+                    ),
             ),
             Text('Table no : ${widget.tabelNo}'),
             Text('Order no : ${widget.orderNo}'),
             Expanded(
               child: ListView.builder(
-                itemCount: orderItems.length,
+                itemCount: filteredItems.length,
                 itemBuilder: (context, index) {
-                  var item = orderItems[index];
+                  var item = filteredItems[index];
                   int itemId = item['item_id'];
                   int quantity = quantities[itemId] ?? item['quantity'];
-                  double price = (item['price'] as num)
-                      .toDouble(); // Ensure price is a double
+                  double price = (item['price'] as num).toDouble();
                   double totalPrice = price * quantity;
 
                   return Card(

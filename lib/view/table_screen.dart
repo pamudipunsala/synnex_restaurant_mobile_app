@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -75,6 +77,9 @@ class _TableScreenState extends State<TableScreenPage> {
             ),
           ),
         ),
+        // Platform-specific back button for iOS
+        leading:
+            Platform.isIOS ? const CupertinoNavigationBarBackButton() : null,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -91,17 +96,26 @@ class _TableScreenState extends State<TableScreenPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                  hintStyle: TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                  fillColor: Color.fromARGB(255, 255, 255, 255),
-                ),
-                style: const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
-                onChanged: searchTables,
-              ),
+              child: Platform.isIOS
+                  ? CupertinoSearchTextField(
+                      onChanged: searchTables,
+                      placeholder: 'Search...',
+                      prefixIcon: const Icon(CupertinoIcons.search,
+                          color: Color.fromARGB(255, 71, 4, 4)),
+                    )
+                  : TextField(
+                      decoration: const InputDecoration(
+                        hintText: 'Search...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                        hintStyle:
+                            TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                        fillColor: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                      style:
+                          const TextStyle(color: Color.fromARGB(255, 71, 4, 4)),
+                      onChanged: searchTables,
+                    ),
             ),
             Expanded(
               child: GridView.builder(

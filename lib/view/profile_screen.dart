@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // Import Cupertino widgets
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 class ProfileScreenPage extends StatefulWidget {
   const ProfileScreenPage({Key? key}) : super(key: key);
@@ -93,25 +95,42 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Profile',
-              style: GoogleFonts.archivo(
-                textStyle: TextStyle(
-                  color: Colors.white,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
+      appBar: Platform.isIOS
+          ? PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: CupertinoNavigationBar(
+                middle: Text(
+                  'Profile',
+                  style: GoogleFonts.archivo(
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+                backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+              ),
+            )
+          : AppBar(
+              backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Profile',
+                    style: GoogleFonts.archivo(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -125,7 +144,9 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
         ),
         child: Center(
           child: isLoading
-              ? const CircularProgressIndicator()
+              ? (Platform.isIOS
+                  ? const CupertinoActivityIndicator()
+                  : const CircularProgressIndicator())
               : userDetails != null
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,

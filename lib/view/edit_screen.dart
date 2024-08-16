@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +24,7 @@ class EditScreenPage extends StatefulWidget {
 
 class _EditScreenState extends State<EditScreenPage> {
   List orderItems = [];
+  List filteredOrderItems = [];
   Map<int, int> quantities = {};
   Map<int, TextEditingController> noteControllers = {};
 
@@ -37,10 +40,6 @@ class _EditScreenState extends State<EditScreenPage> {
       body: {'o_id': widget.orderId},
     );
 
-    print('Response status: ${response.statusCode}');
-    print('Response headers: ${response.headers}');
-    print('Response body: ${response.body}');
-
     if (response.statusCode == 200) {
       try {
         if (response.headers['content-type']?.contains('application/json') ==
@@ -49,6 +48,7 @@ class _EditScreenState extends State<EditScreenPage> {
           if (decodedBody is List) {
             setState(() {
               orderItems = decodedBody;
+              filteredOrderItems = orderItems; // Initialize with all items
               quantities = {
                 for (var item in orderItems) item['item_id']: item['quantity']
               };
@@ -71,6 +71,29 @@ class _EditScreenState extends State<EditScreenPage> {
     }
   }
 
+  void _filterItems(String query) {
+    setState(() {
+      filteredOrderItems = orderItems.where((item) {
+        return item['item']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['price']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['note']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            item['quantity']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase());
+      }).toList();
+    });
+  }
+
   void incrementQuantity(int itemId) {
     setState(() {
       quantities[itemId] = (quantities[itemId] ?? 0) + 1;
@@ -86,7 +109,7 @@ class _EditScreenState extends State<EditScreenPage> {
   }
 
   Future<void> _submitChanges() async {
-    final updatedItems = orderItems.map((item) {
+    final updatedItems = filteredOrderItems.map((item) {
       final itemId = item['item_id'];
       final quantity = quantities[itemId] ?? item['quantity'];
       final price = (item['price'] as num).toDouble();
@@ -130,124 +153,180 @@ class _EditScreenState extends State<EditScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-        foregroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              'Edit Order',
-              style: GoogleFonts.archivo(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  // Logic for search functionality can be implemented here
-                },
-              ),
-            ),
-            Text('Table no : ${widget.tabelNo}'), // Display table number
-            Text('Order no : ${widget.orderNo}'), // Display order number
-            Expanded(
-              child: ListView.builder(
-                itemCount: orderItems.length,
-                itemBuilder: (context, index) {
-                  var item = orderItems[index];
-                  int itemId = item['item_id'];
-                  int quantity = quantities[itemId] ?? item['quantity'];
-                  double price = (item['price'] as num).toDouble();
-                  double totalPrice = price * quantity;
-
-                  return Card(
-                    child: ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Item: ${item['item']}'),
-                          TextField(
-                            controller: noteControllers[itemId],
-                            decoration: const InputDecoration(
-                              labelText: 'Note',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          Text('Quantity: $quantity'),
-                          Text('Price: ${price.toStringAsFixed(2)}'),
-                          Text('Total: ${totalPrice.toStringAsFixed(2)}'),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () => decrementQuantity(itemId),
-                              ),
-                              Text('$quantity'), // Display quantity
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () => incrementQuantity(itemId),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: const Color.fromARGB(255, 71, 4, 4),
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 20.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                elevation: 8,
-                textStyle: GoogleFonts.archivo(
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              middle: Text(
+                'Edit Order',
+                style: GoogleFonts.archivo(
                   textStyle: const TextStyle(
-                    fontSize: 18,
+                    color: Colors.white,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              onPressed: _submitChanges,
-              child: const Text('Save Changes'),
+              backgroundColor: const Color.fromARGB(255, 71, 4, 4),
             ),
-            const SizedBox(height: 20),
+            child: _buildBody(),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+              foregroundColor: const Color.fromARGB(255, 255, 255, 255),
+              title: Text(
+                'Edit Order',
+                style: GoogleFonts.archivo(
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            body: _buildBody(),
+          );
+  }
+
+  Widget _buildBody() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFFDAB3AC),
+            Color(0xFFF0E1DA),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Platform.isIOS
+                ? CupertinoSearchTextField(
+                    onChanged: _filterItems,
+                  )
+                : TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'Search...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: _filterItems,
+                  ),
+          ),
+          Text(
+            'Table no : ${widget.tabelNo}',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.none,
+            ),
+          ),
+          Text(
+            'Order no : ${widget.orderNo}',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              decoration: TextDecoration.none,
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredOrderItems.length,
+              itemBuilder: (context, index) {
+                var item = filteredOrderItems[index];
+                int itemId = item['item_id'];
+                int quantity = quantities[itemId] ?? item['quantity'];
+                double price = (item['price'] as num).toDouble();
+                double totalPrice = price * quantity;
+
+                return Card(
+                  child: ListTile(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Item: ${item['item']}'),
+                        Platform.isIOS
+                            ? CupertinoTextField(
+                                controller: noteControllers[itemId],
+                                placeholder: 'Note',
+                              )
+                            : TextField(
+                                controller: noteControllers[itemId],
+                                decoration: const InputDecoration(
+                                  labelText: 'Note',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                        Text('Quantity: $quantity'),
+                        Text('Price: ${price.toStringAsFixed(2)}'),
+                        Text('Total: ${totalPrice.toStringAsFixed(2)}'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () => decrementQuantity(itemId),
+                            ),
+                            Text('$quantity'),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () => incrementQuantity(itemId),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Platform.isIOS
+                ? CupertinoButton(
+                    color: const Color.fromARGB(255, 71, 4, 4),
+                    onPressed: _submitChanges,
+                    child: Text(
+                      'Save Changes',
+                      style: GoogleFonts.archivo(
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      elevation: 8,
+                      textStyle: GoogleFonts.archivo(
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    onPressed: _submitChanges,
+                    child: const Text('Save Changes'),
+                  ),
+          ),
+        ],
       ),
     );
   }
