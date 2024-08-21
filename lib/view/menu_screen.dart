@@ -198,8 +198,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             ),
                           ),
                           Material(
-                            color: const Color.fromARGB(
-                                255, 255, 255, 255), // Transparent background
+                            color: Color.fromARGB(220, 227, 227, 227),
                             child: Column(
                               children: [
                                 for (var variation in variations)
@@ -241,9 +240,18 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               ],
                             ),
                           ),
-                          Text('Total: Rs.${totalPrice.toStringAsFixed(2)}'),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Total: Rs.${totalPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 71, 4, 4),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(height: 20),
                           Material(
+                            color: Colors.white,
                             child: TextField(
                               controller: menu.noteController,
                               decoration: const InputDecoration(
@@ -412,7 +420,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(240, 225, 218, 255),
+      backgroundColor: const Color.fromARGB(255, 225, 255, 255),
       appBar: _buildPlatformSpecificAppBar(),
       body: Container(
         decoration: const BoxDecoration(
