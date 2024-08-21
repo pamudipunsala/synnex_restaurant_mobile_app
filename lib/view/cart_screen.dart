@@ -143,6 +143,7 @@ class _CartScreenState extends State<CartScreenPage> {
 
   Future<void> submitOrder() async {
     final comId = generatedComId ?? widget.comId;
+    final userId = widget.userId;
     final currentDate = DateTime.now();
     final formattedDateTime =
         '${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')} ${currentDate.hour.toString().padLeft(2, '0')}:${currentDate.minute.toString().padLeft(2, '0')}:${currentDate.second.toString().padLeft(2, '0')}';
@@ -227,7 +228,7 @@ class _CartScreenState extends State<CartScreenPage> {
               noteText = '';
             });
             saveNote();
-            Navigator.pop(context);
+            cart.toDashboard(context, comId, userId);
           } else {
             print(
                 'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');

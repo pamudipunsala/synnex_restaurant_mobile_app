@@ -64,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       textStyle: GoogleFonts.archivo(
                         textStyle: TextStyle(
                           color: const Color.fromARGB(255, 71, 4, 4),
-                          fontSize: screenWidth * 0.08, // Responsive font size
+                          fontSize: screenWidth * 0.08, 
                           fontWeight: FontWeight.bold,
                         ),
                       ),

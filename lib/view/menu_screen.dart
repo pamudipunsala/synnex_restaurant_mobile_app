@@ -569,7 +569,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
         middle: Text(
           'Menu',
           style: GoogleFonts.archivo(
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -577,6 +577,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
           ),
         ),
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+        leading: CupertinoNavigationBarBackButton(
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       );
     } else {
       return AppBar(
@@ -585,12 +591,18 @@ class _MenuScreenState extends State<MenuScreenPage> {
         title: Text(
           'Menu',
           style: GoogleFonts.archivo(
-            textStyle: TextStyle(
+            textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 20, // Adjust the size based on screenWidth if needed
               fontWeight: FontWeight.bold,
             ),
           ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       );
     }
@@ -600,10 +612,9 @@ class _MenuScreenState extends State<MenuScreenPage> {
     if (Platform.isIOS) {
       return CupertinoTextField(
         placeholder: 'Search...',
-        prefix: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(CupertinoIcons.search,
-              size: 20), // Adjust icon size if needed
+        prefix: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(CupertinoIcons.search, size: 20),
         ),
         onChanged: searchProducts,
         decoration: BoxDecoration(
@@ -611,8 +622,8 @@ class _MenuScreenState extends State<MenuScreenPage> {
           border: Border.all(color: const Color.fromARGB(255, 71, 4, 4)),
           borderRadius: BorderRadius.circular(5),
         ),
-        style: TextStyle(
-          color: const Color.fromARGB(255, 71, 4, 4),
+        style: const TextStyle(
+          color: Color.fromARGB(255, 71, 4, 4),
           fontSize: 16,
         ),
       );
@@ -622,7 +633,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
           hintText: 'Search...',
           prefixIcon: const Icon(Icons.search, size: 20),
           border: OutlineInputBorder(
-            borderSide: BorderSide(color: const Color.fromARGB(255, 71, 4, 4)),
+            borderSide: const BorderSide(color: Color.fromARGB(255, 71, 4, 4)),
             borderRadius: BorderRadius.circular(5),
           ),
           filled: true,

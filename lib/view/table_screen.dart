@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
@@ -16,7 +17,8 @@ class TableScreenPage extends StatefulWidget {
   _TableScreenState createState() => _TableScreenState();
 }
 
-class _TableScreenState extends State<TableScreenPage> {
+class _TableScreenState extends State<TableScreenPage>
+    with WidgetsBindingObserver {
   List<dynamic> tables = [];
   List<dynamic> filteredTables = [];
   TableScreen tableScreen = TableScreen();
@@ -24,7 +26,20 @@ class _TableScreenState extends State<TableScreenPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     fetchTables();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when this page is shown again after navigating back
+    fetchTables(); // Refresh the tables data
   }
 
   Future<void> fetchTables() async {
@@ -77,7 +92,6 @@ class _TableScreenState extends State<TableScreenPage> {
             ),
           ),
         ),
-        // Platform-specific back button for iOS
         leading:
             Platform.isIOS ? const CupertinoNavigationBarBackButton() : null,
       ),
