@@ -562,7 +562,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
                               },
                               errorBuilder: (BuildContext context, Object error,
                                   StackTrace? stackTrace) {
-                                return const Icon(Icons.error);
+                                return Image.asset(
+                                  'assets/NO-IMAGE.jpg',
+                                  height: screenHeight * 0.07,
+                                  width: screenWidth * 0.2,
+                                  fit: BoxFit.cover,
+                                );
                               },
                             ),
                             SizedBox(height: screenHeight * 0.01),

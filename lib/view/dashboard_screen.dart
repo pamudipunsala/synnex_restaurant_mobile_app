@@ -28,6 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 225, 218, 255),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromARGB(255, 71, 4, 4),
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: Text(
@@ -94,12 +95,12 @@ class _DashboardPageState extends State<DashboardPage> {
                     style: GoogleFonts.babylonica(
                       textStyle: TextStyle(
                         color: const Color.fromARGB(255, 71, 4, 4),
-                        fontSize: screenWidth * 0.1, 
+                        fontSize: screenWidth * 0.1,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                SizedBox(height: screenHeight * 0.07), 
+                SizedBox(height: screenHeight * 0.07),
                 _build3DButton('Menu', screenWidth, screenHeight, () {
                   dashboard.toMenu(context, widget.comId, widget.userId);
                 }),
