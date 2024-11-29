@@ -11,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryPage extends StatefulWidget {
-  const OrderHistoryPage({Key? key}) : super(key: key);
+  final String comId;
+  const OrderHistoryPage({Key? key, required this.comId}) : super(key: key);
 
   @override
   _OrderHistoryState createState() => _OrderHistoryState();
@@ -19,6 +20,7 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryState extends State<OrderHistoryPage>
     with SingleTickerProviderStateMixin {
+  List<dynamic> products = [];
   late TabController _tabController;
   List<HistoryItem> _originalHistoryItems = [];
   List<HistoryItem> _filteredHistoryItems = [];
@@ -52,14 +54,19 @@ class _OrderHistoryState extends State<OrderHistoryPage>
     if (response.statusCode == 200) {
       try {
         List<dynamic> jsonResponse = json.decode(response.body);
+        print('Parsed JSON: $jsonResponse');
         List<HistoryItem> historyItems = jsonResponse
             .map<HistoryItem>((order) => HistoryItem.fromJson(order))
             .toList();
+
         setState(() {
-          _originalHistoryItems = historyItems;
-          _filteredHistoryItems = historyItems;
+          _originalHistoryItems = historyItems
+              .where((item) => item.comId.toString() == widget.comId)
+              .toList();
+          _filteredHistoryItems = _originalHistoryItems;
         });
       } catch (e) {
+        print('Error parsing JSON: $e');
         throw Exception('Failed to parse order history data: $e');
       }
     } else {
@@ -70,15 +77,15 @@ class _OrderHistoryState extends State<OrderHistoryPage>
 
   void _filterHistoryItems(String query) {
     setState(() {
-      _searchQuery = query;
+      _searchQuery = query.toLowerCase();
       if (_searchQuery.isEmpty) {
         _filteredHistoryItems = _originalHistoryItems;
       } else {
         _filteredHistoryItems = _originalHistoryItems.where((item) {
-          return item.orderNo.contains(_searchQuery) ||
-              item.date.contains(_searchQuery) ||
-              item.tabelNo.contains(_searchQuery) ||
-              item.total_payable.contains(_searchQuery);
+          return item.orderNo.toLowerCase().contains(_searchQuery) ||
+              item.date.toLowerCase().contains(_searchQuery) ||
+              item.tabelNo.toString().contains(_searchQuery) ||
+              item.totalPayable.toString().contains(_searchQuery);
         }).toList();
       }
     });
@@ -96,7 +103,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
           foregroundColor: const Color.fromARGB(255, 255, 255, 255),
           title: Text(
             'Order History',
-            style: GoogleFonts.archivo(
+            style: GoogleFonts.bacasimeAntique(
               textStyle: TextStyle(
                 color: Colors.white,
                 fontSize: MediaQuery.of(context).size.width * 0.05,
@@ -106,13 +113,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
           ),
         ),
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFDAB3AC), Color(0xFFF0E1DA)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+          color: Color.fromARGB(255, 235, 226, 225),
           child: Column(
             children: [
               Padding(
@@ -141,6 +142,14 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                         itemBuilder: (context, index) {
                           HistoryItem history = _filteredHistoryItems[index];
                           return Card(
+                            color: Color.fromARGB(255, 250, 236, 234),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              side: const BorderSide(
+                                color: Color.fromARGB(255, 202, 158, 150),
+                                width: 5.0,
+                              ),
+                            ),
                             margin: EdgeInsets.symmetric(
                               horizontal:
                                   MediaQuery.of(context).size.width * 0.05,
@@ -149,7 +158,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                             ),
                             child: ListTile(
                               title: Text(
-                                'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.total_payable}',
+                                'Order No: ${history.orderNo}\nDate: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(history.date))}\nTable No: ${history.tabelNo}\nTotal: ${history.totalPayable.toStringAsFixed(2)}',
                                 style: TextStyle(
                                   fontSize:
                                       MediaQuery.of(context).size.width * 0.04,

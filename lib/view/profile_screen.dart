@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
               child: CupertinoNavigationBar(
                 middle: Text(
                   'Profile',
-                  style: GoogleFonts.archivo(
+                  style: GoogleFonts.bacasimeAntique(
                     textStyle: TextStyle(
                       color: Colors.white,
                       fontSize: fontSize,
@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
                 children: [
                   Text(
                     'Profile',
-                    style: GoogleFonts.archivo(
+                    style: GoogleFonts.bacasimeAntique(
                       textStyle: TextStyle(
                         color: Colors.white,
                         fontSize: fontSize,
@@ -132,16 +132,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
               ),
             ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: const Color.fromARGB(255, 235, 226, 225),
         child: Center(
           child: isLoading
               ? (Platform.isIOS
@@ -153,18 +144,25 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
                       children: [
                         Text(
                           'Profile Details',
-                          style: TextStyle(
-                            fontSize: fontSize,
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 71, 4, 4),
+                          style: GoogleFonts.bacasimeAntique(
+                            textStyle: const TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 71, 4, 4),
+                            ),
                           ),
                         ),
                         SizedBox(height: contentSpacing),
                         Card(
+                          color: Color.fromARGB(255, 250, 236, 234),
                           elevation: 5,
                           margin: EdgeInsets.all(cardMargin),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.0),
+                            side: const BorderSide(
+                              color: Color.fromARGB(255, 202, 158, 150),
+                              width: 5.0,
+                            ),
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(cardPadding),

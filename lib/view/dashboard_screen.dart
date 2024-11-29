@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,85 +32,94 @@ class _DashboardPageState extends State<DashboardPage> {
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: Text(
           'Dashboard',
-          style: GoogleFonts.archivo(
+          style: GoogleFonts.bacasimeAntique(
             textStyle: TextStyle(
               color: Colors.white,
-              fontSize: screenWidth * 0.05, // Responsive font size
+              fontSize: screenWidth * 0.05,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/img9.png'), // Background image
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (!_isAnimationFinished)
-                AnimatedTextKit(
-                  animatedTexts: [
-                    FadeAnimatedText(
-                      'Restaurant Pos Mobile',
-                      textAlign: TextAlign.center,
-                      textStyle: GoogleFonts.archivo(
-                        textStyle: TextStyle(
-                          color: const Color.fromARGB(255, 71, 4, 4),
-                          fontSize: screenWidth * 0.08, 
-                          fontWeight: FontWeight.bold,
+          // Blur effect
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+            child: Container(
+              color: Colors.black.withOpacity(0.3),
+            ),
+          ),
+          // Foreground content
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!_isAnimationFinished)
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      FadeAnimatedText(
+                        'Restaurant POS Mobile',
+                        textAlign: TextAlign.center,
+                        textStyle: GoogleFonts.babylonica(
+                          textStyle: TextStyle(
+                            color: const Color.fromARGB(255, 71, 4, 4),
+                            fontSize: screenWidth * 0.1,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
+                        duration: const Duration(milliseconds: 4000),
                       ),
-                      duration: const Duration(milliseconds: 4000),
-                    ),
-                  ],
-                  isRepeatingAnimation: false,
-                  onFinished: () {
-                    setState(() {
-                      _isAnimationFinished = true;
-                    });
-                  },
-                )
-              else
-                Text(
-                  'Restaurant Pos Mobile',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.archivo(
-                    textStyle: TextStyle(
-                      color: const Color.fromARGB(255, 71, 4, 4),
-                      fontSize: screenWidth * 0.08, // Responsive font size
-                      fontWeight: FontWeight.bold,
+                    ],
+                    isRepeatingAnimation: false,
+                    onFinished: () {
+                      setState(() {
+                        _isAnimationFinished = true;
+                      });
+                    },
+                  )
+                else
+                  Text(
+                    'Restaurant POS Mobile',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.babylonica(
+                      textStyle: TextStyle(
+                        color: const Color.fromARGB(255, 71, 4, 4),
+                        fontSize: screenWidth * 0.1, 
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              SizedBox(height: screenHeight * 0.07), // Responsive spacing
-              _build3DButton('Menu', screenWidth, screenHeight, () {
-                dashboard.toMenu(context, widget.comId, widget.userId);
-              }),
-              SizedBox(height: screenHeight * 0.02),
-              _build3DButton('Order History', screenWidth, screenHeight, () {
-                dashboard.toOrderHistory(context, widget.comId);
-              }),
-              SizedBox(height: screenHeight * 0.02),
-              _build3DButton('Profile', screenWidth, screenHeight, () {
-                dashboard.toProfile(context);
-              }),
-              SizedBox(height: screenHeight * 0.02),
-              _build3DButton('Logout', screenWidth, screenHeight, () {
-                dashboard.isLogout(context);
-              }),
-              SizedBox(height: screenHeight * 0.1), // Responsive spacing
-            ],
+                SizedBox(height: screenHeight * 0.07), 
+                _build3DButton('Menu', screenWidth, screenHeight, () {
+                  dashboard.toMenu(context, widget.comId, widget.userId);
+                }),
+                SizedBox(height: screenHeight * 0.02),
+                _build3DButton('Order History', screenWidth, screenHeight, () {
+                  dashboard.toOrderHistory(context, widget.comId);
+                }),
+                SizedBox(height: screenHeight * 0.02),
+                _build3DButton('Profile', screenWidth, screenHeight, () {
+                  dashboard.toProfile(context);
+                }),
+                SizedBox(height: screenHeight * 0.02),
+                _build3DButton('Logout', screenWidth, screenHeight, () {
+                  dashboard.isLogout(context);
+                }),
+                SizedBox(height: screenHeight * 0.1),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButton: Platform.isAndroid
           ? Container(
@@ -119,7 +129,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 gradient: LinearGradient(
                   colors: [
                     Color(0xFF470404),
-                    Color(0xFFDAB3AC),
+                    Color.fromRGBO(218, 179, 172, 1),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.19.0
   platform: ^3.1.0
   flutter_platform_widgets: ^7.0.1
+  win32: ^5.8.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,12 @@ flutter:
     - assets/img6.jpeg
     - assets/img7.jpeg
     - assets/img8.jpeg
+    - assets/img9.png
+    - assets/img10.jpg
+    - assets/img11.jpg
+    - assets/img12.jpg
+    - assets/img13.jpg
+    - assets/img14.jpg
     - assets/CinnamonLogo.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

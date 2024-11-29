@@ -6,9 +6,9 @@ import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 
 class ViewScreenPage extends StatefulWidget {
-  final String orderId;
+  final int orderId;
   final String orderNo;
-  final String tabelNo;
+  final int tabelNo;
 
   const ViewScreenPage({
     Key? key,
@@ -36,7 +36,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
   Future<void> _fetchOrderItems() async {
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com/OrderEdit.php'),
-      body: {'o_id': widget.orderId},
+      body: {'o_id': widget.orderId.toString()},
     );
 
     if (response.statusCode == 200) {
@@ -47,7 +47,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
           if (decodedBody is List) {
             setState(() {
               orderItems = decodedBody;
-              filteredItems = orderItems; // Initially, show all items
+              filteredItems = orderItems;
               quantities = {
                 for (var item in orderItems) item['item_id']: item['quantity']
               };
@@ -100,7 +100,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
           children: [
             Text(
               'View Order',
-              style: GoogleFonts.archivo(
+              style: GoogleFonts.bacasimeAntique(
                 textStyle: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -112,16 +112,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: Color.fromARGB(255, 235, 226, 225),
         child: Column(
           children: [
             Padding(
@@ -153,6 +144,14 @@ class _ViewScreenState extends State<ViewScreenPage> {
                   double totalPrice = price * quantity;
 
                   return Card(
+                    color: Color.fromARGB(255, 250, 236, 234),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                      side: const BorderSide(
+                        color: Color.fromARGB(255, 202, 158, 150),
+                        width: 5.0,
+                      ),
+                    ),
                     child: ListTile(
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io'; // Import this to use Platform-specific checks
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart'; // Import this for Cupertino widgets
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
@@ -54,7 +54,6 @@ class _MenuScreenState extends State<MenuScreenPage> {
       if (response.statusCode == 200) {
         List<dynamic> allProducts = json.decode(response.body);
         setState(() {
-          // Filter products by com_id
           products = allProducts
               .where((product) => product['com_id'] == widget.comId)
               .toList();
@@ -84,10 +83,11 @@ class _MenuScreenState extends State<MenuScreenPage> {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
+        final decodedResponse = json.decode(response.body);
         setState(() {
-          categories = json
-              .decode(response.body)
-              .where((category) => category['com_id'] == widget.comId)
+          categories = decodedResponse
+              .where(
+                  (category) => category['com_id'].toString() == widget.comId)
               .toList();
         });
         print('Categories fetched successfully: $categories');
@@ -121,7 +121,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
         Uri.parse('https://mobileapp.synnexcloudpos.com'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
-          'Variation_id': '1',
+          'Variation_id': '296',
         },
       );
 
@@ -132,7 +132,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 int.parse(variation['parent_id'] ?? '0') == parentId)
             .map((variation) => {
                   ...variation,
-                  'groupValue': int.parse(variation['p_id'] ?? '0'),
+                  'groupValue': variation['p_id'] ?? '0',
                 })
             .toList();
 
@@ -198,18 +198,20 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             ),
                           ),
                           Material(
-                            color: Color.fromARGB(220, 227, 227, 227),
+                            color: Color.fromARGB(255, 250, 236, 234),
                             child: Column(
                               children: [
                                 for (var variation in variations)
                                   RadioListTile(
                                     title: Text(
                                         '${variation['name'] ?? 'Unknown'}  Rs.${double.parse(variation['regular_price'] ?? '0.00').toStringAsFixed(2)}'),
-                                    value: int.parse(variation['p_id'] ?? '0'),
+                                    value: int.tryParse(
+                                            variation['p_id'].toString()) ??
+                                        0,
                                     groupValue: selectedRadioInDialog,
                                     onChanged: (val) {
                                       setState(() {
-                                        selectedRadioInDialog = val;
+                                        selectedRadioInDialog = val as int;
                                         selectedRadioPrice = double.parse(
                                             variation['regular_price'] ??
                                                 '0.00');
@@ -276,8 +278,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                             ? () {
                                 setState(() {
                                   final selectedProduct = products.firstWhere(
-                                    (product) =>
-                                        int.parse(product['p_id']) == parentId,
+                                    (product) => product['p_id'] == parentId,
                                     orElse: () => {
                                       'name': 'Unknown',
                                       'com_id': '',
@@ -292,9 +293,11 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                         item.variation ==
                                             variations.firstWhere(
                                               (variation) =>
-                                                  int.parse(
-                                                      variation['p_id']) ==
-                                                  selectedRadioInDialog,
+                                                  variation['p_id'] != null &&
+                                                  int.tryParse(variation['p_id']
+                                                              ?.toString() ??
+                                                          '') ==
+                                                      selectedRadioInDialog,
                                               orElse: () => {'name': 'Unknown'},
                                             )['name'],
                                   );
@@ -313,14 +316,18 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       tableNo: tableNo,
                                       finalNote: note,
                                       comId: selectedProduct['com_id'],
-                                      productId:
-                                          int.parse(selectedProduct['p_id']),
-                                      kotType: products.firstWhere(
-                                        (product) =>
-                                            int.parse(product['p_id']) ==
-                                            parentId,
-                                        orElse: () => {'kot_type': 0},
-                                      )['kot_type'],
+                                      productId: selectedProduct['p_id'],
+                                      kotType: products
+                                              .firstWhere(
+                                                (product) =>
+                                                    product['p_id'] != null &&
+                                                    product['p_id']
+                                                            .toString() ==
+                                                        parentId.toString(),
+                                                orElse: () => {'kot_type': 0},
+                                              )['kot_type']
+                                              ?.toString() ??
+                                          '0',
                                       productName: null,
                                       userId: userId,
                                       oId: 1,
@@ -331,8 +338,10 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       name: selectedProduct['name'],
                                       variation: variations.firstWhere(
                                         (variation) =>
-                                            int.parse(variation['p_id']) ==
-                                            selectedRadioInDialog,
+                                            variation['p_id'] != null &&
+                                            int.tryParse(variation['p_id']
+                                                    .toString()) ==
+                                                selectedRadioInDialog,
                                         orElse: () => {'name': 'Unknown'},
                                       )['name'],
                                       quantity: 1,
@@ -342,14 +351,16 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       tableNo: tableNo,
                                       finalNote: note,
                                       comId: selectedProduct['com_id'],
-                                      productId:
-                                          int.parse(selectedProduct['p_id']),
-                                      kotType: products.firstWhere(
-                                        (product) =>
-                                            int.parse(product['p_id']) ==
-                                            parentId,
-                                        orElse: () => {'kot_type': 0},
-                                      )['kot_type'],
+                                      productId: selectedProduct['p_id'],
+                                      kotType: products
+                                          .firstWhere(
+                                            (product) =>
+                                                product['p_id'] != null &&
+                                                product['p_id'].toString() ==
+                                                    parentId.toString(),
+                                            orElse: () => {'kot_type': 0},
+                                          )['kot_type']
+                                          .toString(),
                                       productName: null,
                                       userId: userId,
                                       oId: 1,
@@ -420,19 +431,10 @@ class _MenuScreenState extends State<MenuScreenPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 225, 255, 255),
+      backgroundColor: Colors.white,
       appBar: _buildPlatformSpecificAppBar(),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: Color.fromARGB(255, 235, 226, 225),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -478,10 +480,12 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   ),
                   ...categories.map((category) {
                     return DropdownMenuItem<String>(
-                      value: category['pc_id'].toString(),
-                      child: Text(category['name'].toString()),
+                      value: category['pc_id']
+                          .toString(), // Ensure 'pc_id' is not null
+                      child: Text(category['name']?.toString() ??
+                          'Unnamed Category'), // Handle null values
                     );
-                  }).toList(),
+                  }).toList()
                 ],
                 style: TextStyle(
                     color: const Color.fromARGB(255, 71, 4, 4),
@@ -500,19 +504,24 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   ),
                   itemBuilder: (BuildContext context, int index) {
                     final product = filteredProducts[index];
-                    final imageUrl = '${product['image_path']}';
+                    final imageUrl =
+                        'https://mobileapp.synnexcloudpos.com/${product['image_path']}';
 
                     return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
                       onTap: () {
-                        showVariationsDialog(
-                            context, int.parse(product['p_id']));
+                        showVariationsDialog(context, product['p_id']);
                       },
                       child: Container(
                         margin: const EdgeInsets.all(10.0),
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Color.fromARGB(255, 250, 236, 234),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 202, 158, 150),
+                            width: 5.0,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
@@ -525,19 +534,45 @@ class _MenuScreenState extends State<MenuScreenPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
+                            Image.network(
                               imageUrl,
-                              height: screenHeight * 0.08,
+                              height: screenHeight * 0.07,
                               width: screenWidth * 0.2,
                               fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
+                                    ),
+                                  );
+                                }
+                              },
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                return const Icon(Icons.error);
+                              },
                             ),
                             SizedBox(height: screenHeight * 0.01),
                             Text(
                               '${product['name']}\nRs.${double.parse(product['regular_price'] ?? '0.00').toStringAsFixed(2)}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontSize: screenHeight * 0.01,
-                                  color: Color.fromARGB(255, 71, 4, 4)),
+                                fontSize: screenHeight * 0.01,
+                                color: const Color.fromARGB(255, 71, 4, 4),
+                              ),
                             ),
                           ],
                         ),
@@ -576,7 +611,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
       return CupertinoNavigationBar(
         middle: Text(
           'Menu',
-          style: GoogleFonts.archivo(
+          style: GoogleFonts.bacasimeAntique(
             textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -598,7 +633,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: Text(
           'Menu',
-          style: GoogleFonts.archivo(
+          style: GoogleFonts.bacasimeAntique(
             textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 20, // Adjust the size based on screenWidth if needed

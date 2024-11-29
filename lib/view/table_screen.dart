@@ -38,8 +38,7 @@ class _TableScreenState extends State<TableScreenPage>
 
   @override
   void didPopNext() {
-    // Called when this page is shown again after navigating back
-    fetchTables(); // Refresh the tables data
+    fetchTables();
   }
 
   Future<void> fetchTables() async {
@@ -84,7 +83,7 @@ class _TableScreenState extends State<TableScreenPage>
         foregroundColor: const Color.fromARGB(255, 255, 255, 255),
         title: Text(
           'Tables',
-          style: GoogleFonts.archivo(
+          style: GoogleFonts.bacasimeAntique(
             textStyle: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -96,16 +95,7 @@ class _TableScreenState extends State<TableScreenPage>
             Platform.isIOS ? const CupertinoNavigationBarBackButton() : null,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: Color.fromARGB(255, 235, 226, 225),
         child: Column(
           children: [
             Padding(
@@ -152,7 +142,9 @@ class _TableScreenState extends State<TableScreenPage>
                         context,
                         MaterialPageRoute(
                           builder: (context) => MenuScreenPage(
-                            tableNo: int.parse(table['tabel_no']),
+                            tableNo: table['tabel_no'] is String
+                                ? int.parse(table['tabel_no'])
+                                : table['tabel_no'],
                             comId: widget.comId,
                             userId: widget.userId,
                           ),
@@ -161,8 +153,13 @@ class _TableScreenState extends State<TableScreenPage>
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 250, 236, 234),
                         borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                              255, 202, 158, 150), // Border color
+                          width: 5, // Border width (adjust as needed)
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),

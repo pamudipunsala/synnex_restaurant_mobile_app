@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class LoginScreenPage extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreenPage> {
   LoginScreen loginScreen = LoginScreen();
   final _formKey = GlobalKey<FormState>();
-  final Platform platform = const LocalPlatform(); // Initialize the platform
+  final Platform platform = const LocalPlatform();
 
   Future<void> _login(BuildContext context) async {
     final username = loginScreen.usernameController.text;
@@ -91,171 +92,155 @@ class _LoginScreenState extends State<LoginScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery to get the screen size and adjust layout accordingly
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: Stack(
+        children: [
+          Image.asset(
+            'assets/img8.jpeg', 
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isSmallScreen ? 20.0 : size.width * 0.1,
-              vertical: size.height * 0.05,
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+            child: Container(
+              color: const Color.fromARGB(255, 113, 32, 32).withOpacity(0.2),
             ),
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 20.0 : size.width * 0.1,
+                vertical: size.height * 0.05,
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(
+                          0.4), // Semi-transparent white background
                       borderRadius: BorderRadius.circular(15.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    elevation: 8.0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              platform.isIOS ? 'Log In' : 'Log In',
-                              style: GoogleFonts.archivo(
-                                color: const Color.fromARGB(255, 71, 4, 4),
-                                fontSize: isSmallScreen ? 30 : 40,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                          15.0), // Ensures blur doesn't leak out
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          elevation: 8.0,
+                          color: Colors.white
+                              .withOpacity(0.7), // Adjust transparency
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    platform.isIOS ? 'Log In' : 'Log In',
+                                    style: GoogleFonts.archivo(
+                                      color:
+                                          const Color.fromARGB(255, 71, 4, 4),
+                                      fontSize: isSmallScreen ? 30 : 40,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 40.0),
+                                  // Username field
+                                  TextFormField(
+                                    controller: loginScreen.usernameController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'UserName or UserEmail',
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter Your Username';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20.0),
+                                  // Password field
+                                  TextFormField(
+                                    controller: loginScreen.passwordController,
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Password',
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter Your Password';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 40.0),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(
+                                          0xFF470404), // Same base color
+                                      fixedSize: Size(
+                                        isSmallScreen ? 180 : 220,
+                                        isSmallScreen ? 50 : 70,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            8.0), // Slightly rounded corners
+                                      ),
+                                      elevation:
+                                          2, // Slight shadow for a classic button look
+                                    ),
+                                    onPressed: () {
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        _login(context);
+                                      }
+                                    },
+                                    child: Text(
+                                      'Login',
+                                      style: GoogleFonts.archivo(
+                                        color: Colors.white, // Keep text white
+                                        fontSize: isSmallScreen ? 18 : 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 40.0),
-                            Theme(
-                              data: Theme.of(context).copyWith(
-                                inputDecorationTheme:
-                                    const InputDecorationTheme(
-                                  labelStyle: TextStyle(
-                                    color: Color.fromARGB(255, 71, 4, 4),
-                                  ),
-                                ),
-                              ),
-                              child: TextFormField(
-                                controller: loginScreen.usernameController,
-                                decoration: const InputDecoration(
-                                  labelText: 'UserName or UserEmail',
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Your Username';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 20.0),
-                            Theme(
-                              data: Theme.of(context).copyWith(
-                                inputDecorationTheme: InputDecorationTheme(
-                                  labelStyle: GoogleFonts.archivo(
-                                    color: const Color.fromARGB(255, 71, 4, 4),
-                                  ),
-                                ),
-                              ),
-                              child: TextFormField(
-                                controller: loginScreen.passwordController,
-                                obscureText: true,
-                                decoration: const InputDecoration(
-                                  labelText: 'Password',
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Your Password';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 40.0),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.black.withOpacity(1),
-                                fixedSize: Size(
-                                  isSmallScreen ? 180 : 220,
-                                  isSmallScreen ? 50 : 70,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                elevation: 0,
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState?.validate() ??
-                                    false) {
-                                  _login(context);
-                                }
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF470404),
-                                      Color(0xFFDAB3AC),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Login',
-                                  style: GoogleFonts.archivo(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    fontSize: isSmallScreen ? 18 : 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 40.0),
-                Text(
-                  platform.isIOS
-                      ? 'Powered by Synnex IT Solutions 2024 (iOS)'
-                      : 'Powered by Synnex IT Solutions 2024 (Android)',
-                  style: GoogleFonts.archivo(
-                    color: Colors.black54,
-                    fontSize: isSmallScreen ? 12 : 14,
+                  const SizedBox(height: 40.0),
+                  Text(
+                    platform.isIOS
+                        ? 'Powered by Synnex IT Solutions 2024 (iOS)'
+                        : 'Powered by Synnex IT Solutions 2024 (Android)',
+                    style: GoogleFonts.archivo(
+                      color: const Color.fromARGB(137, 249, 248, 248),
+                      fontSize: isSmallScreen ? 12 : 14,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

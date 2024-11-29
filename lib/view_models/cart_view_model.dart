@@ -22,6 +22,6 @@ class CartScreen {
 
   void toOrderHistory(BuildContext context) {
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const OrderHistoryPage())));
+        MaterialPageRoute(builder: ((context) => const OrderHistoryPage(comId: '',))));
   }
 }

@@ -98,16 +98,20 @@ class _CartScreenState extends State<CartScreenPage> {
         final latestCode = data['code'];
         final gen = data['gen'];
         final orderPref = data['order_pref'];
+
         print('Latest code: $latestCode');
         print('gen value: $gen');
         print('Order prefix: $orderPref');
 
         if (latestCode != null) {
           // Increment the latest code to generate the next order number
-          int nextCode = int.parse(latestCode);
+          int nextCode =
+              latestCode is int ? latestCode + 1 : int.parse(latestCode) + 1;
           String nextOrderNo = orderPref +
               widget.userId +
-              nextCode.toString().padLeft(int.parse(gen), '0');
+              nextCode
+                  .toString()
+                  .padLeft(gen is int ? gen : int.parse(gen), '0');
 
           setState(() {
             orderNo = nextOrderNo;
@@ -274,7 +278,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 children: [
                   Text(
                     'Shopping Cart',
-                    style: GoogleFonts.archivo(
+                    style: GoogleFonts.bacasimeAntique(
                       textStyle: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -293,7 +297,7 @@ class _CartScreenState extends State<CartScreenPage> {
                 children: [
                   Text(
                     'Shopping Cart',
-                    style: GoogleFonts.archivo(
+                    style: GoogleFonts.bacasimeAntique(
                       textStyle: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -305,16 +309,7 @@ class _CartScreenState extends State<CartScreenPage> {
               ),
             ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFDAB3AC),
-              Color(0xFFF0E1DA),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+        color: Color.fromARGB(255, 235, 226, 225),
         child: Column(
           children: [
             Text(
@@ -341,13 +336,13 @@ class _CartScreenState extends State<CartScreenPage> {
                         color: const Color.fromARGB(255, 170, 131, 128)),
                     child: Card(
                       elevation: Platform.isIOS ? 4.0 : 2.0,
-                      shape: Platform.isIOS
-                          ? RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            )
-                          : RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 202, 158, 150),
+                          width: 5.0,
+                        ),
+                      ),
                       child: ListTile(
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,7 +417,11 @@ class _CartScreenState extends State<CartScreenPage> {
                         },
                         child: const Text(
                           'Add More',
-                          style: TextStyle(color: Colors.white), // Text color
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     )
@@ -461,17 +460,29 @@ class _CartScreenState extends State<CartScreenPage> {
                   ? Container(
                       width: screenWidth * 0.45,
                       height: screenHeight * 0.06,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 71, 4, 4),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: CupertinoButton(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 24.0),
-                        onPressed: submitOrder,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: ElevatedButton(
+                        onPressed: widget.cartItems.isEmpty
+                            ? null
+                            : () {
+                                submitOrder();
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: widget.cartItems.isEmpty
+                              ? Colors.grey // Disabled button color
+                              : const Color.fromARGB(
+                                  255, 71, 4, 4), // Enabled button color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         child: const Text(
                           'Place Order',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     )

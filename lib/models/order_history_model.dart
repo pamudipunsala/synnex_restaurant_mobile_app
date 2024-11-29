@@ -1,45 +1,33 @@
-import 'dart:ffi';
-
 class HistoryItem {
-  final String orderId;
+  final int orderId;
   final String orderNo;
   final String date;
-  final String tabelNo;
-  final String total_payable;
-  final double total;
-  final String note;
-  final String customer;
+  final int tabelNo;
+  final double totalPayable;
+  final double serviceCharge;
   final String status;
-  // final Float total_payable;
-  // final DateTime created_date;
+  final int comId;
 
-  HistoryItem({
-    required this.orderId,
-    required this.orderNo,
-    required this.date,
-    required this.tabelNo,
-    required this.total_payable,
-    required this.total,
-    required this.note,
-    required this.customer,
-    required this.status,
-    // required this.total_payable,
-    // required this.created_date,
-  });
+  HistoryItem(
+      {required this.orderId,
+      required this.orderNo,
+      required this.date,
+      required this.tabelNo,
+      required this.totalPayable,
+      required this.serviceCharge,
+      required this.status,
+      required this.comId});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(
-      orderId: json['o_id'] ?? 'Unknown',
-      orderNo: json['o_no'] ?? 'Unknown',
-      date: json['created_date'] ?? 'Unknown',
+      orderId: json['o_id'] ?? 0,
+      orderNo: json['o_no'] ?? '',
+      date: json['created_date'] ?? '',
       tabelNo: json['tabel_no'] ?? 0,
-      total_payable: json['total_payable'] ?? 0,
-      total: json['total']?.toDouble() ?? 0.0,
-      note: json['note'] ?? '',
-      customer: '',
-      status: '',
-      // total_payable: json['total_payable']?.toDouble() ?? 0.0,
-      // created_date: ,
+      totalPayable: (json['total_payable'] ?? 0).toDouble(),
+      serviceCharge: (json['service_charge'] ?? 0).toDouble(),
+      status: json['status'] ?? '',
+      comId: json['com_id'] ?? 0,
     );
   }
 }

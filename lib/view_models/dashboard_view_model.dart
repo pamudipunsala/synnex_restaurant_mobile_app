@@ -15,8 +15,12 @@ class DashboardScreen {
   }
 
   void toOrderHistory(BuildContext context, String comId) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => const OrderHistoryPage())));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) => OrderHistoryPage(
+                  comId: comId,
+                ))));
   }
 
   void toProfile(BuildContext context) {

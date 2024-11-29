@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class EditScreenPage extends StatefulWidget {
-  final String orderId;
-  final String tabelNo;
+  final int orderId;
+  final int tabelNo;
   final String orderNo;
 
   const EditScreenPage({
@@ -37,7 +37,7 @@ class _EditScreenState extends State<EditScreenPage> {
   Future<void> _fetchOrderItems() async {
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com/OrderEdit.php'),
-      body: {'o_id': widget.orderId},
+      body: {'o_id': widget.orderId.toString()},
     );
 
     if (response.statusCode == 200) {
@@ -48,7 +48,7 @@ class _EditScreenState extends State<EditScreenPage> {
           if (decodedBody is List) {
             setState(() {
               orderItems = decodedBody;
-              filteredOrderItems = orderItems; // Initialize with all items
+              filteredOrderItems = orderItems;
               quantities = {
                 for (var item in orderItems) item['item_id']: item['quantity']
               };
@@ -109,6 +109,8 @@ class _EditScreenState extends State<EditScreenPage> {
   }
 
   Future<void> _submitChanges() async {
+    double totalBeforeDiscount = _calculateTotal();
+
     final updatedItems = filteredOrderItems.map((item) {
       final itemId = item['item_id'];
       final quantity = quantities[itemId] ?? item['quantity'];
@@ -130,11 +132,18 @@ class _EditScreenState extends State<EditScreenPage> {
       };
     }).toList();
 
+    final requestData = {
+      'order_id': widget.orderId, 
+      'total_before_discount': totalBeforeDiscount,
+      'items': updatedItems,
+    };
+
     final response = await http.post(
       Uri.parse('https://mobileapp.synnexcloudpos.com/editorder.php'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode(updatedItems),
+      body: json.encode(requestData),
     );
+
     Navigator.pop(context);
     if (response.statusCode == 200) {
       print('Response: ${response.body}');
@@ -158,7 +167,7 @@ class _EditScreenState extends State<EditScreenPage> {
             navigationBar: CupertinoNavigationBar(
               middle: Text(
                 'Edit Order',
-                style: GoogleFonts.archivo(
+                style: GoogleFonts.bacasimeAntique(
                   textStyle: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -176,7 +185,7 @@ class _EditScreenState extends State<EditScreenPage> {
               foregroundColor: const Color.fromARGB(255, 255, 255, 255),
               title: Text(
                 'Edit Order',
-                style: GoogleFonts.archivo(
+                style: GoogleFonts.bacasimeAntique(
                   textStyle: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -191,16 +200,7 @@ class _EditScreenState extends State<EditScreenPage> {
 
   Widget _buildBody() {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFFDAB3AC),
-            Color(0xFFF0E1DA),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
+      color: Color.fromARGB(255, 235, 226, 225),
       child: Column(
         children: [
           Padding(
@@ -247,6 +247,14 @@ class _EditScreenState extends State<EditScreenPage> {
                 double totalPrice = price * quantity;
 
                 return Card(
+                  color: Color.fromARGB(255, 250, 236, 234),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                    side: const BorderSide(
+                      color: Color.fromARGB(255, 202, 158, 150),
+                      width: 5.0,
+                    ),
+                  ),
                   child: ListTile(
                     title: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,6 +294,17 @@ class _EditScreenState extends State<EditScreenPage> {
                   ),
                 );
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Total: ${_calculateTotal().toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
           ),
           Padding(
@@ -329,5 +348,16 @@ class _EditScreenState extends State<EditScreenPage> {
         ],
       ),
     );
+  }
+
+  double _calculateTotal() {
+    double total = 0.0;
+    for (var item in filteredOrderItems) {
+      int itemId = item['item_id'];
+      int quantity = quantities[itemId] ?? item['quantity'];
+      double price = (item['price'] as num).toDouble();
+      total += price * quantity;
+    }
+    return total;
   }
 }
