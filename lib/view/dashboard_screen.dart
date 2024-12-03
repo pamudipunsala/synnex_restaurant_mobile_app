@@ -48,7 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/img9.png'), // Background image
+                image: AssetImage('assets/img9.png'), 
                 fit: BoxFit.cover,
               ),
             ),
