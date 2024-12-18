@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:restaurant_pos_mobile/constants.dart';
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view_models/cart_view_model.dart';
 import 'package:http/http.dart' as http;
@@ -38,6 +39,7 @@ class _CartScreenState extends State<CartScreenPage> {
   double totalPrice = 0.0;
   int? oId;
   String? generatedComId;
+  final String url = '$apiDomain$addOrderEndpoint';
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _CartScreenState extends State<CartScreenPage> {
 
   Future<void> fetchTables() async {
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      Uri.parse(apiDomain),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {'table_id': '1'},
     );
@@ -79,7 +81,7 @@ class _CartScreenState extends State<CartScreenPage> {
     }
 
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      Uri.parse(apiDomain),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: {'com_id': comId},
     );
@@ -179,7 +181,7 @@ class _CartScreenState extends State<CartScreenPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        Uri.parse(apiDomain),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(orderData),
       );
@@ -213,7 +215,7 @@ class _CartScreenState extends State<CartScreenPage> {
 
           print('Sending items data: $itemsData');
           final itemResponse = await http.post(
-            Uri.parse('https://mobileapp.synnexcloudpos.com/addorder.php'),
+            Uri.parse(url),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode(itemsData),
           );

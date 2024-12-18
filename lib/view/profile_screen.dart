@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart'; // Import Cupertino widgets
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:restaurant_pos_mobile/constants.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
@@ -35,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreenPage> {
     if (userId != null) {
       try {
         final response = await http.post(
-          Uri.parse('https://mobileapp.synnexcloudpos.com'),
+          Uri.parse(apiDomain),
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
           body: {
             'profile_id': userId,

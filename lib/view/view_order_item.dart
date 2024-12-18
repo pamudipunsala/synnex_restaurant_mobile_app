@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 
+import 'package:restaurant_pos_mobile/constants.dart';
+
 class ViewScreenPage extends StatefulWidget {
   final int orderId;
   final String orderNo;
@@ -26,6 +28,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
   List orderItems = [];
   List filteredItems = [];
   Map<int, int> quantities = {};
+  final String url = '$apiDomain$orderEditEndpoint';
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _ViewScreenState extends State<ViewScreenPage> {
 
   Future<void> _fetchOrderItems() async {
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com/OrderEdit.php'),
+      Uri.parse(url),
       body: {'o_id': widget.orderId.toString()},
     );
 

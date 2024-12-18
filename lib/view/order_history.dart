@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'; // Import for iOS-specific widgets
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_pos_mobile/constants.dart';
 import 'package:restaurant_pos_mobile/models/order_history_model.dart';
 import 'package:restaurant_pos_mobile/view/edit_screen.dart';
 import 'package:restaurant_pos_mobile/view/view_order_item.dart';
@@ -44,7 +45,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
     String? userId = prefs.getString('userId');
 
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com'),
+      Uri.parse(apiDomain),
       body: {'history_id': userId},
     );
 

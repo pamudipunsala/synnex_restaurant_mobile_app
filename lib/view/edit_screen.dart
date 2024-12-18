@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_pos_mobile/constants.dart';
 
 class EditScreenPage extends StatefulWidget {
   final int orderId;
@@ -27,6 +28,8 @@ class _EditScreenState extends State<EditScreenPage> {
   List filteredOrderItems = [];
   Map<int, int> quantities = {};
   Map<int, TextEditingController> noteControllers = {};
+  final String url = '$apiDomain$orderEditEndpoint';
+  final String url2 = '$apiDomain$editOrderEndpoint';
 
   @override
   void initState() {
@@ -36,7 +39,7 @@ class _EditScreenState extends State<EditScreenPage> {
 
   Future<void> _fetchOrderItems() async {
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com/OrderEdit.php'),
+      Uri.parse(url),
       body: {'o_id': widget.orderId.toString()},
     );
 
@@ -133,13 +136,13 @@ class _EditScreenState extends State<EditScreenPage> {
     }).toList();
 
     final requestData = {
-      'order_id': widget.orderId, 
+      'order_id': widget.orderId,
       'total_before_discount': totalBeforeDiscount,
       'items': updatedItems,
     };
 
     final response = await http.post(
-      Uri.parse('https://mobileapp.synnexcloudpos.com/editorder.php'),
+      Uri.parse(url2),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(requestData),
     );

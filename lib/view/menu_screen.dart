@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_pos_mobile/constants.dart';
 import 'package:restaurant_pos_mobile/models/cart_model.dart';
 import 'package:restaurant_pos_mobile/view/cart_screen.dart';
 import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
@@ -41,7 +42,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   Future<void> fetchProducts() async {
     try {
       final response = await http.post(
-        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        Uri.parse(apiDomain),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'menu_id': '1',
@@ -72,7 +73,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   Future<void> fetchCategories() async {
     try {
       final response = await http.post(
-        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        Uri.parse(apiDomain),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'category_id': '1',
@@ -118,7 +119,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
   Future<List<dynamic>> fetchVariations(int parentId) async {
     try {
       final response = await http.post(
-        Uri.parse('https://mobileapp.synnexcloudpos.com'),
+        Uri.parse(apiDomain),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'Variation_id': '296',
@@ -505,7 +506,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   itemBuilder: (BuildContext context, int index) {
                     final product = filteredProducts[index];
                     final imageUrl =
-                        'https://mobileapp.synnexcloudpos.com/${product['image_path']}';
+                        '$apiDomain/${product['image_path']}';
 
                     return GestureDetector(
                       behavior: HitTestBehavior.translucent,
