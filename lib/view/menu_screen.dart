@@ -221,25 +221,25 @@ class _MenuScreenState extends State<MenuScreenPage> {
                                       });
                                     },
                                   ),
-                                const Text(
-                                  'Add Ones',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Color.fromARGB(255, 71, 4, 4)),
-                                ),
-                                CheckboxListTile(
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  title: const Text('Add Ones 1  Rs.200.00'),
-                                  value: isChecked,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      isChecked = value!;
-                                      updateTotalPrice();
-                                    });
-                                  },
-                                ),
+                                // const Text(
+                                //   'Add Ones',
+                                //   style: TextStyle(
+                                //       fontWeight: FontWeight.bold,
+                                //       fontSize: 16,
+                                //       color: Color.fromARGB(255, 71, 4, 4)),
+                                // ),
+                                // CheckboxListTile(
+                                //   controlAffinity:
+                                //       ListTileControlAffinity.leading,
+                                //   title: const Text('Add Ones 1  Rs.200.00'),
+                                //   value: isChecked,
+                                //   onChanged: (bool? value) {
+                                //     setState(() {
+                                //       isChecked = value!;
+                                //       updateTotalPrice();
+                                //     });
+                                //   },
+                                // ),
                               ],
                             ),
                           ),
