@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
       Uri.parse(apiDomain),
       body: {
         'u_name': username,
-        'user_password': password,
+        'App_Password': password,
       },
     );
 
