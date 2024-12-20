@@ -12,7 +12,8 @@ import 'package:restaurant_pos_mobile/view_models/table_view_model.dart';
 class TableScreenPage extends StatefulWidget {
   final String comId;
   final String userId;
-  const TableScreenPage({super.key, required this.comId, required this.userId});
+  final String waiterId;
+  const TableScreenPage({super.key, required this.comId, required this.userId, required this.waiterId});
 
   @override
   _TableScreenState createState() => _TableScreenState();
@@ -147,7 +148,7 @@ class _TableScreenState extends State<TableScreenPage>
                                 ? int.parse(table['tabel_no'])
                                 : table['tabel_no'],
                             comId: widget.comId,
-                            userId: widget.userId,
+                            userId: widget.userId, waiterId: '',
                           ),
                         ),
                       );

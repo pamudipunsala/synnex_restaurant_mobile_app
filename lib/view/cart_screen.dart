@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 class CartScreenPage extends StatefulWidget {
   final List<CartItem> cartItems;
   final String userId;
+  final String waiterId;
   final int tableNo;
   final String comId;
 
@@ -21,6 +22,7 @@ class CartScreenPage extends StatefulWidget {
     required this.tableNo,
     required this.comId,
     required this.userId,
+    required this.waiterId,
   }) : super(key: key);
 
   @override
@@ -150,6 +152,7 @@ class _CartScreenState extends State<CartScreenPage> {
   Future<void> submitOrder() async {
     final comId = generatedComId ?? widget.comId;
     final userId = widget.userId;
+    final waiterId = widget.waiterId;
     final currentDate = DateTime.now();
     final formattedDateTime =
         '${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')} ${currentDate.hour.toString().padLeft(2, '0')}:${currentDate.minute.toString().padLeft(2, '0')}:${currentDate.second.toString().padLeft(2, '0')}';
@@ -167,7 +170,7 @@ class _CartScreenState extends State<CartScreenPage> {
       'total_paid': 0.00,
       'payment_method': 0,
       'delivery': 0,
-      'waiter': widget.userId.toString(),
+      'waiter': widget.waiterId.toString(),
       'added_by': widget.userId.toString(),
       'status': 1,
       'order_note': allNotes,
@@ -234,7 +237,7 @@ class _CartScreenState extends State<CartScreenPage> {
               noteText = '';
             });
             saveNote();
-            cart.toDashboard(context, comId, userId);
+            cart.toDashboard(context, comId, userId, waiterId);
           } else {
             print(
                 'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');
@@ -421,7 +424,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           'Add More',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 11,
                             color: Colors.white,
                           ),
                         ),
@@ -444,7 +447,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           elevation: 8, // Shadow effect
                           textStyle: GoogleFonts.archivo(
                             textStyle: const TextStyle(
-                              fontSize: 18, // Adjust font size
+                              fontSize: 11, // Adjust font size
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -482,7 +485,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           'Place Order',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 11,
                             color: Colors.white,
                           ),
                         ),
@@ -503,7 +506,7 @@ class _CartScreenState extends State<CartScreenPage> {
                           elevation: 8,
                           textStyle: GoogleFonts.archivo(
                             textStyle: const TextStyle(
-                              fontSize: 18,
+                              fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

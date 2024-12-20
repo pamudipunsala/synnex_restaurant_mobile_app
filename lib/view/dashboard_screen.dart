@@ -9,8 +9,13 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 class DashboardPage extends StatefulWidget {
   final String comId;
   final String userId;
+  final String waiterId;
 
-  const DashboardPage({super.key, required this.comId, required this.userId});
+  const DashboardPage(
+      {super.key,
+      required this.comId,
+      required this.userId,
+      required this.waiterId});
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -48,7 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/img9.png'), 
+                image: AssetImage('assets/img9.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -102,7 +107,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 SizedBox(height: screenHeight * 0.07),
                 _build3DButton('Menu', screenWidth, screenHeight, () {
-                  dashboard.toMenu(context, widget.comId, widget.userId);
+                  dashboard.toMenu(
+                      context, widget.comId, widget.userId, widget.waiterId);
                 }),
                 SizedBox(height: screenHeight * 0.02),
                 _build3DButton('Order History', screenWidth, screenHeight, () {
@@ -141,7 +147,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 backgroundColor: Colors.transparent,
                 foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                 onPressed: () {
-                  dashboard.toTables(context, widget.comId, widget.userId);
+                  dashboard.toTables(
+                      context, widget.comId, widget.userId, widget.waiterId);
                 },
                 child: const Icon(Icons.add, size: 32), // Consistent icon size
               ),
@@ -149,7 +156,8 @@ class _DashboardPageState extends State<DashboardPage> {
           : CupertinoButton(
               color: const Color.fromARGB(255, 71, 4, 4),
               onPressed: () {
-                dashboard.toTables(context, widget.comId, widget.userId);
+                dashboard.toTables(
+                    context, widget.comId, widget.userId, widget.waiterId);
               },
               child: Icon(CupertinoIcons.add, size: 32),
             ),

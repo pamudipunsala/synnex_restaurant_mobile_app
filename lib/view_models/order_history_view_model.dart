@@ -13,7 +13,8 @@ class OrderHistoryScreen {
             builder: ((context) => const MenuScreenPage(
                   tableNo: 0,
                   userId: '',
-                  comId: '',
+                  comId: '', 
+                  waiterId: '',
                 ))));
   }
 

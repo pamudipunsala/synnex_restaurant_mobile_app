@@ -11,13 +11,15 @@ import 'package:restaurant_pos_mobile/view_models/menu_view_model.dart';
 
 class MenuScreenPage extends StatefulWidget {
   final String userId;
+  final String waiterId;
   final int tableNo;
   final String comId;
   const MenuScreenPage(
       {super.key,
       required this.userId,
       required this.tableNo,
-      required this.comId});
+      required this.comId,
+      required this.waiterId});
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -505,8 +507,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                   ),
                   itemBuilder: (BuildContext context, int index) {
                     final product = filteredProducts[index];
-                    final imageUrl =
-                        '$apiDomain/${product['image_path']}';
+                    final imageUrl = '$apiDomain/${product['image_path']}';
 
                     return GestureDetector(
                       behavior: HitTestBehavior.translucent,
@@ -601,6 +602,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 tableNo: widget.tableNo,
                 comId: widget.comId,
                 userId: widget.userId,
+                waiterId: widget.waiterId,
               ),
             ),
           );

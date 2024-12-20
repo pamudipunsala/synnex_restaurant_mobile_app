@@ -15,9 +15,9 @@ class CartScreen {
     Navigator.of(context).pop();
   }
 
-  void toDashboard(BuildContext context, String comId, String userId) {
+  void toDashboard(BuildContext context, String comId, String userId, String waiterId) {
     Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => DashboardPage(comId: comId, userId: userId))));
+        MaterialPageRoute(builder: ((context) => DashboardPage(comId: comId, userId: userId, waiterId: waiterId))));
   }
 
   void toOrderHistory(BuildContext context) {

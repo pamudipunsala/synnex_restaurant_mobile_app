@@ -5,8 +5,12 @@ class LoginScreen {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void toDashboard(BuildContext context, String comId, String userId) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => DashboardPage(comId: comId, userId: userId))));
+  void toDashboard(
+      BuildContext context, String comId, String userId, String waiterId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) => DashboardPage(
+                comId: comId, userId: userId, waiterId: waiterId))));
   }
 }
