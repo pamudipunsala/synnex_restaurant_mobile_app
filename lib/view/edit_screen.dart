@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/constants.dart';
+import 'package:restaurant_pos_mobile/view/add_more_items.dart';
 
 class EditScreenPage extends StatefulWidget {
   final int orderId;
@@ -315,7 +316,20 @@ class _EditScreenState extends State<EditScreenPage> {
             child: Platform.isIOS
                 ? CupertinoButton(
                     color: const Color.fromARGB(255, 71, 4, 4),
-                    onPressed: _submitChanges,
+                    onPressed: () {
+                      double total =
+                          _calculateTotal(); // Calculate the total before navigating
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddMoreItemsScreen(
+                            orderNo: widget.orderNo,
+                            tableNo: widget.tabelNo,
+                            total: total,
+                          ),
+                        ),
+                      );
+                    },
                     child: Text(
                       'Add More',
                       style: GoogleFonts.archivo(
@@ -344,8 +358,20 @@ class _EditScreenState extends State<EditScreenPage> {
                         ),
                       ),
                     ),
-                    onPressed: _submitChanges,
-                    child: const Text('Add More Items'),
+                    onPressed: () {
+                      double total = _calculateTotal();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddMoreItemsScreen(
+                            orderNo: widget.orderNo,
+                            tableNo: widget.tabelNo,
+                            total: total,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Add More'),
                   ),
           ),
           Padding(
