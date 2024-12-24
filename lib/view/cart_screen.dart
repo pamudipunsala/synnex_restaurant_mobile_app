@@ -42,6 +42,8 @@ class _CartScreenState extends State<CartScreenPage> {
   int? oId;
   String? generatedComId;
   final String url = '$apiDomain$addOrderEndpoint';
+  bool isSubmitting = false;
+  bool isOrderNumberGenerated = true;
 
   @override
   void initState() {
@@ -120,6 +122,7 @@ class _CartScreenState extends State<CartScreenPage> {
           setState(() {
             orderNo = nextOrderNo;
             generatedComId = comId;
+            isOrderNumberGenerated = false;
           });
 
           print('Next order number generated: $orderNo');
@@ -157,6 +160,11 @@ class _CartScreenState extends State<CartScreenPage> {
     final formattedDateTime =
         '${currentDate.year}-${currentDate.month.toString().padLeft(2, '0')}-${currentDate.day.toString().padLeft(2, '0')} ${currentDate.hour.toString().padLeft(2, '0')}:${currentDate.minute.toString().padLeft(2, '0')}:${currentDate.second.toString().padLeft(2, '0')}';
     final allNotes = widget.cartItems.map((item) => item.note).join(', ');
+    if (isSubmitting) return;
+
+    setState(() {
+      isSubmitting = true;
+    });
 
     final orderData = {
       'o_no': orderNo,
@@ -238,28 +246,46 @@ class _CartScreenState extends State<CartScreenPage> {
             });
             saveNote();
             cart.toDashboard(context, comId, userId, waiterId);
+
+            setState(() {
+              widget.cartItems.clear();
+              isSubmitting = false;
+            });
           } else {
             print(
                 'Failed to insert items: Status: ${itemResponse.statusCode} - Body: ${itemResponse.body}');
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Failed to insert items.')),
             );
+
+            setState(() {
+              isSubmitting = false;
+            });
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
+          setState(() {
+            isSubmitting = false;
+          });
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to submit order')),
         );
+        setState(() {
+          isSubmitting = false;
+        });
       }
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error submitting order')),
       );
+      setState(() {
+        isSubmitting = false;
+      });
     }
   }
 
@@ -467,16 +493,19 @@ class _CartScreenState extends State<CartScreenPage> {
                       height: screenHeight * 0.06,
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       child: ElevatedButton(
-                        onPressed: widget.cartItems.isEmpty
+                        onPressed: widget.cartItems.isEmpty ||
+                                isSubmitting ||
+                                isOrderNumberGenerated
                             ? null
                             : () {
                                 submitOrder();
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: widget.cartItems.isEmpty
-                              ? Colors.grey // Disabled button color
-                              : const Color.fromARGB(
-                                  255, 71, 4, 4), // Enabled button color
+                          backgroundColor:
+                              widget.cartItems.isEmpty || isSubmitting
+                                  ? Colors.grey // Disabled button color
+                                  : const Color.fromARGB(
+                                      255, 71, 4, 4), // Enabled button color
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -504,18 +533,12 @@ class _CartScreenState extends State<CartScreenPage> {
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           elevation: 8,
-                          textStyle: GoogleFonts.archivo(
-                            textStyle: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
                         ),
-                        onPressed: widget.cartItems.isNotEmpty
-                            ? () {
+                        onPressed: widget.cartItems.isEmpty || isSubmitting
+                            ? null
+                            : () {
                                 submitOrder();
-                              }
-                            : null,
+                              },
                         child: const Text('Place Order'),
                       ),
                     ),

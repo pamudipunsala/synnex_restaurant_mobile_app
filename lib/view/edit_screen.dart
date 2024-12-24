@@ -317,6 +317,44 @@ class _EditScreenState extends State<EditScreenPage> {
                     color: const Color.fromARGB(255, 71, 4, 4),
                     onPressed: _submitChanges,
                     child: Text(
+                      'Add More',
+                      style: GoogleFonts.archivo(
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: const Color.fromARGB(255, 71, 4, 4),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      elevation: 8,
+                      textStyle: GoogleFonts.archivo(
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    onPressed: _submitChanges,
+                    child: const Text('Add More Items'),
+                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Platform.isIOS
+                ? CupertinoButton(
+                    color: const Color.fromARGB(255, 71, 4, 4),
+                    onPressed: _submitChanges,
+                    child: Text(
                       'Save Changes',
                       style: GoogleFonts.archivo(
                         textStyle: const TextStyle(
