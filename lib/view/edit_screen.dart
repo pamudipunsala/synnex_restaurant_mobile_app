@@ -12,6 +12,7 @@ class EditScreenPage extends StatefulWidget {
   final int orderId;
   final int tabelNo;
   final String orderNo;
+  final int comId;
 
   const EditScreenPage({
     Key? key,
@@ -19,6 +20,7 @@ class EditScreenPage extends StatefulWidget {
     required this.tabelNo,
     required this.orderNo,
     required List orderDetails,
+    required this.comId,
   }) : super(key: key);
 
   @override
@@ -325,7 +327,7 @@ class _EditScreenState extends State<EditScreenPage> {
                           builder: (context) => MenuScreenPage(
                             userId: '',
                             tableNo: 0,
-                            comId: '',
+                            comId: widget.comId.toString(),
                             waiterId: '',
                           ),
                         ),

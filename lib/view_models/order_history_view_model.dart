@@ -26,7 +26,7 @@ class OrderHistoryScreen {
                   orderDetails: [],
                   orderId: 0,
                   tabelNo: 0,
-                  orderNo: '',
+                  orderNo: '', comId: 0,
                 ))));
   }
 }
