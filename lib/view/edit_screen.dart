@@ -325,11 +325,11 @@ class _EditScreenState extends State<EditScreenPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => MenuScreenPage(
-                            userId: '',
-                            tableNo: 0,
-                            comId: widget.comId.toString(),
-                            waiterId: '',
-                          ),
+                              userId: '',
+                              tableNo: 0,
+                              comId: widget.comId.toString(),
+                              waiterId: '',
+                              orderNo: widget.orderNo),
                         ),
                       );
                     },

@@ -14,7 +14,7 @@ class OrderHistoryScreen {
                   tableNo: 0,
                   userId: '',
                   comId: '', 
-                  waiterId: '',
+                  waiterId: '', orderNo: '',
                 ))));
   }
 

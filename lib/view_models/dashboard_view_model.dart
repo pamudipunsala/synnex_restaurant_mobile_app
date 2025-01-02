@@ -11,7 +11,7 @@ class DashboardScreen {
         context,
         MaterialPageRoute(
             builder: ((context) =>
-                MenuScreenPage(tableNo: 0, userId: userId, comId: comId, waiterId: waiterId))));
+                MenuScreenPage(tableNo: 0, userId: userId, comId: comId, waiterId: waiterId, orderNo: '',))));
   }
 
   void toOrderHistory(BuildContext context, String comId) {

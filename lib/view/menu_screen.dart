@@ -14,12 +14,15 @@ class MenuScreenPage extends StatefulWidget {
   final String waiterId;
   final int tableNo;
   final String comId;
+  final String orderNo;
+
   const MenuScreenPage(
       {super.key,
       required this.userId,
       required this.tableNo,
       required this.comId,
-      required this.waiterId});
+      required this.waiterId,
+      required this.orderNo});
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -603,6 +606,7 @@ class _MenuScreenState extends State<MenuScreenPage> {
                 comId: widget.comId,
                 userId: widget.userId,
                 waiterId: widget.waiterId,
+                orderNo: widget.orderNo,
               ),
             ),
           );

@@ -15,6 +15,7 @@ class CartScreenPage extends StatefulWidget {
   final String waiterId;
   final int tableNo;
   final String comId;
+  final String orderNo;
 
   const CartScreenPage({
     Key? key,
@@ -23,6 +24,7 @@ class CartScreenPage extends StatefulWidget {
     required this.comId,
     required this.userId,
     required this.waiterId,
+    required this.orderNo,
   }) : super(key: key);
 
   @override
@@ -344,7 +346,7 @@ class _CartScreenState extends State<CartScreenPage> {
         child: Column(
           children: [
             Text(
-              'Order no : $orderNo',
+              'Order no : ${widget.orderNo.isNotEmpty ? widget.orderNo : orderNo.isNotEmpty ? orderNo : orderNo}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Expanded(
