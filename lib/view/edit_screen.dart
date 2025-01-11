@@ -37,6 +37,7 @@ class _EditScreenState extends State<EditScreenPage> {
   Map<int, TextEditingController> noteControllers = {};
   final String url = '$apiDomain$orderEditEndpoint';
   final String url2 = '$apiDomain$editOrderEndpoint';
+  final String url3 = '$apiDomain$deleteOrderEndpoint';
 
   @override
   void initState() {
@@ -159,6 +160,22 @@ class _EditScreenState extends State<EditScreenPage> {
       print('Response: ${response.body}');
     } else {
       print('Error: ${response.statusCode}');
+    }
+  }
+
+  Future<void> _deleteItem(int itemId) async {
+    final response = await http.get(
+      Uri.parse(
+          '$url3?item_id=${itemId.toString()}&order_id=${widget.orderId.toString()}'),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        filteredOrderItems.removeWhere((item) => item['item_id'] == itemId);
+      });
+      print('Item deleted successfully');
+    } else {
+      print('Failed to delete item');
     }
   }
 
@@ -300,6 +317,10 @@ class _EditScreenState extends State<EditScreenPage> {
                           ],
                         ),
                       ],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => _deleteItem(itemId),
                     ),
                   ),
                 );
