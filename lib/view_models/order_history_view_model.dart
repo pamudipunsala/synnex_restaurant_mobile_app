@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_pos_mobile/view/edit_menu_screen.dart';
 import 'package:restaurant_pos_mobile/view/edit_screen.dart';
 import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 
@@ -10,11 +11,14 @@ class OrderHistoryScreen {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: ((context) => const MenuScreenPage(
+            builder: ((context) => const EditMenuScreenPage(
                   tableNo: 0,
                   userId: '',
-                  comId: '', 
-                  waiterId: '', orderNo: '',
+                  comId: '',
+                  waiterId: '',
+                  orderNo: '',
+                  orderId: 0,
+                  totalPrice: 0,
                 ))));
   }
 
@@ -26,7 +30,9 @@ class OrderHistoryScreen {
                   orderDetails: [],
                   orderId: 0,
                   tabelNo: 0,
-                  orderNo: '', comId: 0,
+                  orderNo: '',
+                  comId: 0,
+                  waiterId: '',
                 ))));
   }
 }

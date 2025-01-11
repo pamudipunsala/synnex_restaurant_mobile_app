@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/constants.dart';
 import 'package:restaurant_pos_mobile/view/add_more_items.dart';
+import 'package:restaurant_pos_mobile/view/edit_menu_screen.dart';
 import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 
 class EditScreenPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class EditScreenPage extends StatefulWidget {
   final int tabelNo;
   final String orderNo;
   final int comId;
+  final String waiterId;
 
   const EditScreenPage({
     Key? key,
@@ -21,6 +23,7 @@ class EditScreenPage extends StatefulWidget {
     required this.orderNo,
     required List orderDetails,
     required this.comId,
+    required this.waiterId,
   }) : super(key: key);
 
   @override
@@ -324,12 +327,15 @@ class _EditScreenState extends State<EditScreenPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MenuScreenPage(
-                              userId: '',
-                              tableNo: 0,
-                              comId: widget.comId.toString(),
-                              waiterId: '',
-                              orderNo: widget.orderNo),
+                          builder: (context) => EditMenuScreenPage(
+                            userId: '',
+                            tableNo: 0,
+                            comId: widget.comId.toString(),
+                            waiterId: widget.waiterId.toString(),
+                            orderNo: widget.orderNo,
+                            orderId: widget.orderId,
+                            totalPrice: total,
+                          ),
                         ),
                       );
                     },
@@ -366,10 +372,14 @@ class _EditScreenState extends State<EditScreenPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddMoreItemsScreen(
+                          builder: (context) => EditMenuScreenPage(
+                            userId: '',
+                            tableNo: 0,
+                            comId: widget.comId.toString(),
+                            waiterId: widget.waiterId.toString(),
                             orderNo: widget.orderNo,
-                            tableNo: widget.tabelNo,
-                            total: total,
+                            orderId: widget.orderId,
+                            totalPrice: total,
                           ),
                         ),
                       );

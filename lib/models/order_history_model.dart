@@ -16,7 +16,7 @@ class HistoryItem {
       required this.totalPayable,
       required this.serviceCharge,
       required this.status,
-      required this.comId});
+      required this.comId,});
 
   factory HistoryItem.fromJson(Map<String, dynamic> json) {
     return HistoryItem(

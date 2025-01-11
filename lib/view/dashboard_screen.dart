@@ -11,11 +11,12 @@ class DashboardPage extends StatefulWidget {
   final String userId;
   final String waiterId;
 
-  const DashboardPage(
-      {super.key,
-      required this.comId,
-      required this.userId,
-      required this.waiterId});
+  DashboardPage({
+    super.key,
+    required this.comId,
+    required this.userId,
+    required this.waiterId,
+  });
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -24,6 +25,14 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   DashboardScreen dashboard = DashboardScreen();
   bool _isAnimationFinished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    UserSession.initialize(widget.userId, widget.waiterId);
+    print(
+        "UserSession initialized with: ${UserSession.userId}, ${UserSession.waiterId}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +116,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 SizedBox(height: screenHeight * 0.07),
                 _build3DButton('Menu', screenWidth, screenHeight, () {
-                  dashboard.toMenu(
-                      context, widget.comId, widget.userId, widget.waiterId);
+                  dashboard.toMenu(context, widget.comId, UserSession.userId!,
+                      UserSession.waiterId!);
                 }),
                 SizedBox(height: screenHeight * 0.02),
                 _build3DButton('Order History', screenWidth, screenHeight, () {
@@ -147,8 +156,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 backgroundColor: Colors.transparent,
                 foregroundColor: const Color.fromARGB(255, 255, 255, 255),
                 onPressed: () {
-                  dashboard.toTables(
-                      context, widget.comId, widget.userId, widget.waiterId);
+                  dashboard.toTables(context, widget.comId, UserSession.userId!,
+                      UserSession.waiterId!);
                 },
                 child: const Icon(Icons.add, size: 32), // Consistent icon size
               ),
@@ -156,8 +165,8 @@ class _DashboardPageState extends State<DashboardPage> {
           : CupertinoButton(
               color: const Color.fromARGB(255, 71, 4, 4),
               onPressed: () {
-                dashboard.toTables(
-                    context, widget.comId, widget.userId, widget.waiterId);
+                dashboard.toTables(context, widget.comId, UserSession.userId!,
+                    UserSession.waiterId!);
               },
               child: Icon(CupertinoIcons.add, size: 32),
             ),
@@ -210,5 +219,19 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
     );
+  }
+}
+
+class UserSession {
+  static String? userId;
+  static String? waiterId;
+
+  static void initialize(String? user, String? waiter) {
+    if (userId == null && user != null) {
+      userId = user;
+    }
+    if (waiterId == null && waiter != null) {
+      waiterId = waiter;
+    }
   }
 }

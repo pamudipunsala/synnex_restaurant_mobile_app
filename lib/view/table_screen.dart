@@ -148,7 +148,7 @@ class _TableScreenState extends State<TableScreenPage>
                                 ? int.parse(table['tabel_no'])
                                 : table['tabel_no'],
                             comId: widget.comId,
-                            userId: widget.userId, waiterId: '', orderNo: '',
+                            userId: widget.userId, waiterId: '', orderNo: ''
                           ),
                         ),
                       );

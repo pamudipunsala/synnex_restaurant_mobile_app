@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   final String comId;
+
   const OrderHistoryPage({Key? key, required this.comId}) : super(key: key);
 
   @override
@@ -272,7 +273,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                                                   orderNo: history.orderNo,
                                                   tabelNo: history.tabelNo,
                                                   comId: history.comId.toInt(),
-                                                  orderDetails: [],
+                                                  orderDetails: [], waiterId: '',
                                                 ),
                                               ),
                                             );
@@ -318,7 +319,7 @@ class _OrderHistoryState extends State<OrderHistoryPage>
                                                   orderNo: history.orderNo,
                                                   tabelNo: history.tabelNo,
                                                   comId: history.comId.toInt(),
-                                                  orderDetails: [],
+                                                  orderDetails: [], waiterId: '',
                                                 ),
                                               ),
                                             );

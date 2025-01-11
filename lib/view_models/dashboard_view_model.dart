@@ -6,12 +6,18 @@ import 'package:restaurant_pos_mobile/view/profile_screen.dart';
 import 'package:restaurant_pos_mobile/view/table_screen.dart';
 
 class DashboardScreen {
-  void toMenu(BuildContext context, String comId, String userId, String waiterId) {
+  void toMenu(
+      BuildContext context, String comId, String userId, String waiterId) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: ((context) =>
-                MenuScreenPage(tableNo: 0, userId: userId, comId: comId, waiterId: waiterId, orderNo: '',))));
+            builder: ((context) => MenuScreenPage(
+                  tableNo: 0,
+                  userId: userId,
+                  comId: comId,
+                  waiterId: waiterId,
+                  orderNo: '',
+                ))));
   }
 
   void toOrderHistory(BuildContext context, String comId) {
@@ -28,13 +34,15 @@ class DashboardScreen {
         MaterialPageRoute(builder: ((context) => const ProfileScreenPage())));
   }
 
-  void toTables(BuildContext context, String comId, String userId, String waiterId) {
+  void toTables(
+      BuildContext context, String comId, String userId, String waiterId) {
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => TableScreenPage(
                   comId: comId,
-                  userId: userId, waiterId: waiterId,
+                  userId: userId,
+                  waiterId: waiterId,
                 ))));
   }
 
