@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,33 +23,40 @@ class _LoginScreenState extends State<LoginScreenPage> {
   final Platform platform = const LocalPlatform();
 
   Future<void> _login(BuildContext context) async {
-    final username = loginScreen.usernameController.text;
-    final password = loginScreen.passwordController.text;
+    try {
+      final username = loginScreen.usernameController.text;
+      final password = loginScreen.passwordController.text;
 
-    final response = await http.post(
-      Uri.parse(apiDomain),
-      body: {
-        'u_name': username,
-        'App_Password': password,
-      },
-    );
+      final response = await http.post(
+        Uri.parse(apiDomain),
+        body: {
+          'u_name': username,
+          'App_Password': password,
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
 
-      if (responseData is List && responseData.isNotEmpty) {
-        final userId = responseData[0]['user_id'].toString();
-        final comId = responseData[0]['com_id'].toString();
-        final waiterId = responseData[0]['waiter_id'].toString();
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userId', userId.toString());
+        if (responseData is List && responseData.isNotEmpty) {
+          final userId = responseData[0]['user_id'].toString();
+          final comId = responseData[0]['com_id'].toString();
+          final waiterId = responseData[0]['waiter_id'].toString();
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userId', userId);
 
-        loginScreen.toDashboard(context, comId, userId, waiterId);
+          loginScreen.toDashboard(context, comId, userId, waiterId);
+        } else {
+          _showErrorDialog(context, 'Unexpected response from the server.');
+        }
       } else {
-        _showErrorDialog(context, 'Unexpected response from the server.');
+        _showErrorDialog(context, '\nInvalid username or password.');
       }
-    } else {
-      _showErrorDialog(context, '\nInvalid username or password.');
+    } on SocketException {
+      _showErrorDialog(context, 'No internet connection. Please try again.');
+    } catch (e) {
+      _showErrorDialog(
+          context, 'An unexpected error occurred. Please try again.');
     }
   }
 
@@ -101,7 +109,7 @@ class _LoginScreenState extends State<LoginScreenPage> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/img8.jpeg', 
+            'assets/img8.jpeg',
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,

@@ -5,9 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:restaurant_pos_mobile/constants.dart';
-import 'package:restaurant_pos_mobile/view/add_more_items.dart';
 import 'package:restaurant_pos_mobile/view/edit_menu_screen.dart';
-import 'package:restaurant_pos_mobile/view/menu_screen.dart';
 
 class EditScreenPage extends StatefulWidget {
   final int orderId;
@@ -264,68 +262,80 @@ class _EditScreenState extends State<EditScreenPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredOrderItems.length,
-              itemBuilder: (context, index) {
-                var item = filteredOrderItems[index];
-                int itemId = item['item_id'];
-                int quantity = quantities[itemId] ?? item['quantity'];
-                double price = (item['price'] as num).toDouble();
-                double totalPrice = price * quantity;
+            child: filteredOrderItems.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No Order Items to Display',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: filteredOrderItems.length,
+                    itemBuilder: (context, index) {
+                      var item = filteredOrderItems[index];
+                      int itemId = item['item_id'];
+                      int quantity = quantities[itemId] ?? item['quantity'];
+                      double price = (item['price'] as num).toDouble();
+                      double totalPrice = price * quantity;
 
-                return Card(
-                  color: Color.fromARGB(255, 250, 236, 234),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    side: const BorderSide(
-                      color: Color.fromARGB(255, 202, 158, 150),
-                      width: 5.0,
-                    ),
-                  ),
-                  child: ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Item: ${item['item']}'),
-                        Platform.isIOS
-                            ? CupertinoTextField(
-                                controller: noteControllers[itemId],
-                                placeholder: 'Note',
-                              )
-                            : TextField(
-                                controller: noteControllers[itemId],
-                                decoration: const InputDecoration(
-                                  labelText: 'Note',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                        Text('Quantity: $quantity'),
-                        Text('Price: ${price.toStringAsFixed(2)}'),
-                        Text('Total: ${totalPrice.toStringAsFixed(2)}'),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: () => decrementQuantity(itemId),
-                            ),
-                            Text('$quantity'),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () => incrementQuantity(itemId),
-                            ),
-                          ],
+                      return Card(
+                        color: Color.fromARGB(255, 250, 236, 234),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: const BorderSide(
+                            color: Color.fromARGB(255, 202, 158, 150),
+                            width: 5.0,
+                          ),
                         ),
-                      ],
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _deleteItem(itemId),
-                    ),
+                        child: ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Item: ${item['item']}'),
+                              Platform.isIOS
+                                  ? CupertinoTextField(
+                                      controller: noteControllers[itemId],
+                                      placeholder: 'Note',
+                                    )
+                                  : TextField(
+                                      controller: noteControllers[itemId],
+                                      decoration: const InputDecoration(
+                                        labelText: 'Note',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                              Text('Quantity: $quantity'),
+                              Text('Price: ${price.toStringAsFixed(2)}'),
+                              Text('Total: ${totalPrice.toStringAsFixed(2)}'),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () => decrementQuantity(itemId),
+                                  ),
+                                  Text('$quantity'),
+                                  IconButton(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: () => incrementQuantity(itemId),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteItem(itemId),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

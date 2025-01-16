@@ -137,37 +137,48 @@ class _ViewScreenState extends State<ViewScreenPage> {
             Text('Table no : ${widget.tabelNo}'),
             Text('Order no : ${widget.orderNo}'),
             Expanded(
-              child: ListView.builder(
-                itemCount: filteredItems.length,
-                itemBuilder: (context, index) {
-                  var item = filteredItems[index];
-                  int itemId = item['item_id'];
-                  int quantity = quantities[itemId] ?? item['quantity'];
-                  double price = (item['price'] as num).toDouble();
-                  double totalPrice = price * quantity;
+              child: filteredItems.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No Order Items to Display',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredItems.length,
+                      itemBuilder: (context, index) {
+                        var item = filteredItems[index];
+                        int itemId = item['item_id'];
+                        int quantity = quantities[itemId] ?? item['quantity'];
+                        double price = (item['price'] as num).toDouble();
+                        double totalPrice = price * quantity;
 
-                  return Card(
-                    color: Color.fromARGB(255, 250, 236, 234),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      side: const BorderSide(
-                        color: Color.fromARGB(255, 202, 158, 150),
-                        width: 5.0,
-                      ),
-                    ),
-                    child: ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Item: ${item['item']}\nNote: ${item['note']}\nQuantity: $quantity\nPrice: ${price.toStringAsFixed(2)}\nTotal: ${totalPrice.toStringAsFixed(2)}',
+                        return Card(
+                          color: Color.fromARGB(255, 250, 236, 234),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                            side: const BorderSide(
+                              color: Color.fromARGB(255, 202, 158, 150),
+                              width: 5.0,
+                            ),
                           ),
-                        ],
-                      ),
+                          child: ListTile(
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Item: ${item['item']}\nNote: ${item['note']}\nQuantity: $quantity\nPrice: ${price.toStringAsFixed(2)}\nTotal: ${totalPrice.toStringAsFixed(2)}',
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
